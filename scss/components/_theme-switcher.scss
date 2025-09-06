@@ -1,0 +1,53 @@
+/* --- COMPONENTE: BOTÓN DE CAMBIO DE TEMA --- */
+
+.theme-toggle-btn {
+    position: fixed;
+    top: 20px;
+    right: 80px; /* Posicionado a la izquierda del botón de historial */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--color-display-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--color-display-text);
+    z-index: 100;
+    
+    &:hover {
+        transform: scale(1.1);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    &:active {
+        transform: scale(0.95);
+    }
+    
+    i {
+        transition: transform 0.5s ease;
+    }
+    
+    &:hover i {
+        transform: rotate(30deg);
+    }
+    
+    @media (max-width: 600px) {
+        top: 10px;
+        right: 70px; /* Ajustado para móviles */
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+}
+
+/* Animación para el cambio de tema */
+.theme-transition {
+    transition: background-color 0.5s ease,
+                color 0.5s ease,
+                border-color 0.5s ease,
+                box-shadow 0.5s ease;
+}

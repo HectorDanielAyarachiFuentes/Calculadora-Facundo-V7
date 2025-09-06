@@ -1,0 +1,126 @@
+/* --- COMPONENTE: MODAL Y LECTOR DE NÚMEROS --- */
+#infoModalLabel {
+    color: #040101;
+    text-align: center;
+    width: 100%;
+}
+
+.modal-body {
+    .input-section {
+        margin-bottom: 2rem;
+        text-align: center;
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 1.1rem;
+            color: $ln-color-texto-principal;
+        }
+        input {
+            font-family: 'Roboto Mono', monospace;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            color: $ln-color-texto-principal;
+        }
+    }
+    .card {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        color: #000;
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            color: $ln-color-texto-principal;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+        }
+    }
+    .result-box {
+        padding: 1rem;
+        border-radius: 8px;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $ln-color-fondo;
+        font-size: 1.2rem;
+        font-family: 'Roboto', sans-serif;
+        transition: background-color 0.3s;
+    }
+    .placeholder-text {
+        color: $ln-color-placeholder;
+        font-style: italic;
+    }
+    .phonetic-box {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        letter-spacing: 1px;
+        word-spacing: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        .palabra-fonetica {
+            padding: 2px 5px;
+            transition: background-color 0.2s, color 0.2s;
+            border-radius: 4px;
+        }
+    }
+    .svg-box {
+        padding: 0;
+        background-color: transparent;
+        overflow-x: auto;
+        svg {
+            display: block;
+            width: 100%;
+            max-height: 250px;
+        }
+    }
+    .svg-etiqueta-principal {
+        font-family: 'Roboto', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+        fill: #555;
+    }
+    .svg-etiqueta-vertical {
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+        text-transform: uppercase;
+        fill: $ln-color-decimal;
+    }
+    .svg-numero {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 5rem;
+        font-weight: 700;
+    }
+    .highlight {
+        background-color: $ln-color-entero !important;
+        color: white !important;
+        fill: white !important;
+        transition: background-color 0.1s, color 0.1s;
+    }
+    .play-btn {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        background: #fff;
+        cursor: pointer;
+        color: #333;
+        transition: background-color 0.2s, transform 0.2s;
+        &:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+    }
+}

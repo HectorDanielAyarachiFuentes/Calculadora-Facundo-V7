@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es-ES">
+
+<head>
+    <!-- ============== METAETIQUETAS ORIGINALES DE LA CALCULADORA ============== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="La Calculadora de Facundo con herramientas avanzadas como un lector de números.">
+    <meta name="author" content="Hector Daniel Ayarachi Fuentes">
+    <meta name="theme-color" content="#66FF66">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='5' y='5' width='90' height='90' rx='15' fill='%2366FF66'/><text x='50' y='55' font-size='40' text-anchor='middle' fill='%23000' font-family='Arial, sans-serif'>FC</text></svg>">
+    <title>Calculadora Facundo 🧮</title>
+
+    <!-- Metadatos Open Graph para redes sociales -->
+    <meta property="og:title" content="Calculadora Facundo 🧮">
+    <meta property="og:description"
+        content="La Calculadora de Facundo: rápida, atractiva y con herramientas avanzadas.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hectordanielayarachifuentes.github.io/Calculadora-Facundo-V4//">
+    <meta property="og:image"
+        content="https://hectordanielayarachifuentes.github.io/Calculadora-Facundo-V4/Img/Inicio%20de%20calculadora.jpeg">
+
+    <!-- ============== RECURSOS PARA LA NUEVA BARRA LATERAL Y MODAL ============== -->
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- He quitado las fuentes de Google Fonts de aquí porque ya están importadas en el archivo SCSS -->
+
+    <!-- ============== ESTILOS DE LA CALCULADORA (CARGADO AL FINAL PARA TENER PRIORIDAD) ============== -->
+    <!-- Este enlace debe apuntar al archivo CSS compilado desde tu SCSS -->
+    <link rel="stylesheet" href="scss\style.css">
+</head>
+
+<body>
+    <!-- ============== CONTENIDO ORIGINAL DE LA CALCULADORA ============== -->
+    <main id="contenedor" class="calculator-container" role="main">
+        <header role="banner">
+            <h1>LA<br>CALCULADORA<br>DE <span>FACUNDO</span></h1>
+            <p class="subtitle">Un proyecto de <a href="https://github.com/HectorDanielAyarachiFuentes" target="_blank"
+                    rel="noopener">Facundo Killer</a></p>
+        </header>
+        <section aria-label="Pantalla de la calculadora">
+            <div id="display" class="display" role="textbox" aria-live="polite">0</div>
+        </section>
+        <section aria-label="Teclado y pantalla de operaciones">
+            <div id="cuerpoteclado" class="keyboard-container">
+                <div id="teclado" class="keyboard" role="grid">
+                    <button class="keyboard__button keyboard__button--special keyboard__button--double-width"
+                        data-action="view-screen" aria-label="Ver pantalla de resultados">Ver<br>Pantalla</button>
+                    <button id="tcal" class="keyboard__button keyboard__button--equals keyboard__button--triple-width"
+                        data-action="calculate" aria-label="Calcular">=</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="7">7</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="8">8</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="9">9</button>
+                    <button id="tmas" class="keyboard__button keyboard__button--operator" data-value="+">+</button>
+                    <button id="tmen" class="keyboard__button keyboard__button--operator" data-value="-">-</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="4">4</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="5">5</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="6">6</button>
+                    <button id="tpor" class="keyboard__button keyboard__button--operator" data-value="x">×</button>
+                    <button id="tdiv" class="keyboard__button keyboard__button--operator" data-value="/">÷</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="1">1</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="2">2</button>
+                    <button class="keyboard__button keyboard__button--number" data-value="3">3</button>
+                    <button id="tpri" class="keyboard__button keyboard__button--equals" data-action="primos"
+                        aria-label="Factores Primos">|</button>
+                    <button id="trai" class="keyboard__button keyboard__button--equals" data-action="raiz"
+                        aria-label="Raíz Cuadrada">√</button>
+                    <button class="keyboard__button keyboard__button--number keyboard__button--double-width"
+                        data-value="0">0</button>
+                    <button id="tcom" class="keyboard__button keyboard__button--number" data-value=",">,</button>
+                    <button class="keyboard__button keyboard__button--operator" data-action="clear"
+                        aria-label="Limpiar Todo">C</button>
+                    <button class="keyboard__button keyboard__button--operator" data-action="delete"
+                        aria-label="Borrar">⌫</button>
+                </div>
+                <div id="salida" class="output-screen" role="region" aria-live="polite"></div>
+                <nav id="divvolver" class="bottom-nav" aria-label="Controles de resultados">
+                    <button id="volver" class="bottom-nav__button bottom-nav__button--arrow" data-action="hide-screen"
+                        aria-label="Volver al teclado">↩</button>
+                    <button id="botexp" class="bottom-nav__button" data-action="divide-expanded"
+                        aria-label="Ver división expandida">DIV EXPAND.</button>
+                    <button id="botnor" class="bottom-nav__button" data-action="divide-normal"
+                        aria-label="Ver división normal">DIV NORMAL</button>
+                </nav>
+            </div>
+        </section>
+    </main>
+        <!-- === FIN === -->
+
+    <!-- ============== BOTÓN DE CAMBIO DE TEMA ============== -->
+    <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Cambiar entre modo claro y oscuro">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- ============== BARRA LATERAL HISTORIA ============== -->
+
+    <button id="history-toggle-btn" class="history-toggle-btn" aria-label="Mostrar u ocultar historial"
+        aria-controls="history-panel">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+                d="M13,3A9,9,0,0,0,4,12H1L4.89,15.89L4.96,16.03L9,12H6A7,7,0,0,1,13,5V8L18,4L13,0V3M12,12.5A1.5,1.5,0,0,0,10.5,14A1.5,1.5,0,0,0,12,15.5A1.5,1.5,0,0,0,13.5,14A1.5,1.5,0,0,0,12,12.5Z" />
+        </svg>
+    </button>
+    <aside id="history-panel" class="history-panel" role="complementary" aria-hidden="true">
+        <header class="history-panel__header">
+            <h2 id="history-title" class="history-panel__title">Historial</h2>
+            <button id="clear-history-btn" class="history-panel__clear-btn">Limpiar</button>
+        </header>
+        <ul id="history-list" class="history-panel__list" role="list" aria-labelledby="history-title"></ul>
+    </aside>
+    <!-- === FIN === -->
+
+    <!-- ==============  BARRA LATERAL Y MODAL LECTOR DE NUMEROS ============== -->
+    <div class="sidebar-wrapper">
+        <button class="btn btn-primary bubble-btn bubble-main" type="button" data-bs-toggle="collapse"
+            data-bs-target="#mainOptions" aria-expanded="false" aria-controls="mainOptions" title="Abrir herramientas">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+        </button>
+        <div class="collapse" id="mainOptions">
+            <div class="d-flex flex-column gap-3 mt-3">
+                <div class="d-flex flex-column align-items-start">
+                    <button class="btn btn-success bubble-btn" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#mathSubOptions" aria-expanded="false" aria-controls="mathSubOptions"
+                        title="Matemáticas">
+                        <i class="fa-solid fa-calculator"></i>
+                    </button>
+                    <div class="collapse mt-2 ps-4" id="mathSubOptions">
+                        <div class="d-flex flex-column gap-2">
+                            <button class="btn btn-success bubble-btn bubble-sub" data-modal-target="readNumbers"
+                                title="Lector de Números Avanzado">
+                                <i class="fa-solid fa-spell-check"></i>
+                            </button>
+                            <button class="btn btn-success bubble-btn bubble-sub" data-modal-target="geometry"
+                                title="Geometría">
+                                <i class="fa-solid fa-draw-polygon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary bubble-btn" data-modal-target="config" title="Configuración">
+                    <i class="fa-solid fa-gears"></i>
+                </button>
+                <button class="btn btn-info bubble-btn" data-modal-target="help" title="Ayuda">
+                    <i class="fa-solid fa-circle-question"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4" id="infoModalLabel">Título</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="infoModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- === FIN === -->
+   <!-- NUEVO: Footer -->
+    <footer class="main-footer">
+        <p>© 2023 Facundo Killer. Todos los derechos reservados.</p>
+        <p>Hecho con <span style="color: red;">♥</span> y CSS.</p>
+    </footer>
+    <!-- ============== SCRIPTS (ORIGINALES + NUEVOS) ============== -->
+    <!-- Script original de la calculadora -->
+    <script type="module" src="js/main.js"></script>
+
+    <!-- Script de Bootstrap (necesario para el sidebar y modal) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script de Bootstrap (Lector de numeros) -->
+    <script src="js/geometry.js"></script>
+    <script type="module" src="js/bostraplectornumeros.js"></script>
+</body>
+
+</html>

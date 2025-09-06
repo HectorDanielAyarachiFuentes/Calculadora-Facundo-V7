@@ -1,0 +1,23 @@
+/* ======================================================= */
+/* --- ARCHIVO PRINCIPAL DE ESTILOS (SCSS) --- */
+/* ======================================================= */
+
+// 1. Base y configuración global.
+// Variables, fuentes, reseteo y estilos base.
+@import 'base/variables';
+@import 'base/base';
+@import 'base/animations';
+
+// 2. Estructura y layout.
+// Define la disposición de los elementos principales en la página.
+@import 'layout/main';
+@import 'layout/header';
+@import 'layout/footer';
+
+// 3. Componentes de la UI.
+// Estilos para cada pieza individual y reutilizable de la interfaz.
+@import 'components/calculator';
+@import 'components/history';
+@import 'components/sidebar';
+@import 'components/modal';
+@import 'components/theme-switcher'; // Nuevo componente para el cambio de tema

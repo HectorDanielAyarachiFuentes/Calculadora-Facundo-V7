@@ -1,0 +1,108 @@
+/* --- VARIABLES, FUENTES Y PALETA DE COLORES --- */
+
+/* Fuentes */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&family=Quicksand:wght@400;700&family=Outfit:wght@400;700&family=Titillium+Web:wght@700&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
+
+/* Variables de Tema */
+:root {
+    /* Tema Oscuro (por defecto) */
+    --bg-main: #121212;
+    --bg-grid-lines: rgba(200, 200, 200, 0.04);
+    --bg-display: #1a1a1a;
+    --bg-keyboard: #000;
+    --bg-output-screen: #111;
+    --history-panel-bg: #1f1f1f;
+    --history-header-bg: #2b2b2b;
+    --nav-bg: #333;
+    
+    --color-display-text: #f0e68c;
+    --history-text-color: #e0e0e0;
+    --history-input-color: #b0b0b0;
+    --history-border-color: #404040;
+    --history-hover-bg: #333333;
+    --color-lineas-output: #ddd;
+    --color-error: #e84d4d;
+    --focus-color: #66FF66;
+    
+    --btn-num-bg: #FFFF66;
+    --btn-op-bg: #FF3333;
+    --btn-special-bg: #6666FF;
+    --btn-equal-bg: #66FF66;
+    --btn-text-color: #000;
+    --btn-disabled-bg: #333;
+    --btn-disabled-text: #666;
+    --history-clear-btn-bg: #e74c3c;
+    --history-clear-btn-hover-bg: #c0392b;
+}
+
+/* Tema Claro */
+[data-theme="light"] {
+    --bg-main: #f5f5f5;
+    --bg-grid-lines: rgba(0, 0, 0, 0.04);
+    --bg-display: #ffffff;
+    --bg-keyboard: #e0e0e0;
+    --bg-output-screen: #f8f8f8;
+    --history-panel-bg: #ffffff;
+    --history-header-bg: #f0f0f0;
+    --nav-bg: #f0f0f0;
+    
+    --color-display-text: #333333;
+    --history-text-color: #333333;
+    --history-input-color: #555555;
+    --history-border-color: #dddddd;
+    --history-hover-bg: #f5f5f5;
+    --color-lineas-output: #555555;
+    --color-error: #d32f2f;
+    --focus-color: #4caf50;
+    
+    --btn-num-bg: #ffeb3b;
+    --btn-op-bg: #ff5252;
+    --btn-special-bg: #5c6bc0;
+    --btn-equal-bg: #4caf50;
+    --btn-text-color: #333333;
+    --btn-disabled-bg: #cccccc;
+    --btn-disabled-text: #999999;
+    --history-clear-btn-bg: #e74c3c;
+    --history-clear-btn-hover-bg: #c0392b;
+}
+
+/* Variables SCSS para compatibilidad con código existente */
+$bg-main: var(--bg-main);
+$bg-grid-lines: var(--bg-grid-lines);
+$bg-display: var(--bg-display);
+$bg-keyboard: var(--bg-keyboard);
+$bg-output-screen: var(--bg-output-screen);
+$history-panel-bg: var(--history-panel-bg);
+$history-header-bg: var(--history-header-bg);
+$nav-bg: var(--nav-bg);
+
+$color-display-text: var(--color-display-text);
+$history-text-color: var(--history-text-color);
+$history-input-color: var(--history-input-color);
+$history-border-color: var(--history-border-color);
+$history-hover-bg: var(--history-hover-bg);
+$color-lineas-output: var(--color-lineas-output);
+$color-error: var(--color-error);
+$focus-color: var(--focus-color);
+
+/* Colores de Botones */
+$btn-num-bg: var(--btn-num-bg);
+$btn-op-bg: var(--btn-op-bg);
+$btn-special-bg: var(--btn-special-bg);
+$btn-equal-bg: var(--btn-equal-bg);
+$btn-text-color: var(--btn-text-color);
+$btn-disabled-bg: var(--btn-disabled-bg);
+$btn-disabled-text: var(--btn-disabled-text);
+$history-clear-btn-bg: var(--history-clear-btn-bg);
+$history-clear-btn-hover-bg: var(--history-clear-btn-hover-bg);
+
+/* Dimensiones */
+$nav-height: 60px;
+
+/* Variables para el Lector de Números (dentro del modal) */
+$ln-color-fondo: #f8f9fa;
+$ln-color-texto-principal: #333;
+$ln-color-entero: #0d6efd;
+$ln-color-decimal: #198754;
+$ln-color-coma: #dc3545;
+$ln-color-placeholder: #6c757d;

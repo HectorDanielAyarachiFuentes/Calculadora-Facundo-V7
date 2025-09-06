@@ -1,0 +1,91 @@
+/* --- ANIMACIONES GLOBALES Y KEYFRAMES --- */
+@keyframes fadeInScale-animation {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-fade-in-scale {
+    opacity: 0;
+    transform: scale(0.5);
+    animation: fadeInScale-animation 0.5s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes arcoiris {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+}
+.pulse {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes history-item-highlight {
+    0% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+    50% {
+        background-color: rgba(76, 175, 80, 0.4);
+        transform: scale(1.02);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+
+@keyframes move-grid {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -96px -96px; // Mueve exactamente un cuadro de la rejilla
+    }
+}
+
+@keyframes neon-pulse {
+    0% {
+        box-shadow: 0 0 5px rgba(var(--neon-color-1), 0.2),
+                    0 0 10px rgba(var(--neon-color-1), 0.2),
+                    0 0 20px rgba(var(--neon-color-1), 0.2),
+                    0 0 40px rgba(var(--neon-color-2), 0.1),
+                    inset 0 0 5px rgba(var(--neon-color-1), 0.1);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(var(--neon-color-1), 0.4),
+                    0 0 20px rgba(var(--neon-color-1), 0.4),
+                    0 0 40px rgba(var(--neon-color-1), 0.2),
+                    0 0 80px rgba(var(--neon-color-2), 0.2),
+                    inset 0 0 10px rgba(var(--neon-color-1), 0.2);
+    }
+}
+
+@keyframes ripple-effect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+@keyframes glitch-main { 0%, 100% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 40% { transform: translate(-3px, -3px); } 60% { transform: translate(3px, 3px); } 80% { transform: translate(3px, -3px); } }
+@keyframes glitch-anim-1 { 0% { clip-path: inset(30% 0 60% 0); } 100% { clip-path: inset(50% 0 20% 0); } }
+@keyframes glitch-anim-2 { 0% { clip-path: inset(80% 0 10% 0); } 100% { clip-path: inset(10% 0 75% 0); } }

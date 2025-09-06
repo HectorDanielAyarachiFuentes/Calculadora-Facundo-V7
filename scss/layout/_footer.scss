@@ -1,0 +1,23 @@
+/* --- ESTILOS DEL PIE DE PÁGINA --- */
+.main-footer {
+    margin-top: 30px;
+    padding-bottom: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+
+    a {
+        color: $btn-special-bg;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        &:hover {
+            color: #4de89d;
+            text-decoration: underline;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        display: none;
+    }
+}

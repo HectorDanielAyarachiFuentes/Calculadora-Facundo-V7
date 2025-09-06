@@ -1,0 +1,166 @@
+/* ======================================================= */
+/* --- COMPONENTE: PANEL DE HISTORIAL (Corregido) --- */
+/* ======================================================= */
+
+.history-toggle-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1002;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--nav-bg); // Corregido
+    border: 1px solid #555;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
+
+    &:hover {
+        background-color: #4CAF50;
+        transform: scale(1.1);
+    }
+
+    svg {
+        width: 28px;
+        height: 28px;
+        fill: #eee;
+    }
+
+    @media (max-width: 600px) {
+        --floating-btn-margin-mobile: 10px;
+        top: calc(env(safe-area-inset-top, 10px) + var(--floating-btn-margin-mobile));
+        right: var(--floating-btn-margin-mobile);
+        width: 60px;
+        height: 60px;
+        svg {
+            width: 50%;
+            height: 50%;
+        }
+    }
+}
+
+.history-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    max-width: 100vw;
+    height: 100svh; // Correcto, usa la altura visible
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background-color: var(--history-panel-bg); // Corregido
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    font-family: 'Quicksand', sans-serif;
+    visibility: hidden;
+    transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+
+    &--open {
+        right: 0;
+        visibility: visible;
+        
+        & + .history-toggle-btn {
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+
+    &__header {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-shrink: 0;
+        padding: 15px 20px;
+        background-color: var(--history-header-bg); // Corregido
+        border-bottom: 1px solid var(--history-border-color); // Corregido
+        
+        @media (max-width: 600px) {
+            --floating-btn-size-mobile: 60px;
+            --floating-btn-margin-mobile: 10px;
+            padding-left: calc(var(--floating-btn-size-mobile) + var(--floating-btn-margin-mobile) + 10px);
+            padding-right: calc(var(--floating-btn-size-mobile) + var(--floating-btn-margin-mobile) + 10px);
+            justify-content: flex-start;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--history-text-color); // Corregido
+    }
+
+    &__clear-btn {
+        flex-shrink: 0;
+        margin-left: 20px;
+        padding: 8px 15px;
+        background-color: var(--history-clear-btn-bg); // Corregido
+        color: #fff;
+        font-family: 'Chakra Petch', sans-serif;
+        font-size: 0.85em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-radius: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+
+        &:hover {
+            background-color: var(--history-clear-btn-hover-bg); // Corregido
+            transform: scale(1.05);
+        }
+    }
+
+    &__list {
+        flex-grow: 1;
+        margin: 0;
+        padding: 0 10px 10px;
+        list-style: none;
+        color: var(--history-text-color); // Corregido
+        overflow-y: auto;
+    }
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--history-border-color); // Corregido
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &:hover {
+            background-color: var(--history-hover-bg); // Corregido
+        }
+
+        &.history-item-highlight {
+            animation: history-item-highlight 1.5s ease-out forwards;
+        }
+    }
+
+    &__input {
+        font-size: 0.95em;
+        line-height: 1.3;
+        color: var(--history-input-color); // Corregido
+        word-break: break-all;
+    }
+
+    &__result {
+        display: block;
+        margin-top: 6px;
+        font-size: 1.2em;
+        font-weight: bold;
+        color: var(--color-display-text); // Corregido
+        word-break: break-all;
+    }
+}

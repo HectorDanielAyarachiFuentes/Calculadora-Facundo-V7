@@ -1,0 +1,207 @@
+/* ======================================================= */
+/* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
+/* ======================================================= */
+
+// --- Variables específicas del componente ---
+$nav-height: 60px;
+$keyboard-gap: 2px;
+
+.calculator-container {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    opacity: 0;
+    transition: opacity 1s;
+
+    // Efectos visuales consolidados
+    --neon-color-1: var(--btn-equal-bg);
+    --neon-color-2: var(--btn-special-bg);
+    animation: neon-pulse 5s infinite alternate;
+
+    // Layout flexible para móviles
+    @media (max-width: 600px) {
+        max-width: none;
+        margin-bottom: 0;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.display {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    min-height: 65px;
+    margin-bottom: 15px;
+    padding: 20px;
+    background-color: var(--bg-display);
+    color: var(--color-display-text);
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 2.2rem;
+    text-align: right;
+    border-radius: 10px;
+    word-wrap: break-word;
+    overflow: hidden;
+    position: relative;
+
+    // Efecto Glitch
+    &.glitch {
+        animation: glitch-main 0.3s linear;
+        &::before, &::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-display); overflow: hidden; }
+        &::before { left: 2px; text-shadow: -2px 0 var(--btn-op-bg); animation: glitch-anim-1 0.8s infinite linear alternate-reverse; }
+        &::after { left: -2px; text-shadow: -2px 0 var(--btn-special-bg), 2px 2px var(--btn-equal-bg); animation: glitch-anim-2 0.6s infinite linear alternate-reverse; }
+    }
+
+    @media (max-width: 600px) {
+        // MEJORA: Tipografía fluida y controlada
+        font-size: clamp(2.5rem, 10vw, 4rem);
+        padding: 15px;
+        flex-shrink: 0; // Evita que el display se encoja cuando el teclado crece
+    }
+}
+
+.keyboard-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: var(--bg-keyboard);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+
+    @media (max-width: 600px) {
+        // El teclado se vuelve flexible para ocupar el espacio restante
+        flex-grow: 1;           // Ocupa todo el espacio vertical disponible
+        min-height: 0;          // Fix necesario para flexbox en algunos navegadores
+        aspect-ratio: unset;    // Se quita la relación de aspecto para que la altura sea libre
+    }
+}
+
+.keyboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: $keyboard-gap; // MEJORA: Usando variable SCSS
+    width: 100%;
+    height: 100%;
+    transition: top 0.5s ease-in-out, opacity 0.3s ease-in-out;
+
+    &--hidden { top: 100%; opacity: 0; pointer-events: none; }
+    
+    &__button {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--btn-text-color);
+        font-family: 'Chakra Petch', sans-serif;
+        font-size: 1.4rem;
+        border: 2px solid #000;
+        overflow: hidden;
+        transition: transform 0.1s ease, background-color 0.2s ease;
+
+        &--number { background-color: var(--btn-num-bg); }
+        &--operator { background-color: var(--btn-op-bg); }
+        &--special { background-color: var(--btn-special-bg); font-size: 0.8em; }
+        &--equals { background-color: var(--btn-equal-bg); }
+        &--double-width { grid-column: span 2; }
+        &--triple-width { grid-column: span 3; }
+
+        &:not(:disabled):hover { background: linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff); background-size: 200% 200%; animation: arcoiris 2s linear infinite; transform: scale(1.05); }
+        &:active:not(:disabled) { transform: scale(0.95); }
+        &:disabled { background-color: var(--btn-disabled-bg); color: var(--btn-disabled-text); cursor: not-allowed; animation: none; transform: none; }
+
+        .ripple { position: absolute; border-radius: 50%; background-color: rgba(255, 255, 255, 0.6); transform: scale(0); animation: ripple-effect 0.6s linear; pointer-events: none; }
+
+        @media (max-width: 600px) {
+            // MEJORA: Tipografía fluida y controlada
+            font-size: clamp(1.5rem, 6vw, 2.2rem);
+        }
+    }
+}
+
+// Estos botones deberían idealmente tener una clase, pero mantenemos los IDs
+#botexp, #botnor {
+    @media (max-width: 600px) {
+        font-size: clamp(0.8rem, 3.5vw, 1.1rem);
+        padding: 8px;
+    }
+}
+
+.output-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: calc(100% - #{$nav-height}); // MEJORA: Usando variable SCSS
+    padding: 15px;
+    background-color: var(--bg-output-screen);
+    opacity: 0;
+    pointer-events: none;
+    overflow: auto;
+    transition: opacity 0.3s ease-in-out;
+
+    &--visible { opacity: 1; pointer-events: all; }
+
+    &__error-message {
+        width: 90%; margin: auto; color: var(--color-error); font-size: 1.2rem; text-align: center;
+        @media (max-width: 600px) {
+            font-size: clamp(1rem, 4.5vw, 1.5rem);
+            padding-top: 25%;
+        }
+    }
+
+    .output-grid {
+        &__cell { position: absolute; display: flex; align-items: center; justify-content: center;
+            &--dividendo { color: #ff8c00; } &--divisor { color: #6495ed; } &--cociente { color: #00ff00; }
+            &--producto { color: #ccc; } &--resto { color: #f08080; } &--suma-intermedia { color: #f0ad4e; font-weight: bold; z-index: 10; animation: fadeIn 0.3s ease-out; }
+        }
+        &__line { position: absolute; background-color: var(--color-lineas-output); }
+    }
+    
+    @media (max-width: 600px) {
+        font-size: clamp(1.2rem, 5vw, 1.8rem);
+    }
+}
+
+.bottom-nav {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    z-index: 3;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: $nav-height; // MEJORA: Usando variable SCSS
+    padding: 10px;
+    background-color: var(--nav-bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: bottom 0.5s ease-in-out, opacity 0.3s ease-in-out;
+
+    &--visible { bottom: 0; opacity: 1; pointer-events: all; }
+
+    &__button {
+        flex-grow: 1; padding: 10px; background-color: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8);
+        text-align: center; border-radius: 5px; transition: background-color 0.2s, color 0.2s;
+
+        &:hover { background-color: rgba(255, 255, 255, 0.2); color: white; }
+
+        &--arrow {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            @media (max-width: 600px) {
+                font-size: clamp(1.8rem, 7vw, 2.5rem);
+            }
+        }
+    }
+}

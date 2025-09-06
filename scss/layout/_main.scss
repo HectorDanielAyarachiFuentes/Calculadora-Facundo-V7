@@ -1,0 +1,17 @@
+/* --- CONTENEDORES PRINCIPALES DE LAYOUT --- */
+.main-content-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 0;
+}
+
+// Estilo suelto del CSS original
+#contenedor {
+  padding-left: 1em; /* relativo al tamaño de fuente */
+  @media (max-width: 600px) {
+      padding-left: 0 !important;
+  }
+}

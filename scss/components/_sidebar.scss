@@ -1,0 +1,73 @@
+/* --- COMPONENTE: BARRA LATERAL DE UTILIDADES (BURBUJAS) --- */
+.sidebar-wrapper {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1050;
+
+    .bubble-main {
+        width: 65px;
+        height: 65px;
+        transition: transform 0.3s ease-in-out;
+        &[aria-expanded="true"] {
+            transform: rotate(45deg);
+        }
+    }
+    .bubble-btn {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s ease;
+        color: #eee;
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Aplicar background-color solo en tema oscuro */
+        [data-theme="light"] & {
+            /* Mantener los colores originales de Bootstrap en modo claro */
+            &.btn-primary { background-color: #0d6efd; }
+            &.btn-success { background-color: #198754; }
+            &.btn-secondary { background-color: #6c757d; }
+            &.btn-info { background-color: #0dcaf0; }
+            color: #fff; /* Mantener el texto blanco para contraste */
+        }
+        
+        /* En tema oscuro, usar el color de fondo de navegación */
+        :root:not([data-theme="light"]) & {
+            background-color: $nav-bg;
+        }
+    }
+    .bubble-sub {
+        width: 45px;
+        height: 45px;
+        i {
+            font-size: 1.2rem;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        --floating-btn-margin-mobile: 10px;
+        top: calc(env(safe-area-inset-top, 10px) + var(--floating-btn-margin-mobile));
+        left: var(--floating-btn-margin-mobile);
+
+        .bubble-main {
+            width: 60px;
+            height: 60px;
+        }
+        .bubble-btn {
+            width: 52px;
+            height: 52px;
+        }
+        .bubble-sub {
+            width: 45px;
+            height: 45px;
+        }
+    }
+}

@@ -1,0 +1,82 @@
+/* --- RESET Y ESTILOS BASE GLOBALES --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, button, input, div, p, span, a, h1, h2, h3, h4, h5, h6 {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+html {
+    @media (max-width: 600px) {
+        box-sizing: border-box;
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+    }
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100svh;
+    padding: 20px;
+    background-color: $bg-main;
+    background-image: repeating-linear-gradient(90deg, $bg-grid-lines 0 1px, transparent 1px 96px),
+                      repeating-linear-gradient(0deg, $bg-grid-lines 0 1px, transparent 1px 96px);
+    font-family: 'Quicksand', sans-serif;
+    color: #eee;
+    overflow: hidden; /* Evita scroll en escritorio */
+
+    @media (max-width: 600px) {
+        margin: 0;
+        padding: env(safe-area-inset-top, 10px) env(safe-area-inset-right, 10px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 10px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+button {
+    border: none;
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid $focus-color;
+    outline-offset: 2px;
+}
+
+.error {
+    color: $color-error;
+}
+
+
+body {
+    // ... tus estilos existentes ...
+    position: relative; // Necesario para el pseudo-elemento
+    overflow: hidden; // Asegura que nada se salga
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            repeating-linear-gradient(90deg, $bg-grid-lines 0 1px, transparent 1px 96px),
+            repeating-linear-gradient(0deg, $bg-grid-lines 0 1px, transparent 1px 96px);
+        background-size: 96px 96px; // Tamaño explícito
+        animation: move-grid 20s linear infinite;
+        z-index: -1; // Detrás de todo el contenido
+        opacity: 0.5; // Un poco más sutil
+    }
+}

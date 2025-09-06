@@ -1,0 +1,14 @@
+{
+  "name": "calculadora-facundo",
+  "version": "1.0.0",
+  "description": "Calculadora didáctica que muestra el proceso de cálculo",
+  "main": "main.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  },
+  "type": "module"
+}
