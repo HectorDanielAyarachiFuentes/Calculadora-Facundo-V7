@@ -1,4 +1,4 @@
-# Registro de Cambios - Calculadora Facundo
+# Registro de Cambios - Calculadora Facundo v-7
 
 ## Cambios realizados
 
@@ -33,3 +33,4 @@
 ---
 
 Este registro documenta los cambios principales realizados para mejorar la funcionalidad, organización y experiencia de usuario de la calculadora.
+
