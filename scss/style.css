@@ -632,6 +632,34 @@ header[role=banner] .subtitle a:hover {
   margin-bottom: 10px;
   width: 100%;
 }
+.output-screen .output-grid__result--multiplication-final {
+  font-family: "Roboto Mono", monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--focus-color);
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 8px 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  text-align: left;
+}
+.output-screen .output-grid__result--multiplication-final::-webkit-scrollbar {
+  height: 5px;
+}
+.output-screen .output-grid__result--multiplication-final::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+.output-screen .output-grid__result--multiplication-final::-webkit-scrollbar-thumb {
+  background: var(--focus-color);
+  border-radius: 10px;
+}
+.output-screen .output-grid__result--multiplication-final::-webkit-scrollbar-thumb:hover {
+  background: #55dd55;
+}
 @media (max-width: 600px) {
   .output-screen {
     font-size: clamp(1.2rem, 5vw, 1.8rem);

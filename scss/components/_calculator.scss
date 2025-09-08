@@ -182,6 +182,27 @@ $keyboard-gap: 2px;
             margin-bottom: 10px;
             width: 100%;
         }
+        // MEJORA: Estilo para el resultado final de la multiplicación, para manejar números grandes.
+        &__result--multiplication-final {
+            font-family: 'Roboto Mono', monospace; // Fuente monoespaciada para claridad
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--focus-color);
+            background-color: rgba(0, 0, 0, 0.2); // Fondo ligero para indicar el área
+            padding: 8px 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            width: 100%;
+            white-space: nowrap; // Evita que el texto salte de línea
+            overflow-x: auto;    // Permite el desplazamiento horizontal si el contenido se desborda
+            text-align: left;    // Alineación a la izquierda para que el scroll sea natural
+
+            // Scrollbar personalizado para mejor estética
+            &::-webkit-scrollbar { height: 5px; }
+            &::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+            &::-webkit-scrollbar-thumb { background: var(--focus-color); border-radius: 10px; }
+            &::-webkit-scrollbar-thumb:hover { background: #55dd55; }
+        }
     }
     
     @media (max-width: 600px) {
