@@ -8,7 +8,7 @@
     flex-shrink: 0;
 
     a {
-        color: $btn-special-bg;
+        color: var(--btn-special-bg);
         text-decoration: none;
         transition: color 0.2s ease;
         &:hover {

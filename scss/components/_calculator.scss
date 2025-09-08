@@ -9,7 +9,8 @@ $keyboard-gap: 2px;
 .calculator-container {
     position: relative;
     width: 100%;
-    max-width: 480px;
+    /* MEJORA: Aumentado el tamaño para que ocupe más espacio en pantallas grandes usando unidades relativas (vmin) */
+    max-width: 80vmin;
     opacity: 0;
     transition: opacity 1s;
 

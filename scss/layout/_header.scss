@@ -16,7 +16,7 @@ header[role="banner"] {
         font-weight: 700;
         line-height: 1;
         letter-spacing: 1px;
-        color: $color-error;
+        color: var(--color-error);
         text-transform: uppercase;
         text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
 
@@ -35,11 +35,11 @@ header[role="banner"] {
     .subtitle {
         margin-top: 15px;
         font-size: clamp(0.6rem, 1.2vw, 0.75rem);
-        color: $color-error;
+        color: var(--color-error);
         opacity: 0.8;
 
         a {
-            color: $btn-special-bg;
+            color: var(--btn-special-bg);
             font-weight: bold;
             text-decoration: underline;
             transition: color 0.2s ease;

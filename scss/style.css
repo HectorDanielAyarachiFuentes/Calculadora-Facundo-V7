@@ -134,18 +134,32 @@ body {
   min-height: 100svh;
   padding: 20px;
   background-color: var(--bg-main);
-  background-image: repeating-linear-gradient(90deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px), repeating-linear-gradient(0deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px);
   font-family: "Quicksand", sans-serif;
   color: #eee;
   overflow: hidden; /* Evita scroll en escritorio */
+  position: relative;
 }
 @media (max-width: 600px) {
   body {
-    margin: 0;
-    padding: env(safe-area-inset-top, 10px) env(safe-area-inset-right, 10px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 10px);
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding: 0;
+    display: block;
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
   }
+}
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: repeating-linear-gradient(90deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px), repeating-linear-gradient(0deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px);
+  background-size: 96px 96px;
+  animation: move-grid 20s linear infinite;
+  z-index: -1;
+  opacity: 0.5;
 }
 
 button {
@@ -164,24 +178,6 @@ button:focus-visible {
 
 .error {
   color: var(--color-error);
-}
-
-body {
-  position: relative;
-  overflow: hidden;
-}
-body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: repeating-linear-gradient(90deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px), repeating-linear-gradient(0deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px);
-  background-size: 96px 96px;
-  animation: move-grid 20s linear infinite;
-  z-index: -1;
-  opacity: 0.5;
 }
 
 /* --- ANIMACIONES GLOBALES Y KEYFRAMES --- */
@@ -413,7 +409,8 @@ header[role=banner] .subtitle a:hover {
 .calculator-container {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  /* MEJORA: Aumentado el tamaño para que ocupe más espacio en pantallas grandes usando unidades relativas (vmin) */
+  max-width: 80vmin;
   opacity: 0;
   transition: opacity 1s;
   --neon-color-1: var(--btn-equal-bg);
