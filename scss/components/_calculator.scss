@@ -25,6 +25,7 @@ $keyboard-gap: 2px;
         flex-grow: 1;
         display: flex;
         flex-direction: column;
+        animation: none;
     }
 }
 
@@ -56,9 +57,13 @@ $keyboard-gap: 2px;
 
     @media (max-width: 600px) {
         // MEJORA: Tipografía fluida y controlada
-        font-size: clamp(2.5rem, 10vw, 4rem);
+        width: 100%;
+        margin: 0 0 15px;
+        font-size: 2.5rem;
+        min-height: 70px;
         padding: 15px;
         flex-shrink: 0; // Evita que el display se encoja cuando el teclado crece
+        border-radius: 0;
     }
 }
 
@@ -73,9 +78,13 @@ $keyboard-gap: 2px;
 
     @media (max-width: 600px) {
         // El teclado se vuelve flexible para ocupar el espacio restante
+        width: 100%;
+        margin: 0;
         flex-grow: 1;           // Ocupa todo el espacio vertical disponible
-        min-height: 0;          // Fix necesario para flexbox en algunos navegadores
+        max-height: 60vh;
+        border-radius: 0;
         aspect-ratio: unset;    // Se quita la relación de aspecto para que la altura sea libre
+        min-height: 0;          // Fix necesario para flexbox en algunos navegadores
     }
 }
 
@@ -121,7 +130,8 @@ $keyboard-gap: 2px;
 
         @media (max-width: 600px) {
             // MEJORA: Tipografía fluida y controlada
-            font-size: clamp(1.5rem, 6vw, 2.2rem);
+            font-size: 1.5rem;
+            border-radius: 8px;
         }
     }
 }
@@ -129,8 +139,9 @@ $keyboard-gap: 2px;
 // Estos botones deberían idealmente tener una clase, pero mantenemos los IDs
 #botexp, #botnor {
     @media (max-width: 600px) {
-        font-size: clamp(0.8rem, 3.5vw, 1.1rem);
-        padding: 8px;
+        font-size: 0.9rem;
+        padding: 12px 8px;
+        height: 50px;
     }
 }
 
@@ -207,6 +218,9 @@ $keyboard-gap: 2px;
     
     @media (max-width: 600px) {
         font-size: clamp(1.2rem, 5vw, 1.8rem);
+        #divvolver {
+            padding: 15px;
+        }
     }
 }
 
@@ -244,7 +258,13 @@ $keyboard-gap: 2px;
             font-family: 'Outfit', sans-serif;
             font-size: 1.5rem;
             @media (max-width: 600px) {
-                font-size: clamp(1.8rem, 7vw, 2.5rem);
+                font-size: 2rem;
+                width: 50px;
+                height: 50px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-grow: 0;
             }
         }
     }

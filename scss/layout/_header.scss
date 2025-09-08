@@ -5,6 +5,8 @@ header[role="banner"] {
     margin-top: 0;
 
     @media (max-width: 600px) {
+        padding: 10px 15px 0;
+        margin-bottom: 15px;
         flex-shrink: 0;
     }
 
@@ -23,8 +25,10 @@ header[role="banner"] {
         }
         
         @media (max-width: 600px) {
-            font-size: 12vw !important;
-            letter-spacing: 1px !important;
+            font-size: 2rem;
+            line-height: 1.2;
+            margin-bottom: 5px;
+            letter-spacing: normal;
         }
     }
 
@@ -46,7 +50,8 @@ header[role="banner"] {
         }
         
         @media (max-width: 600px) {
-            font-size: 3.5vw !important;
+            font-size: 0.7rem;
+            margin-top: 5px;
         }
     }
 }
