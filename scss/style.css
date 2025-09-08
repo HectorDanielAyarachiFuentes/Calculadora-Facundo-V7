@@ -99,7 +99,8 @@ body {
   background-image: repeating-linear-gradient(90deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px), repeating-linear-gradient(0deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px);
   font-family: "Quicksand", sans-serif;
   color: #eee;
-  overflow: hidden; /* Evita scroll en escritorio */
+  position: relative;
+  overflow: hidden; /* Evita scroll en escritorio y se combina con la regla de abajo */
 }
 @media (max-width: 600px) {
   body {
@@ -128,10 +129,6 @@ button:focus-visible {
   color: var(--color-error);
 }
 
-body {
-  position: relative;
-  overflow: hidden;
-}
 body::before {
   content: "";
   position: absolute;
@@ -144,6 +141,80 @@ body::before {
   animation: move-grid 20s linear infinite;
   z-index: -1;
   opacity: 0.5;
+}
+
+/* --- COMPONENTE: GEOMETRÍA (Movido a una ubicación correcta) --- */
+.geometry-container {
+    padding: 15px;
+    color: var(--history-text-color);
+    font-family: "Quicksand", sans-serif;
+    background-color: var(--bg-display);
+    border-radius: 8px;
+}
+
+.geometry-selector select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: var(--history-panel-bg);
+    color: var(--history-text-color);
+    border: 1px solid var(--history-border-color);
+    font-weight: bold;
+}
+
+.geometry-inputs label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--history-text-color);
+}
+
+.geometry-inputs input {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: var(--history-panel-bg);
+    color: var(--history-text-color);
+    border: 1px solid var(--history-border-color);
+    font-weight: bold;
+}
+
+.geometry-results {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: var(--history-panel-bg);
+    border-radius: 8px;
+    border: 1px solid var(--history-border-color);
+}
+
+.geometry-results p {
+    margin: 5px 0;
+    font-weight: bold;
+    color: var(--history-text-color);
+}
+
+.geometry-visualization {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    background-color: var(--history-panel-bg);
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid var(--history-border-color);
+}
+
+.geometry-visualization svg {
+    max-width: 100%;
+    height: auto;
+    stroke: var(--history-text-color);
+}
+
+.geometry-visualization text {
+    fill: var(--history-text-color);
+    font-family: "Quicksand", sans-serif;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 /* --- ANIMACIONES GLOBALES Y KEYFRAMES --- */
@@ -1278,7 +1349,7 @@ header[role=banner] .subtitle a:hover {
     }
 }
 
-/* Paragraph */
-#infoModalBody p{
- color:#051004;
-}
+/*# sourceMappingURL=style.css.map */
+
+/* La regla huérfana para #infoModalBody p fue eliminada. 
+   Si es necesaria, debería integrarse en los estilos del modal en un archivo SCSS. */
