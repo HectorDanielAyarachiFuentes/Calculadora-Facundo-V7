@@ -19,7 +19,7 @@
         input {
             font-family: 'Roboto Mono', monospace;
             padding: 0.75rem;
-            border: 1px solid #ccc;
+            border: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
             border-radius: 8px;
             font-size: 1.5rem;
             width: 100%;
@@ -30,10 +30,10 @@
         }
     }
     .card {
-        background: #ffffff;
+        background: var(--history-panel-bg); /* MEJORA: Usar variable de tema */
         padding: 1.5rem;
         border-radius: 12px;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
         margin-bottom: 1.5rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         color: var(--history-text-color); /* MEJORA: Usar variable de tema */
@@ -42,7 +42,7 @@
             margin-bottom: 1rem;
             font-size: 1.25rem;
             color: var(--history-text-color); /* MEJORA: Usar variable de tema */
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
             padding-bottom: 0.75rem;
         }
     }
@@ -115,7 +115,7 @@
         padding: 0.5rem 1rem;
         font-size: 1rem;
         border-radius: 20px;
-        border: 1px solid #ccc;
+        border: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
         background: var(--history-panel-bg); /* MEJORA: Usar variable de tema */
         cursor: pointer;
         color: var(--history-text-color); /* MEJORA: Usar variable de tema */
