@@ -1,0 +1,14 @@
+/* --- COMPONENTE: VISUALIZACIÓN DE MULTIPLICACIÓN --- */
+
+// Estos estilos se aplican a los elementos dentro de la pantalla de salida.
+// Las clases de color se siguen añadiendo dinámicamente desde multiplication.js,
+// pero ahora los colores se gestionan desde CSS, permitiendo el uso de temas.
+.output-screen {
+    .color-operando { color: var(--color-operando); }
+    .color-signo    { color: var(--color-signo); }
+    .color-coma     { color: var(--color-coma); font-weight: bold; }
+    .color-resultado{ color: var(--color-resultado); }
+    .color-parcial-1 { color: var(--color-parcial-1); }
+    .color-parcial-2 { color: var(--color-parcial-2); }
+    .color-parcial-3 { color: var(--color-parcial-3); }
+}

@@ -7,28 +7,7 @@ import { calculateLayout } from '../utils/layout-calculator.js';
 import { crearCelda } from '../utils/dom-helpers.js';
 import { salida, errorMessages } from '../../config.js';
 
-function injectMultiplicationStyles() {
-    const styleId = 'multiplication-styles';
-    if (document.getElementById(styleId)) {
-        return;
-    }
-    const cssStyles = `
-        .color-operando { color: #ffab70; }
-        .color-signo    { color: #9e9e9e; }
-        .color-coma     { color: #f44336; font-weight: bold; }
-        .color-resultado{ color: #4caf50; }
-        .color-parcial-1 { color: #64b5f6; }
-        .color-parcial-2 { color: #ba68c8; }
-        .color-parcial-3 { color: #4db6ac; }
-    `;
-    const styleElement = document.createElement('style');
-    styleElement.id = styleId;
-    styleElement.textContent = cssStyles;
-    document.head.appendChild(styleElement);
-}
-
 export function multiplica(numerosAR) {
-    injectMultiplicationStyles();
     salida.innerHTML = "";
     const fragment = document.createDocumentFragment();
 

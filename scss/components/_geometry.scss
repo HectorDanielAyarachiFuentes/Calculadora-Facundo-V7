@@ -1,0 +1,62 @@
+/* --- COMPONENTE: GEOMETRÍA --- */
+
+.geometry-container {
+    padding: 15px;
+    color: var(--history-text-color);
+    font-family: "Quicksand", sans-serif;
+    background-color: var(--bg-display);
+    border-radius: 8px;
+}
+
+.geometry-selector select,
+.unit-selector select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: var(--history-panel-bg);
+    color: var(--history-text-color);
+    border: 1px solid var(--history-border-color);
+    font-weight: bold;
+}
+
+.geometry-inputs label,
+.unit-selector label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--history-text-color);
+}
+
+.geometry-inputs input {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: var(--history-panel-bg);
+    color: var(--history-text-color);
+    border: 1px solid var(--history-border-color);
+    font-weight: bold;
+}
+
+.geometry-results {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: var(--history-hover-bg);
+    border-radius: 8px;
+    border: 1px solid var(--history-border-color);
+
+    p { margin: 5px 0; font-weight: bold; color: var(--history-text-color); }
+}
+
+.geometry-visualization {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    background-color: var(--history-panel-bg);
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid var(--history-border-color);
+
+    svg { max-width: 100%; height: auto; stroke: var(--history-text-color); }
+    text { fill: var(--history-text-color); font-family: "Quicksand", sans-serif; font-size: 12px; font-weight: bold; }
+}
