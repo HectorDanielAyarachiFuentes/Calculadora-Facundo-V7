@@ -1154,109 +1154,6 @@ header[role=banner] .subtitle a:hover {
 /* --- DISEÑO RESPONSIVE PARA MÓVILES MEJORADO --- */
 /* ============================================== */
 @media (max-width: 600px) {
-    /* Ocultamos el scroll para evitar desbordamientos en el cuerpo de la página */
-    body { 
-        padding: 0;
-        /* --- CORRECCIÓN #1: Usar svh en lugar de vh --- */
-        /* Usamos 100svh (Small Viewport Height) para que la altura total 
-           se ajuste al espacio visible CUANDO las barras del navegador están presentes. */
-        height: 100svh;
-        overflow: hidden; /* Evita cualquier scroll no deseado en el body */
-    }
-    
-    /* Hacemos que el contenedor principal sea un flexbox vertical */
-    #contenedor {
-        width: 100%;
-        max-width: 100%;
-        height: 100%; /* Ocupará el 100% del body, que ya tiene 100svh */
-        margin: 0 !important;
-        
-        /* --- CORRECCIÓN #2: Estructura con Flexbox y Safe Area Padding --- */
-        /* Convertimos el contenedor en una columna flex para distribuir el espacio */
-        display: flex;
-        flex-direction: column;
-
-        /* Añadimos padding que respeta los "safe areas" de los móviles (notches, home bars)
-           con un fallback de 10px para navegadores que no lo soporten. */
-        padding: env(safe-area-inset-top, 10px) 
-                 env(safe-area-inset-right, 10px) 
-                 env(safe-area-inset-bottom, 10px) 
-                 env(safe-area-inset-left, 10px);
-
-        /* Esencial para que el padding no aumente el tamaño total del contenedor */
-        box-sizing: border-box;
-    }
-    
-    header[role="banner"] {
-        /* Este elemento no debe crecer ni encogerse, ocupa su espacio natural */
-        flex-shrink: 0; 
-        margin-bottom: 15px;
-        padding: 0; /* El padding ya está en #contenedor */
-    }
-    
-    header[role="banner"] h1 {
-        font-size: 2rem !important;
-        line-height: 1.2;
-    }
-    
-    header[role="banner"] .subtitle {
-        font-size: 0.8rem !important;
-        margin-top: 5px;
-    }
-
-    .display {
-        /* El display tampoco debe crecer ni encogerse */
-        flex-shrink: 0; 
-        width: 100%;
-        margin: 0 0 15px 0 !important;
-        font-size: 2.5rem !important;
-        min-height: 70px;
-    }
-
-    .keyboard-container {
-        /* --- CORRECCIÓN #3: Hacer que el teclado ocupe el espacio restante --- */
-        /* Con flex-grow: 1, el teclado se estirará verticalmente para
-           ocupar todo el espacio que sobre después de que el header y el display
-           hayan ocupado su lugar. */
-        flex-grow: 1;
-        /* Este truco de flexbox es necesario para que flex-grow funcione correctamente en todos los casos */
-        min-height: 0; 
-        
-        width: 100% !important;
-        margin: 0;
-        border-radius: 15px;
-    }
-    
-    .keyboard__button {
-        font-size: 1.6rem !important; /* Ligeramente más grande para mejor legibilidad */
-        border-radius: 8px;
-        border: none; /* Quitamos el borde negro que tenías para un look más limpio */
-    }
-    
-    /* --- OTROS AJUSTES RESPONSIVE --- */
-    .history-panel {
-        width: 100%;
-        max-width: 100vw;
-        height: 100svh; /* También aquí para consistencia */
-    }
-    
-    .history-toggle-btn, .sidebar-wrapper {
-        top: calc(env(safe-area-inset-top, 0px) + 15px);
-    }
-
-    .history-toggle-btn {
-        right: 15px;
-    }
-
-    .sidebar-wrapper {
-        left: 15px;
-    }
-}
-
-/* ============================================== */
-/* --- DISEÑO RESPONSIVE PARA MÓVILES MEJORADO --- */
-/* ============================================== */
-@media (max-width: 600px) {
     body { 
         padding: 0;
         display: block;
@@ -1381,15 +1278,7 @@ header[role=banner] .subtitle a:hover {
     }
 }
 
-
-
-/* Info modal body */
-#infoModalBody{
- transform:translatex(0px) translatey(0px);
-}
-
 /* Paragraph */
 #infoModalBody p{
  color:#051004;
 }
-

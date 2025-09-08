@@ -456,13 +456,14 @@ export function divide(numerosAR) {
     const [dividendoStr, ] = numerosAR[0];
     const [divisorStr, ] = numerosAR[1];
 
+    // TODO: Usar el ErrorHandler centralizado como se menciona en CHANGELOG.md
     // Validaciones
     if (BigInt(divisorStr) === 0n) { 
-        salida.innerHTML = `<p class="output-screen__error-message">${errorMessages.division2}</p>`; 
+        salida.innerHTML = errorMessages.division2; 
         return; 
     }
     if (BigInt(dividendoStr) === 0n) { 
-        salida.innerHTML = `<p class="output-screen__error-message">${errorMessages.division1}</p>`; 
+        salida.innerHTML = errorMessages.division1; 
         return; 
     }
 
@@ -483,14 +484,7 @@ export function divide(numerosAR) {
 
     // Mostrar el resultado final con estilo mejorado
     const resultadoFinal = `${dividendoStr} ÷ ${divisorStr} = ${cociente}`;
-    const resultadoElement = crearCelda("output-grid__result improved-division-result", resultadoFinal, {
-        left: '10px',
-        top: '10px',
-        fontSize: '18px',
-        fontWeight: 'bold',
-        color: '#66FF66',
-        fontFamily: 'Courier New, monospace'
-    });
+    const resultadoElement = crearCelda("output-grid__result output-grid__result--division-final", resultadoFinal, {});
     fragment.appendChild(resultadoElement);
 
     // Dibujar el Header (Divisor, Cociente y Galera) con mejor alineación y colores
@@ -518,13 +512,14 @@ export function divideExt(numerosAR) {
     const [dividendoStr, ] = numerosAR[0];
     const [divisorStr, ] = numerosAR[1];
 
+    // TODO: Usar el ErrorHandler centralizado
     // Validaciones
     if (BigInt(divisorStr) === 0n) { 
-        salida.innerHTML = `<p class="output-screen__error-message">${errorMessages.division2}</p>`; 
+        salida.innerHTML = errorMessages.division2; 
         return; 
     }
     if (BigInt(dividendoStr) === 0n) { 
-        salida.innerHTML = `<p class="output-screen__error-message">${errorMessages.division1}</p>`; 
+        salida.innerHTML = errorMessages.division1; 
         return; 
     }
 

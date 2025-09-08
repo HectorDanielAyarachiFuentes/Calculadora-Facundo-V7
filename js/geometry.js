@@ -58,10 +58,8 @@ const GeometryUI = {
             </div>
         `;
 
-        // Asegurarse de que los elementos estén en el DOM antes de configurar los listeners
-        setTimeout(() => {
-            this.setupEventListeners();
-        }, 100);
+        // Los elementos ya están en el DOM después de la asignación de innerHTML.
+        this.setupEventListeners();
     },
 
     setupEventListeners() {
