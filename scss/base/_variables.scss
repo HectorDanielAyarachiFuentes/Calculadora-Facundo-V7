@@ -33,6 +33,15 @@
     --btn-disabled-text: #666;
     --history-clear-btn-bg: #e74c3c;
     --history-clear-btn-hover-bg: #c0392b;
+
+    /* Variables para la multiplicación */
+    --color-operando: #ffab70;
+    --color-signo: #9e9e9e;
+    --color-coma: #f44336;
+    --color-resultado: #4caf50;
+    --color-parcial-1: #64b5f6;
+    --color-parcial-2: #ba68c8;
+    --color-parcial-3: #4db6ac;
 }
 
 /* Tema Claro */
@@ -64,6 +73,15 @@
     --btn-disabled-text: #999999;
     --history-clear-btn-bg: #e74c3c;
     --history-clear-btn-hover-bg: #c0392b;
+
+    /* MEJORA: Variables de multiplicación adaptadas para el tema claro con mejor contraste */
+    --color-operando: #E65100; /* Naranja oscuro */
+    --color-signo: #616161; /* Gris oscuro */
+    --color-coma: #C62828; /* Rojo oscuro */
+    --color-resultado: #2E7D32; /* Verde oscuro */
+    --color-parcial-1: #1565C0; /* Azul oscuro */
+    --color-parcial-2: #6A1B9A; /* Púrpura oscuro */
+    --color-parcial-3: #00695C; /* Teal oscuro */
 }
 
 /* Variables SCSS para compatibilidad con código existente */

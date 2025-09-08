@@ -70,14 +70,14 @@
   --btn-disabled-text: #999999;
   --history-clear-btn-bg: #e74c3c;
   --history-clear-btn-hover-bg: #c0392b;
-  /* Variables para la multiplicación (se pueden ajustar para el tema claro) */
-  --color-operando: #f57c00;
-  --color-signo: #757575;
-  --color-coma: #d32f2f;
-  --color-resultado: #388e3c;
-  --color-parcial-1: #1976d2;
-  --color-parcial-2: #7b1fa2;
-  --color-parcial-3: #00796b;
+  /* MEJORA: Variables de multiplicación adaptadas para el tema claro con mejor contraste */
+  --color-operando: #E65100; /* Naranja oscuro */
+  --color-signo: #616161; /* Gris oscuro */
+  --color-coma: #C62828; /* Rojo oscuro */
+  --color-resultado: #2E7D32; /* Verde oscuro */
+  --color-parcial-1: #1565C0; /* Azul oscuro */
+  --color-parcial-2: #6A1B9A; /* Púrpura oscuro */
+  --color-parcial-3: #00695C; /* Teal oscuro */
 }
 
 /* Variables SCSS para compatibilidad con código existente */
@@ -1030,6 +1030,30 @@ header[role=banner] .subtitle a:hover {
 .modal-body .play-btn:hover {
   background-color: var(--history-hover-bg); /* MEJORA: Usar variable de tema */
   transform: translateY(-2px);
+}
+
+/* --- COMPONENTE: VISUALIZACIÓN DE MULTIPLICACIÓN --- */
+.output-screen .color-operando {
+  color: var(--color-operando);
+}
+.output-screen .color-signo {
+  color: var(--color-signo);
+}
+.output-screen .color-coma {
+  color: var(--color-coma);
+  font-weight: bold;
+}
+.output-screen .color-resultado {
+  color: var(--color-resultado);
+}
+.output-screen .color-parcial-1 {
+  color: var(--color-parcial-1);
+}
+.output-screen .color-parcial-2 {
+  color: var(--color-parcial-2);
+}
+.output-screen .color-parcial-3 {
+  color: var(--color-parcial-3);
 }
 
 /* --- COMPONENTE: BOTÓN DE CAMBIO DE TEMA --- */
