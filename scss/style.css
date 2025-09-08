@@ -947,6 +947,24 @@ header[role=banner] .subtitle a:hover {
 }
 
 /* --- COMPONENTE: MODAL Y LECTOR DE NÚMEROS --- */
+.modal-content {
+  background-color: var(--history-panel-bg);
+  border: 1px solid var(--history-border-color);
+  color: var(--history-text-color);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--history-border-color);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--history-border-color);
+}
+
+.btn-close {
+  filter: invert(1) grayscale(100) brightness(200%);
+}
+
 #infoModalLabel {
   color: var(--history-text-color); /* MEJORA: Usar variable de tema */
   text-align: center;
