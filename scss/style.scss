@@ -23,22 +23,3 @@
 @use 'components/multiplication';
 @use 'components/geometry';
 @use 'components/theme-switcher'; // Nuevo componente para el cambio de tema
-
-// Adaptación para pantalla completa en móviles
-@media (max-width: 600px) {
-    html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden; // Evita el scroll del body
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .main-footer {
-        display: none;
-    }
-}

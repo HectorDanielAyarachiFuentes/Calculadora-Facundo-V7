@@ -32,8 +32,10 @@ body {
     position: relative; // Necesario para el pseudo-elemento
 
     @media (max-width: 600px) {
-        padding: 0;
-        display: block;
+        padding: 0; // Sin padding en los bordes.
+        // Anulamos el centrado de escritorio para que el contenido se expanda.
+        justify-content: flex-start;
+        align-items: stretch;
         min-height: 100dvh;
         height: 100dvh;
         overflow: hidden;
