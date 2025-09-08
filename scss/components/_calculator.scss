@@ -81,7 +81,6 @@ $keyboard-gap: 2px;
         width: 100%;
         margin: 0;
         flex-grow: 1;           // Ocupa todo el espacio vertical disponible
-        max-height: 60vh;
         border-radius: 0;
         aspect-ratio: unset;    // Se quita la relación de aspecto para que la altura sea libre
         min-height: 0;          // Fix necesario para flexbox en algunos navegadores

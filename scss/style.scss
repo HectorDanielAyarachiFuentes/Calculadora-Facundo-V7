@@ -4,22 +4,41 @@
 
 // 1. Base y configuración global.
 // Variables, fuentes, reseteo y estilos base.
-@import 'base/variables';
-@import 'base/base';
-@import 'base/animations';
+@use 'base/variables';
+@use 'base/base';
+@use 'base/animations';
 
 // 2. Estructura y layout.
 // Define la disposición de los elementos principales en la página.
-@import 'layout/main';
-@import 'layout/header';
-@import 'layout/footer';
+@use 'layout/main';
+@use 'layout/header';
+@use 'layout/footer';
 
 // 3. Componentes de la UI.
 // Estilos para cada pieza individual y reutilizable de la interfaz.
-@import 'components/calculator';
-@import 'components/history';
-@import 'components/sidebar';
-@import 'components/modal';
-@import 'components/multiplication';
-@import 'components/geometry';
-@import 'components/theme-switcher'; // Nuevo componente para el cambio de tema
+@use 'components/calculator';
+@use 'components/history';
+@use 'components/sidebar';
+@use 'components/modal';
+@use 'components/multiplication';
+@use 'components/geometry';
+@use 'components/theme-switcher'; // Nuevo componente para el cambio de tema
+
+// Adaptación para pantalla completa en móviles
+@media (max-width: 600px) {
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; // Evita el scroll del body
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-footer {
+        display: none;
+    }
+}

@@ -25,9 +25,7 @@ body {
     align-items: center;
     min-height: 100svh;
     padding: 20px;
-    background-color: $bg-main;
-    background-image: repeating-linear-gradient(90deg, $bg-grid-lines 0 1px, transparent 1px 96px),
-                      repeating-linear-gradient(0deg, $bg-grid-lines 0 1px, transparent 1px 96px);
+    background-color: var(--bg-main);
     font-family: 'Quicksand', sans-serif;
     color: #eee;
     overflow: hidden; /* Evita scroll en escritorio */
@@ -38,6 +36,24 @@ body {
         min-height: 100dvh;
         height: 100dvh;
         overflow: hidden;
+    }
+
+    position: relative; // Necesario para el pseudo-elemento
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            repeating-linear-gradient(90deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px),
+            repeating-linear-gradient(0deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px);
+        background-size: 96px 96px; // Tamaño explícito
+        animation: move-grid 20s linear infinite;
+        z-index: -1; // Detrás de todo el contenido
+        opacity: 0.5; // Un poco más sutil
     }
 }
 
@@ -51,33 +67,10 @@ button {
 
 a:focus-visible,
 button:focus-visible {
-    outline: 2px solid $focus-color;
+    outline: 2px solid var(--focus-color);
     outline-offset: 2px;
 }
 
 .error {
-    color: $color-error;
-}
-
-
-body {
-    // ... tus estilos existentes ...
-    position: relative; // Necesario para el pseudo-elemento
-    overflow: hidden; // Asegura que nada se salga
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            repeating-linear-gradient(90deg, $bg-grid-lines 0 1px, transparent 1px 96px),
-            repeating-linear-gradient(0deg, $bg-grid-lines 0 1px, transparent 1px 96px);
-        background-size: 96px 96px; // Tamaño explícito
-        animation: move-grid 20s linear infinite;
-        z-index: -1; // Detrás de todo el contenido
-        opacity: 0.5; // Un poco más sutil
-    }
+    color: var(--color-error);
 }
