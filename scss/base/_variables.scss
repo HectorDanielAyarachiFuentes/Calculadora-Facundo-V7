@@ -42,6 +42,12 @@
     --color-parcial-1: #64b5f6;
     --color-parcial-2: #ba68c8;
     --color-parcial-3: #4db6ac;
+
+    /* Variables para la barra de navegación inferior */
+    --bottom-nav-btn-bg: rgba(255, 255, 255, 0.08);
+    --bottom-nav-btn-text: rgba(255, 255, 255, 0.8);
+    --bottom-nav-btn-hover-bg: rgba(255, 255, 255, 0.2);
+    --bottom-nav-btn-hover-text: #ffffff;
 }
 
 /* Tema Claro */
@@ -82,6 +88,12 @@
     --color-parcial-1: #1565C0; /* Azul oscuro */
     --color-parcial-2: #6A1B9A; /* Púrpura oscuro */
     --color-parcial-3: #00695C; /* Teal oscuro */
+
+    /* MEJORA: Variables de navegación inferior para el tema claro */
+    --bottom-nav-btn-bg: rgba(0, 0, 0, 0.05);
+    --bottom-nav-btn-text: #333333;
+    --bottom-nav-btn-hover-bg: rgba(0, 0, 0, 0.1);
+    --bottom-nav-btn-hover-text: #000000;
 }
 
 /* Variables SCSS para compatibilidad con código existente */

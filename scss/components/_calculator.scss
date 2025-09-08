@@ -209,10 +209,15 @@ $keyboard-gap: 2px;
     &--visible { bottom: 0; opacity: 1; pointer-events: all; }
 
     &__button {
-        flex-grow: 1; padding: 10px; background-color: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8);
-        text-align: center; border-radius: 5px; transition: background-color 0.2s, color 0.2s;
+        flex-grow: 1;
+        padding: 10px;
+        background-color: var(--bottom-nav-btn-bg);
+        color: var(--bottom-nav-btn-text);
+        text-align: center;
+        border-radius: 5px;
+        transition: background-color 0.2s, color 0.2s;
 
-        &:hover { background-color: rgba(255, 255, 255, 0.2); color: white; }
+        &:hover { background-color: var(--bottom-nav-btn-hover-bg); color: var(--bottom-nav-btn-hover-text); }
 
         &--arrow {
             font-family: 'Outfit', sans-serif;
