@@ -99,8 +99,7 @@ body {
   background-image: repeating-linear-gradient(90deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px), repeating-linear-gradient(0deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px);
   font-family: "Quicksand", sans-serif;
   color: #eee;
-  position: relative;
-  overflow: hidden; /* Evita scroll en escritorio y se combina con la regla de abajo */
+  overflow: hidden; /* Evita scroll en escritorio */
 }
 @media (max-width: 600px) {
   body {
@@ -129,6 +128,10 @@ button:focus-visible {
   color: var(--color-error);
 }
 
+body {
+  position: relative;
+  overflow: hidden;
+}
 body::before {
   content: "";
   position: absolute;
@@ -141,80 +144,6 @@ body::before {
   animation: move-grid 20s linear infinite;
   z-index: -1;
   opacity: 0.5;
-}
-
-/* --- COMPONENTE: GEOMETRÍA (Movido a una ubicación correcta) --- */
-.geometry-container {
-    padding: 15px;
-    color: var(--history-text-color);
-    font-family: "Quicksand", sans-serif;
-    background-color: var(--bg-display);
-    border-radius: 8px;
-}
-
-.geometry-selector select {
-    width: 100%;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background-color: var(--history-panel-bg);
-    color: var(--history-text-color);
-    border: 1px solid var(--history-border-color);
-    font-weight: bold;
-}
-
-.geometry-inputs label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: var(--history-text-color);
-}
-
-.geometry-inputs input {
-    width: 100%;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    background-color: var(--history-panel-bg);
-    color: var(--history-text-color);
-    border: 1px solid var(--history-border-color);
-    font-weight: bold;
-}
-
-.geometry-results {
-    margin: 15px 0;
-    padding: 10px;
-    background-color: var(--history-panel-bg);
-    border-radius: 8px;
-    border: 1px solid var(--history-border-color);
-}
-
-.geometry-results p {
-    margin: 5px 0;
-    font-weight: bold;
-    color: var(--history-text-color);
-}
-
-.geometry-visualization {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-    background-color: var(--history-panel-bg);
-    border-radius: 8px;
-    padding: 10px;
-    border: 1px solid var(--history-border-color);
-}
-
-.geometry-visualization svg {
-    max-width: 100%;
-    height: auto;
-    stroke: var(--history-text-color);
-}
-
-.geometry-visualization text {
-    fill: var(--history-text-color);
-    font-family: "Quicksand", sans-serif;
-    font-size: 12px;
-    font-weight: bold;
 }
 
 /* --- ANIMACIONES GLOBALES Y KEYFRAMES --- */
@@ -428,20 +357,26 @@ header[role=banner] .subtitle a:hover {
   }
 }
 
-/* --- COMPONENTE: CALCULADORA (CONTENEDOR, PANTALLA, TECLADO) --- */
+/* ======================================================= */
+/* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
+/* ======================================================= */
 .calculator-container {
   position: relative;
   width: 100%;
   max-width: 480px;
   opacity: 0;
   transition: opacity 1s;
+  --neon-color-1: var(--btn-equal-bg);
+  --neon-color-2: var(--btn-special-bg);
+  animation: neon-pulse 5s infinite alternate;
 }
 @media (max-width: 600px) {
   .calculator-container {
-    width: 100% !important;
-    max-width: none !important;
+    max-width: none;
     margin-bottom: 0;
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -461,21 +396,36 @@ header[role=banner] .subtitle a:hover {
   border-radius: 10px;
   word-wrap: break-word;
   overflow: hidden;
+  position: relative;
+}
+.display.glitch {
+  animation: glitch-main 0.3s linear;
+}
+.display.glitch::before, .display.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-display);
+  overflow: hidden;
+}
+.display.glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 var(--btn-op-bg);
+  animation: glitch-anim-1 0.8s infinite linear alternate-reverse;
+}
+.display.glitch::after {
+  left: -2px;
+  text-shadow: -2px 0 var(--btn-special-bg), 2px 2px var(--btn-equal-bg);
+  animation: glitch-anim-2 0.6s infinite linear alternate-reverse;
 }
 @media (max-width: 600px) {
   .display {
-    font-size: 10vw !important;
+    font-size: clamp(2.5rem, 10vw, 4rem);
     padding: 15px;
     flex-shrink: 0;
-  }
-}
-
-#display {
-  margin-left: 0;
-}
-@media (max-width: 600px) {
-  #display {
-    margin-left: 0 !important;
   }
 }
 
@@ -490,9 +440,9 @@ header[role=banner] .subtitle a:hover {
 }
 @media (max-width: 600px) {
   .keyboard-container {
-    width: 100% !important;
-    height: auto !important;
     flex-grow: 1;
+    min-height: 0;
+    aspect-ratio: unset;
   }
 }
 
@@ -513,11 +463,6 @@ header[role=banner] .subtitle a:hover {
   top: 100%;
   opacity: 0;
   pointer-events: none;
-}
-@media (max-width: 600px) {
-  .keyboard {
-    height: 100%;
-  }
 }
 .keyboard__button {
   position: relative;
@@ -556,22 +501,33 @@ header[role=banner] .subtitle a:hover {
   animation: arcoiris 2s linear infinite;
   transform: scale(1.05);
 }
+.keyboard__button:active:not(:disabled) {
+  transform: scale(0.95);
+}
 .keyboard__button:disabled {
-  background-color: var(--btn-disabled-bg) !important;
+  background-color: var(--btn-disabled-bg);
   color: var(--btn-disabled-text);
   cursor: not-allowed;
-  animation: none !important;
-  transform: none !important;
+  animation: none;
+  transform: none;
+}
+.keyboard__button .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple-effect 0.6s linear;
+  pointer-events: none;
 }
 @media (max-width: 600px) {
   .keyboard__button {
-    font-size: 6vw;
+    font-size: clamp(1.5rem, 6vw, 2.2rem);
   }
 }
 
 @media (max-width: 600px) {
   #botexp, #botnor {
-    font-size: 3.5vw !important;
+    font-size: clamp(0.8rem, 3.5vw, 1.1rem);
     padding: 8px;
   }
 }
@@ -595,7 +551,6 @@ header[role=banner] .subtitle a:hover {
   pointer-events: all;
 }
 .output-screen__error-message {
-  position: relative;
   width: 90%;
   margin: auto;
   color: var(--color-error);
@@ -604,7 +559,7 @@ header[role=banner] .subtitle a:hover {
 }
 @media (max-width: 600px) {
   .output-screen__error-message {
-    font-size: 4.5vw !important;
+    font-size: clamp(1rem, 4.5vw, 1.5rem);
     padding-top: 25%;
   }
 }
@@ -615,19 +570,23 @@ header[role=banner] .subtitle a:hover {
   justify-content: center;
 }
 .output-screen .output-grid__cell--dividendo {
-  color: #ff8c00;
+  color: orange;
+  font-weight: bold;
 }
 .output-screen .output-grid__cell--divisor {
-  color: #6495ed;
+  color: lightblue;
+  font-weight: bold;
 }
 .output-screen .output-grid__cell--cociente {
-  color: #00ff00;
+  color: lightgreen;
+  font-weight: bold;
 }
 .output-screen .output-grid__cell--producto {
   color: #ccc;
 }
 .output-screen .output-grid__cell--resto {
   color: #f08080;
+  font-weight: bold;
 }
 .output-screen .output-grid__cell--suma-intermedia {
   color: #f0ad4e;
@@ -639,9 +598,17 @@ header[role=banner] .subtitle a:hover {
   position: absolute;
   background-color: var(--color-lineas-output);
 }
+.output-screen .output-grid__result--division-final {
+  font-family: "Courier New", monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--focus-color);
+  margin-bottom: 10px;
+  width: 100%;
+}
 @media (max-width: 600px) {
   .output-screen {
-    font-size: 5vw !important;
+    font-size: clamp(1.2rem, 5vw, 1.8rem);
   }
 }
 
@@ -686,61 +653,13 @@ header[role=banner] .subtitle a:hover {
 }
 @media (max-width: 600px) {
   .bottom-nav__button--arrow {
-    font-size: 7vw !important;
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
   }
 }
 
-.calculator-container {
-  --neon-color-1: var(--btn-equal-bg);
-  --neon-color-2: var(--btn-special-bg);
-  animation: neon-pulse 5s infinite alternate;
-}
-
-.keyboard__button {
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.1s ease;
-}
-.keyboard__button:active:not(:disabled) {
-  transform: scale(0.95);
-}
-.keyboard__button .ripple {
-  position: absolute;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.6);
-  transform: scale(0);
-  animation: ripple-effect 0.6s linear;
-  pointer-events: none;
-}
-
-.display {
-  position: relative;
-}
-.display.glitch {
-  animation: glitch-main 0.3s linear;
-}
-.display.glitch::before, .display.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--bg-display);
-  overflow: hidden;
-}
-.display.glitch::before {
-  left: 2px;
-  text-shadow: -2px 0 var(--btn-op-bg);
-  animation: glitch-anim-1 0.8s infinite linear alternate-reverse;
-}
-.display.glitch::after {
-  left: -2px;
-  text-shadow: -2px 0 var(--btn-special-bg), 2px 2px var(--btn-equal-bg);
-  animation: glitch-anim-2 0.6s infinite linear alternate-reverse;
-}
-
-/* --- COMPONENTE: PANEL DE HISTORIAL --- */
+/* ======================================================= */
+/* --- COMPONENTE: PANEL DE HISTORIAL (Corregido) --- */
+/* ======================================================= */
 .history-toggle-btn {
   position: fixed;
   top: 20px;
@@ -972,7 +891,7 @@ header[role=banner] .subtitle a:hover {
 
 /* --- COMPONENTE: MODAL Y LECTOR DE NÚMEROS --- */
 #infoModalLabel {
-  color: #040101;
+  color: var(--history-text-color); /* MEJORA: Usar variable de tema */
   text-align: center;
   width: 100%;
 }
@@ -986,34 +905,35 @@ header[role=banner] .subtitle a:hover {
   margin-bottom: 0.5rem;
   font-weight: 500;
   font-size: 1.1rem;
-  color: #333;
+  color: var(--history-input-color); /* MEJORA: Usar variable de tema */
 }
 .modal-body .input-section input {
   font-family: "Roboto Mono", monospace;
   padding: 0.75rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
   border-radius: 8px;
   font-size: 1.5rem;
   width: 100%;
   max-width: 400px;
   text-align: center;
-  color: #333;
+  color: var(--color-display-text); /* MEJORA: Usar variable de tema */
+  background-color: var(--bg-display); /* MEJORA: Usar variable de tema */
 }
 .modal-body .card {
-  background: #ffffff;
+  background: var(--history-panel-bg); /* MEJORA: Usar variable de tema */
   padding: 1.5rem;
   border-radius: 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  color: #000;
+  color: var(--history-text-color); /* MEJORA: Usar variable de tema */
 }
 .modal-body .card h2 {
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 1.25rem;
-  color: #333;
-  border-bottom: 1px solid #eee;
+  color: var(--history-text-color); /* MEJORA: Usar variable de tema */
+  border-bottom: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
   padding-bottom: 0.75rem;
 }
 .modal-body .result-box {
@@ -1023,13 +943,13 @@ header[role=banner] .subtitle a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
+  background-color: var(--history-hover-bg); /* MEJORA: Usar variable de tema */
   font-size: 1.2rem;
   font-family: "Roboto", sans-serif;
   transition: background-color 0.3s;
 }
 .modal-body .placeholder-text {
-  color: #6c757d;
+  color: var(--history-input-color); /* MEJORA: Usar variable de tema */
   font-style: italic;
 }
 .modal-body .phonetic-box {
@@ -1060,21 +980,22 @@ header[role=banner] .subtitle a:hover {
   font-size: 18px;
   font-weight: 700;
   text-transform: uppercase;
-  fill: #555;
+  fill: var(--history-input-color); /* MEJORA: Usar variable de tema */
 }
 .modal-body .svg-etiqueta-vertical {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   text-transform: uppercase;
-  fill: #198754;
+  fill: var(--btn-special-bg); /* MEJORA: Usar variable de tema */
 }
 .modal-body .svg-numero {
   font-family: "Roboto Mono", monospace;
   font-size: 5rem;
   font-weight: 700;
+  fill: var(--color-display-text); /* MEJORA: Usar variable de tema */
 }
 .modal-body .highlight {
-  background-color: #0d6efd !important;
+  background-color: var(--btn-equal-bg) !important; /* MEJORA: Usar variable de tema */
   color: white !important;
   fill: white !important;
   transition: background-color 0.1s, color 0.1s;
@@ -1084,14 +1005,14 @@ header[role=banner] .subtitle a:hover {
   padding: 0.5rem 1rem;
   font-size: 1rem;
   border-radius: 20px;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--history-border-color); /* MEJORA: Usar variable de tema */
+  background: var(--history-panel-bg); /* MEJORA: Usar variable de tema */
   cursor: pointer;
-  color: #333;
+  color: var(--history-text-color); /* MEJORA: Usar variable de tema */
   transition: background-color 0.2s, transform 0.2s;
 }
 .modal-body .play-btn:hover {
-  background-color: #f0f0f0;
+  background-color: var(--history-hover-bg); /* MEJORA: Usar variable de tema */
   transform: translateY(-2px);
 }
 
@@ -1127,11 +1048,17 @@ header[role=banner] .subtitle a:hover {
 .theme-toggle-btn:hover i {
   transform: rotate(30deg);
 }
-
+@media (max-width: 600px) {
+  .theme-toggle-btn {
+    top: 10px;
+    right: 70px; /* Ajustado para móviles */
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}
 
 /* Animación para el cambio de tema */
 .theme-transition {
   transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
-}
-
-/*# sourceMappingURL=style.css.map */
+}/*# sourceMappingURL=style.css.map */
