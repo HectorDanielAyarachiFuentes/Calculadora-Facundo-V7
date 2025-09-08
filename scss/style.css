@@ -427,9 +427,6 @@ header[role=banner] .subtitle a:hover {
     flex-direction: column;
     animation: none;
   }
-  .calculator-container > header {
-    display: none;
-  }
   .calculator-container > section:last-of-type {
     flex-grow: 1;
     display: flex;
