@@ -33,23 +33,36 @@ let lastDivisionState = {
 
 // --- INICIALIZACIÓN Y EVENTOS ---
 function alCargar() {
-    // Inicializar dimensiones responsivas
-    w = Math.min(window.innerHeight / 1.93, window.innerWidth / 1.5);
-    contenedor.style.width = `${w}px`;
-    contenedor.style.paddingTop = `${(w * 1.56) * 0.04}px`;
-    display.style.fontSize = `${w * 0.085}px`;
-    display.style.height = `${w * 0.11 * 1.11}px`;
-    const cuerpoteclado = document.getElementById("cuerpoteclado");
-    cuerpoteclado.style.width = `${0.95 * w}px`;
-    cuerpoteclado.style.height = `${0.95 * w}px`;
-    teclado.style.fontSize = `${0.1 * w}px`;
-    const volver = document.getElementById("volver");
-    volver.style.fontSize = `${0.15 * w}px`;
-    volver.style.padding = `${0.05 * w}px ${0.03 * w}px`;
-    botExp.style.fontSize = `${0.08 * w}px`;
-    botExp.style.paddingTop = `${0.05 * w}px`;
-    botNor.style.fontSize = `${0.08 * w}px`;
-    botNor.style.paddingTop = `${0.05 * w}px`;
+    // Si la pantalla es más ancha que 600px, aplicamos los estilos de JS para centrar y escalar.
+    if (window.innerWidth > 600) {
+        // Inicializar dimensiones responsivas para escritorio
+        w = Math.min(window.innerHeight / 1.93, window.innerWidth / 1.5);
+        contenedor.style.width = `${w}px`;
+        contenedor.style.paddingTop = `${(w * 1.56) * 0.04}px`;
+        display.style.fontSize = `${w * 0.085}px`;
+        display.style.height = `${w * 0.11 * 1.11}px`;
+        const cuerpoteclado = document.getElementById("cuerpoteclado");
+        cuerpoteclado.style.width = `${0.95 * w}px`;
+        cuerpoteclado.style.height = `${0.95 * w}px`;
+        teclado.style.fontSize = `${0.1 * w}px`;
+        const volver = document.getElementById("volver");
+        volver.style.fontSize = `${0.15 * w}px`;
+        volver.style.padding = `${0.05 * w}px ${0.03 * w}px`;
+        botExp.style.fontSize = `${0.08 * w}px`;
+        botExp.style.paddingTop = `${0.05 * w}px`;
+        botNor.style.fontSize = `${0.08 * w}px`;
+        botNor.style.paddingTop = `${0.05 * w}px`;
+    } else {
+        // En móvil, reseteamos los estilos inline para que el CSS tome el control total.
+        contenedor.style.width = '';
+        contenedor.style.paddingTop = '';
+        display.style.fontSize = '';
+        display.style.height = '';
+        const cuerpoteclado = document.getElementById("cuerpoteclado");
+        cuerpoteclado.style.width = '';
+        cuerpoteclado.style.height = '';
+    }
+
     contenedor.style.opacity = "1";
     
     // Inicializar el cambiador de tema

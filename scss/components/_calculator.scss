@@ -27,6 +27,19 @@ $keyboard-gap: 2px;
         display: flex;
         flex-direction: column;
         animation: none;
+
+        // Ocultamos el header en móvil para que la calculadora ocupe toda la pantalla.
+        > header {
+            display: none;
+        }
+
+        // La sección que contiene el teclado debe crecer para ocupar el espacio disponible.
+        > section:last-of-type {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; // Fix para que flex-grow funcione correctamente en contenedores anidados.
+        }
     }
 }
 
