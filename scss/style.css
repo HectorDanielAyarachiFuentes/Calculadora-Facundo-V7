@@ -765,7 +765,7 @@ header[role=banner] .subtitle a:hover {
 .history-toggle-btn svg {
   width: 28px;
   height: 28px;
-  fill: #eee;
+  fill: var(--history-text-color);
 }
 @media (max-width: 600px) {
   .history-toggle-btn {
