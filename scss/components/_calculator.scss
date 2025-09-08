@@ -160,10 +160,28 @@ $keyboard-gap: 2px;
 
     .output-grid {
         &__cell { position: absolute; display: flex; align-items: center; justify-content: center;
-            &--dividendo { color: #ff8c00; } &--divisor { color: #6495ed; } &--cociente { color: #00ff00; }
-            &--producto { color: #ccc; } &--resto { color: #f08080; } &--suma-intermedia { color: #f0ad4e; font-weight: bold; z-index: 10; animation: fadeIn 0.3s ease-out; }
+            // MEJORA: Paleta de colores más vibrante y consistente para las operaciones.
+            // Estos colores provienen de tus archivos de mejoras, ahora unificados aquí.
+            &--dividendo { color: orange; font-weight: bold; } 
+            &--divisor { color: lightblue; font-weight: bold; } 
+            &--cociente { color: lightgreen; font-weight: bold; }
+            &--producto { color: #ccc; } // Se mantiene un color neutro para los productos intermedios
+            &--resto { color: #f08080; font-weight: bold; } 
+            &--suma-intermedia { color: #f0ad4e; font-weight: bold; z-index: 10; animation: fadeIn 0.3s ease-out; }
         }
-        &__line { position: absolute; background-color: var(--color-lineas-output); }
+        &__line { 
+            position: absolute; 
+            background-color: var(--color-lineas-output); 
+        }
+        // MEJORA: Estilo unificado para el resultado final de una operación.
+        &__result--division-final {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--focus-color); // Un color verde brillante para destacar.
+            margin-bottom: 10px;
+            width: 100%;
+        }
     }
     
     @media (max-width: 600px) {

@@ -484,7 +484,7 @@ export function divide(numerosAR) {
 
     // Mostrar el resultado final con estilo mejorado
     const resultadoFinal = `${dividendoStr} ÷ ${divisorStr} = ${cociente}`;
-    const resultadoElement = crearCelda("output-grid__result output-grid__result--division-final", resultadoFinal, {});
+    const resultadoElement = crearCelda("output-grid__result--division-final", resultadoFinal, {});
     fragment.appendChild(resultadoElement);
 
     // Dibujar el Header (Divisor, Cociente y Galera) con mejor alineación y colores

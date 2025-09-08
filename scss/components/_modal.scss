@@ -1,6 +1,6 @@
 /* --- COMPONENTE: MODAL Y LECTOR DE NÚMEROS --- */
 #infoModalLabel {
-    color: #040101;
+    color: var(--history-text-color); /* MEJORA: Usar variable de tema */
     text-align: center;
     width: 100%;
 }
@@ -14,7 +14,7 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             font-size: 1.1rem;
-            color: $ln-color-texto-principal;
+            color: var(--history-input-color); /* MEJORA: Usar variable de tema */
         }
         input {
             font-family: 'Roboto Mono', monospace;
@@ -25,7 +25,8 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
-            color: $ln-color-texto-principal;
+            color: var(--color-display-text); /* MEJORA: Usar variable de tema */
+            background-color: var(--bg-display); /* MEJORA: Usar variable de tema */
         }
     }
     .card {
@@ -34,13 +35,13 @@
         border-radius: 12px;
         border: 1px solid #e0e0e0;
         margin-bottom: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        color: #000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        color: var(--history-text-color); /* MEJORA: Usar variable de tema */
         h2 {
             margin-top: 0;
             margin-bottom: 1rem;
             font-size: 1.25rem;
-            color: $ln-color-texto-principal;
+            color: var(--history-text-color); /* MEJORA: Usar variable de tema */
             border-bottom: 1px solid #eee;
             padding-bottom: 0.75rem;
         }
@@ -52,13 +53,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: $ln-color-fondo;
+        background-color: var(--history-hover-bg); /* MEJORA: Usar variable de tema */
         font-size: 1.2rem;
         font-family: 'Roboto', sans-serif;
         transition: background-color 0.3s;
     }
     .placeholder-text {
-        color: $ln-color-placeholder;
+        color: var(--history-input-color); /* MEJORA: Usar variable de tema */
         font-style: italic;
     }
     .phonetic-box {
@@ -89,21 +90,22 @@
         font-size: 18px;
         font-weight: 700;
         text-transform: uppercase;
-        fill: #555;
+        fill: var(--history-input-color); /* MEJORA: Usar variable de tema */
     }
     .svg-etiqueta-vertical {
         font-family: 'Roboto', sans-serif;
         font-size: 14px;
         text-transform: uppercase;
-        fill: $ln-color-decimal;
+        fill: var(--btn-special-bg); /* MEJORA: Usar variable de tema */
     }
     .svg-numero {
         font-family: 'Roboto Mono', monospace;
         font-size: 5rem;
         font-weight: 700;
+        fill: var(--color-display-text); /* MEJORA: Usar variable de tema */
     }
     .highlight {
-        background-color: $ln-color-entero !important;
+        background-color: var(--btn-equal-bg) !important; /* MEJORA: Usar variable de tema */
         color: white !important;
         fill: white !important;
         transition: background-color 0.1s, color 0.1s;
@@ -114,12 +116,12 @@
         font-size: 1rem;
         border-radius: 20px;
         border: 1px solid #ccc;
-        background: #fff;
+        background: var(--history-panel-bg); /* MEJORA: Usar variable de tema */
         cursor: pointer;
-        color: #333;
+        color: var(--history-text-color); /* MEJORA: Usar variable de tema */
         transition: background-color 0.2s, transform 0.2s;
         &:hover {
-            background-color: #f0f0f0;
+            background-color: var(--history-hover-bg); /* MEJORA: Usar variable de tema */
             transform: translateY(-2px);
         }
     }
