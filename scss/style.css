@@ -46,6 +46,12 @@
   --bottom-nav-btn-text: rgba(255, 255, 255, 0.8);
   --bottom-nav-btn-hover-bg: rgba(255, 255, 255, 0.2);
   --bottom-nav-btn-hover-text: #ffffff;
+  /* Variables para los botones de burbuja de la barra lateral */
+  --bubble-btn-primary-bg: var(--nav-bg);
+  --bubble-btn-success-bg: var(--nav-bg);
+  --bubble-btn-secondary-bg: var(--nav-bg);
+  --bubble-btn-info-bg: var(--nav-bg);
+  --bubble-btn-text-color: #eee;
 }
 
 /* Tema Claro */
@@ -88,6 +94,12 @@
   --bottom-nav-btn-text: #333333;
   --bottom-nav-btn-hover-bg: rgba(0, 0, 0, 0.1);
   --bottom-nav-btn-hover-text: #000000;
+  /* MEJORA: Variables de burbuja para el tema claro */
+  --bubble-btn-primary-bg: #0d6efd;
+  --bubble-btn-success-bg: #198754;
+  --bubble-btn-secondary-bg: #6c757d;
+  --bubble-btn-info-bg: #0dcaf0;
+  --bubble-btn-text-color: #ffffff;
 }
 
 /* Variables SCSS para compatibilidad con código existente */
@@ -889,32 +901,23 @@ header[role=banner] .subtitle a:hover {
   padding: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
-  color: #eee;
-  /* Aplicar background-color solo en tema oscuro */
-  /* En tema oscuro, usar el color de fondo de navegación */
+  color: var(--bubble-btn-text-color);
 }
 .sidebar-wrapper .bubble-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
-[data-theme=light] .sidebar-wrapper .bubble-btn {
-  /* Mantener los colores originales de Bootstrap en modo claro */
-  color: #fff; /* Mantener el texto blanco para contraste */
+.sidebar-wrapper .bubble-btn.btn-primary {
+  background-color: var(--bubble-btn-primary-bg);
 }
-[data-theme=light] .sidebar-wrapper .bubble-btn.btn-primary {
-  background-color: #0d6efd;
+.sidebar-wrapper .bubble-btn.btn-success {
+  background-color: var(--bubble-btn-success-bg);
 }
-[data-theme=light] .sidebar-wrapper .bubble-btn.btn-success {
-  background-color: #198754;
+.sidebar-wrapper .bubble-btn.btn-secondary {
+  background-color: var(--bubble-btn-secondary-bg);
 }
-[data-theme=light] .sidebar-wrapper .bubble-btn.btn-secondary {
-  background-color: #6c757d;
-}
-[data-theme=light] .sidebar-wrapper .bubble-btn.btn-info {
-  background-color: #0dcaf0;
-}
-:root:not([data-theme=light]) .sidebar-wrapper .bubble-btn {
-  background-color: var(--nav-bg);
+.sidebar-wrapper .bubble-btn.btn-info {
+  background-color: var(--bubble-btn-info-bg);
 }
 .sidebar-wrapper .bubble-sub {
   width: 45px;
@@ -1092,6 +1095,79 @@ header[role=banner] .subtitle a:hover {
 }
 .output-screen .color-parcial-3 {
   color: var(--color-parcial-3);
+}
+
+/* --- COMPONENTE: GEOMETRÍA --- */
+.geometry-container {
+  padding: 15px;
+  color: var(--history-text-color);
+  font-family: "Quicksand", sans-serif;
+  background-color: var(--bg-display);
+  border-radius: 8px;
+}
+
+.geometry-selector select,
+.unit-selector select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: var(--history-panel-bg);
+  color: var(--history-text-color);
+  border: 1px solid var(--history-border-color);
+  font-weight: bold;
+}
+
+.geometry-inputs label,
+.unit-selector label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--history-text-color);
+}
+
+.geometry-inputs input {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: var(--history-panel-bg);
+  color: var(--history-text-color);
+  border: 1px solid var(--history-border-color);
+  font-weight: bold;
+}
+
+.geometry-results {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: var(--history-hover-bg);
+  border-radius: 8px;
+  border: 1px solid var(--history-border-color);
+}
+.geometry-results p {
+  margin: 5px 0;
+  font-weight: bold;
+  color: var(--history-text-color);
+}
+
+.geometry-visualization {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  background-color: var(--history-panel-bg);
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid var(--history-border-color);
+}
+.geometry-visualization svg {
+  max-width: 100%;
+  height: auto;
+  stroke: var(--history-text-color);
+}
+.geometry-visualization text {
+  fill: var(--history-text-color);
+  font-family: "Quicksand", sans-serif;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 /* --- COMPONENTE: BOTÓN DE CAMBIO DE TEMA --- */

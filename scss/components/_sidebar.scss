@@ -23,26 +23,18 @@
         padding: 0;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         transition: all 0.2s ease;
-        color: #eee;
+        color: var(--bubble-btn-text-color); // MEJORA: Usar variable de tema para el color del texto
+
         &:hover {
             transform: scale(1.1);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
         }
         
-        /* Aplicar background-color solo en tema oscuro */
-        [data-theme="light"] & {
-            /* Mantener los colores originales de Bootstrap en modo claro */
-            &.btn-primary { background-color: #0d6efd; }
-            &.btn-success { background-color: #198754; }
-            &.btn-secondary { background-color: #6c757d; }
-            &.btn-info { background-color: #0dcaf0; }
-            color: #fff; /* Mantener el texto blanco para contraste */
-        }
-        
-        /* En tema oscuro, usar el color de fondo de navegación */
-        :root:not([data-theme="light"]) & {
-            background-color: $nav-bg;
-        }
+        // MEJORA: Aplicar colores de fondo usando variables de tema para cada tipo de botón
+        &.btn-primary { background-color: var(--bubble-btn-primary-bg); }
+        &.btn-success { background-color: var(--bubble-btn-success-bg); }
+        &.btn-secondary { background-color: var(--bubble-btn-secondary-bg); }
+        &.btn-info { background-color: var(--bubble-btn-info-bg); }
     }
     .bubble-sub {
         width: 45px;
