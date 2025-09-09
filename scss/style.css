@@ -792,12 +792,12 @@ header[role=banner] .subtitle a:hover {
   .history-toggle-btn {
     top: 10px;
     right: 10px;
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
   }
   .history-toggle-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
   }
 }
 
@@ -970,17 +970,12 @@ header[role=banner] .subtitle a:hover {
     top: calc(env(safe-area-inset-top, 10px) + var(--floating-btn-margin-mobile));
     left: var(--floating-btn-margin-mobile);
   }
-  .sidebar-wrapper .bubble-main {
-    width: 60px;
-    height: 60px;
+  .sidebar-wrapper .bubble-main, .sidebar-wrapper .bubble-btn, .sidebar-wrapper .bubble-sub {
+    width: 48px;
+    height: 48px;
   }
-  .sidebar-wrapper .bubble-btn {
-    width: 52px;
-    height: 52px;
-  }
-  .sidebar-wrapper .bubble-sub {
-    width: 45px;
-    height: 45px;
+  .sidebar-wrapper .bubble-btn i {
+    font-size: 1.4rem;
   }
 }
 
@@ -1261,10 +1256,10 @@ header[role=banner] .subtitle a:hover {
 @media (max-width: 600px) {
   .theme-toggle-btn {
     top: 10px;
-    right: 70px; /* Ajustado para móviles */
-    width: 35px;
-    height: 35px;
-    font-size: 1rem;
+    right: 78px; /* Ajustado para el nuevo tamaño del botón de historial (10px + 48px + 20px gap) */
+    width: 48px;
+    height: 48px;
+    font-size: 1.4rem;
   }
 }
 

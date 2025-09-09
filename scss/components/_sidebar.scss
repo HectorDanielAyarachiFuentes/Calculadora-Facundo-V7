@@ -49,17 +49,13 @@
         top: calc(env(safe-area-inset-top, 10px) + var(--floating-btn-margin-mobile));
         left: var(--floating-btn-margin-mobile);
 
-        .bubble-main {
-            width: 60px;
-            height: 60px;
+        // MEJORA: Unificar el tamaño de todos los botones de burbuja para consistencia en móvil.
+        .bubble-main, .bubble-btn, .bubble-sub {
+            width: 48px;
+            height: 48px;
         }
-        .bubble-btn {
-            width: 52px;
-            height: 52px;
-        }
-        .bubble-sub {
-            width: 45px;
-            height: 45px;
+        .bubble-btn i {
+            font-size: 1.4rem; // Ajustar el tamaño del ícono al nuevo tamaño del botón
         }
     }
 }
