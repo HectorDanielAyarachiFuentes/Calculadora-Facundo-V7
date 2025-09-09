@@ -75,6 +75,25 @@ function alCargar() {
     actualizarEstadoDivisionUI(false);
     setupEventListeners();
     setupTitleAnimation(); // *** CORRECCIÓN: Centralizamos la inicialización de la animación del título.
+
+    // *** NUEVO: Manejador global de errores para depuración ***
+    // Este código captura errores de JavaScript que no fueron atrapados en otro lugar.
+    window.addEventListener('error', (event) => {
+        console.log('ERROR GLOBAL CAPTURADO:', {
+            mensaje: event.message,
+            archivo: event.filename,
+            linea: event.lineno,
+            columna: event.colno,
+            error: event.error
+        });
+    });
+
+    // Este código captura promesas que fueron rechazadas pero no tenían un .catch() para manejar el error.
+    window.addEventListener('unhandledrejection', (event) => {
+        console.log('PROMESA RECHAZADA SIN MANEJAR:', {
+            motivo: event.reason
+        });
+    });
 }
 
 function setupEventListeners() {

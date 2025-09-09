@@ -83,8 +83,8 @@ function validateAndParseInput() {
 
 async function visualizeSquareRoot(numero) {
     const container = setupContainer();
-    const { groups, decimalPos } = groupDigits(numero);
-    const steps = calculateSquareRootSteps(groups);
+    const { groups, decimalPos, decGroups } = groupDigits(numero);
+    const steps = calculateSquareRootSteps(groups, decGroups);
     
     const layout = calculateVisualizationLayout(container, groups, steps);
     const positions = drawStaticElements(container, groups, decimalPos, layout);
@@ -404,10 +404,10 @@ function groupDigits(numero) {
     const groups = [...intGroups, ...decGroups];
     if (groups.length === 0) groups.push('00');
     
-    return { groups, decimalPos };
+    return { groups, decimalPos, decGroups };
 }
 
-function calculateSquareRootSteps(groups) {
+function calculateSquareRootSteps(groups, decGroups) {
     const steps = [];
     let rootSoFar = '';
     let remainder = 0n;
@@ -440,7 +440,7 @@ function calculateSquareRootSteps(groups) {
         remainder = newRemainder;
         
         if (remainder === 0n && i >= groups.length / 2) {
-             if (i >= (groups.length - decGroups.length) + 1 ) {
+             if (decGroups && i >= (groups.length - decGroups.length) + 1 ) {
                  break;
             }
         }
