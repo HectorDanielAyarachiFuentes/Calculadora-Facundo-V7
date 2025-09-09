@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const mainOptionsCollapseEl = document.getElementById('mainOptions');
     const mainOptionsCollapse = new bootstrap.Collapse(mainOptionsCollapseEl, { toggle: false });
@@ -14,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bounce = 0.9;
     const restitution = 1.1;
     const STORAGE_KEY = 'physicsCirclesState';
+    const dragThreshold = 5; // Pixels to move before a drag starts
 
     let prevMouseX = 0, prevMouseY = 0;
 
@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             x: savedCircle ? savedCircle.x : rect.left, y: savedCircle ? savedCircle.y : rect.top,
             vx: 0, vy: 0, radius: rect.width / 2, mass: 1,
             isBeingDragged: false, hasDragged: false, physicsEnabled: !!savedCircle,
+            startX: 0, startY: 0, // For drag threshold
             original: {
                 x: rect.left, y: rect.top,
                 position: computedStyle.position, top: computedStyle.top,
@@ -44,13 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         element.addEventListener('mousedown', (e) => {
             if (circle.type === 'collapse-toggle' && mainOptionsCollapseEl.classList.contains('show')) return;
-            if (!circle.physicsEnabled) {
-                circle.physicsEnabled = true;
-                element.style.position = 'absolute';
-            }
-            element.style.zIndex = 1000;
+            
             circle.isBeingDragged = true;
             circle.hasDragged = false;
+            circle.startX = e.clientX;
+            circle.startY = e.clientY;
             prevMouseX = e.clientX;
             prevMouseY = e.clientY;
         });
@@ -75,14 +74,28 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mousemove', (e) => {
         const draggedCircle = circles.find(c => c.isBeingDragged);
         if (draggedCircle) {
-            const mouseVX = e.clientX - prevMouseX;
-            const mouseVY = e.clientY - prevMouseY;
+            if (!draggedCircle.hasDragged) {
+                const dx = e.clientX - draggedCircle.startX;
+                const dy = e.clientY - draggedCircle.startY;
+                if (Math.sqrt(dx * dx + dy * dy) > dragThreshold) {
+                    draggedCircle.hasDragged = true;
+                    if (!draggedCircle.physicsEnabled) {
+                        draggedCircle.physicsEnabled = true;
+                        draggedCircle.el.style.position = 'absolute';
+                    }
+                    draggedCircle.el.style.zIndex = 1000;
+                }
+            }
 
-            draggedCircle.hasDragged = true;
-            draggedCircle.x = e.clientX - draggedCircle.radius;
-            draggedCircle.y = e.clientY - draggedCircle.radius;
-            draggedCircle.vx = mouseVX;
-            draggedCircle.vy = mouseVY;
+            if (draggedCircle.hasDragged) {
+                const mouseVX = e.clientX - prevMouseX;
+                const mouseVY = e.clientY - prevMouseY;
+
+                draggedCircle.x = e.clientX - draggedCircle.radius;
+                draggedCircle.y = e.clientY - draggedCircle.radius;
+                draggedCircle.vx = mouseVX;
+                draggedCircle.vy = mouseVY;
+            }
         }
         prevMouseX = e.clientX;
         prevMouseY = e.clientY;
