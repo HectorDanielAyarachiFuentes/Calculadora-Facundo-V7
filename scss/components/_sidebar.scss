@@ -6,8 +6,8 @@
     z-index: 1050;
 
     .bubble-main {
-        width: 65px;
-        height: 65px;
+        width: 50px;  // Unificado con el resto de botones flotantes
+        height: 50px; // Unificado con el resto de botones flotantes
         transition: transform 0.3s ease-in-out;
         &[aria-expanded="true"] {
             transform: rotate(45deg);

@@ -923,8 +923,8 @@ header[role=banner] .subtitle a:hover {
   z-index: 1050;
 }
 .sidebar-wrapper .bubble-main {
-  width: 65px;
-  height: 65px;
+  width: 50px;
+  height: 50px;
   transition: transform 0.3s ease-in-out;
 }
 .sidebar-wrapper .bubble-main[aria-expanded=true] {
@@ -1247,15 +1247,15 @@ header[role=banner] .subtitle a:hover {
   position: fixed;
   top: 20px;
   right: 80px; /* Posicionado a la izquierda del botón de historial */
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background-color: transparent;
   color: var(--color-display-text);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid var(--color-display-text);

@@ -4,15 +4,15 @@
     position: fixed;
     top: 20px;
     right: 80px; /* Posicionado a la izquierda del botón de historial */
-    width: 40px;
-    height: 40px;
+    width: 50px;   // Unificado con el resto de botones flotantes
+    height: 50px;  // Unificado con el resto de botones flotantes
     border-radius: 50%;
     background-color: transparent;
     color: var(--color-display-text);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2rem;
+    font-size: 1.5rem; // Ajustado para el nuevo tamaño
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid var(--color-display-text);
