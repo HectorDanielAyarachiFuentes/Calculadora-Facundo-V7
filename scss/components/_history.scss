@@ -64,11 +64,6 @@
     &--open {
         right: 0;
         visibility: visible;
-        
-        & + .history-toggle-btn {
-            opacity: 0;
-            pointer-events: none;
-        }
     }
 
     &__header {
@@ -81,8 +76,10 @@
         border-bottom: 1px solid var(--history-border-color); // Corregido
         
         @media (max-width: 600px) {
-            padding: 15px 70px 15px 20px;
-            justify-content: flex-start;
+            // MEJORA: Ajustar el layout para que el título y el botón "Limpiar" no se solapen
+            // con los botones flotantes de la interfaz (sidebar y toggle de historial).
+            justify-content: space-between; // Pone el título a la izquierda y el botón a la derecha.
+            padding: 15px 70px; // 70px a izq/der para dejar espacio a los botones flotantes.
         }
     }
 
@@ -107,6 +104,10 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         cursor: pointer;
         transition: background-color 0.2s, transform 0.1s;
+
+        @media (max-width: 600px) {
+            margin-left: 0; // En móvil, space-between ya gestiona el espaciado.
+        }
 
         &:hover {
             background-color: var(--history-clear-btn-hover-bg); // Corregido

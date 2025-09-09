@@ -57,5 +57,32 @@
         .bubble-btn i {
             font-size: 1.4rem; // Ajustar el tamaño del ícono al nuevo tamaño del botón
         }
+
+        // MEJORA UX/UI: Animación de expansión para los sub-botones.
+        #mainOptions.collapse .d-flex > * {
+            // Estado inicial (oculto y encogido)
+            opacity: 0;
+            transform: scale(0.5) translateX(-15px);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease-out;
+            pointer-events: none; // Evita interacción cuando están ocultos
+        }
+
+        #mainOptions.collapse.show .d-flex > * {
+            // Estado final (visible y en su posición)
+            opacity: 1;
+            transform: scale(1) translateX(0);
+            pointer-events: auto;
+        }
+
+        // MEJORA UX/UI: Retraso escalonado para un efecto de cascada.
+        #mainOptions.collapse.show .d-flex > *:nth-child(1) {
+            transition-delay: 0.05s;
+        }
+        #mainOptions.collapse.show .d-flex > *:nth-child(2) {
+            transition-delay: 0.1s;
+        }
+        #mainOptions.collapse.show .d-flex > *:nth-child(3) {
+            transition-delay: 0.15s;
+        }
     }
 }

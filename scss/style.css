@@ -823,10 +823,6 @@ header[role=banner] .subtitle a:hover {
   right: 0;
   visibility: visible;
 }
-.history-panel--open + .history-toggle-btn {
-  opacity: 0;
-  pointer-events: none;
-}
 .history-panel__header {
   display: flex;
   justify-content: flex-start;
@@ -838,8 +834,8 @@ header[role=banner] .subtitle a:hover {
 }
 @media (max-width: 600px) {
   .history-panel__header {
-    padding: 15px 70px 15px 20px;
-    justify-content: flex-start;
+    justify-content: space-between;
+    padding: 15px 70px;
   }
 }
 .history-panel__title {
@@ -862,6 +858,11 @@ header[role=banner] .subtitle a:hover {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
+}
+@media (max-width: 600px) {
+  .history-panel__clear-btn {
+    margin-left: 0;
+  }
 }
 .history-panel__clear-btn:hover {
   background-color: var(--history-clear-btn-hover-bg);
@@ -976,6 +977,26 @@ header[role=banner] .subtitle a:hover {
   }
   .sidebar-wrapper .bubble-btn i {
     font-size: 1.4rem;
+  }
+  .sidebar-wrapper #mainOptions.collapse .d-flex > * {
+    opacity: 0;
+    transform: scale(0.5) translateX(-15px);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease-out;
+    pointer-events: none;
+  }
+  .sidebar-wrapper #mainOptions.collapse.show .d-flex > * {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    pointer-events: auto;
+  }
+  .sidebar-wrapper #mainOptions.collapse.show .d-flex > *:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+  .sidebar-wrapper #mainOptions.collapse.show .d-flex > *:nth-child(2) {
+    transition-delay: 0.1s;
+  }
+  .sidebar-wrapper #mainOptions.collapse.show .d-flex > *:nth-child(3) {
+    transition-delay: 0.15s;
   }
 }
 
