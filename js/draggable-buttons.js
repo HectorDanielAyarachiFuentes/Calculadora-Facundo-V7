@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const circle = {
             id: config.id, el: element, type: config.type,
-            x: savedCircle ? savedCircle.x : rect.left, y: savedCircle ? savedCircle.y : rect.top,
+            x: rect.left, y: rect.top,
             vx: 0, vy: 0, radius: rect.width / 2, mass: 1,
-            isBeingDragged: false, hasDragged: false, physicsEnabled: !!savedCircle,
+            isBeingDragged: false, hasDragged: false, physicsEnabled: false,
             startX: 0, startY: 0, // For drag threshold
             original: {
                 x: rect.left, y: rect.top,
