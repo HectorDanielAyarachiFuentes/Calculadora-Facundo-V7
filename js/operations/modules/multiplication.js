@@ -48,63 +48,72 @@ export function multiplica(numerosAR) {
     if (num2.replace(/0/g, '').length === 0) partialProducts.push({product: '0', offset:0, digit:'0'});
 
     const maxPartialProductWidth = partialProducts.reduce((max, p) => Math.max(max, p.product.length + p.offset), 0);
-    const anchuraEnCeldas = Math.max(num1Display.length, num2Display.length + 2, resultadoDisplay.length, maxPartialProductWidth + (partialProducts.length > 1 ? 1 : 0));
-    const alturaEnCeldas = 3 + (partialProducts.length > 1 ? partialProducts.length + 1 : (partialProducts.length === 1 ? 1 : 0));
     
-    const alturaReducida = alturaEnCeldas > 3 ? alturaEnCeldas - 1 : alturaEnCeldas;
+    // --- MEJORA: Cálculo de dimensiones más robusto y claro ---
+    const rightPadding = 1;
+    const signPadding = 1; 
+    const num2BlockWidth = num2Display.length + signPadding + 1; // +1 para el signo 'x'
+    const partialsBlockWidth = (partialProducts.length > 1) ? maxPartialProductWidth + signPadding + 1 : maxPartialProductWidth;
+
+    const anchuraEnCeldas = Math.max(num1Display.length, num2BlockWidth, resultadoDisplay.length, partialsBlockWidth) + rightPadding;
     
-    const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = calculateLayout(salida, anchuraEnCeldas, alturaReducida);
+    const numPartials = partialProducts.length;
+    const numRowsForPartials = (numPartials > 1) ? numPartials + 1 : 0; // N parciales + 1 línea
+    const alturaEnCeldas = 2 + 1 + numRowsForPartials + 1; // 2 operandos, 1 línea, bloque de parciales, 1 resultado
+    
+    const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = calculateLayout(salida, anchuraEnCeldas, alturaEnCeldas);
     
     let yPos = paddingTop;
 
+    // MEJORA: Función de dibujo unificada y corregida para alinear a la derecha del grid.
     const dibujarNumero = (numeroStr, y, claseBase, claseDigito) => {
+        const startCol = anchuraEnCeldas - rightPadding - numeroStr.length;
         for (let i = 0; i < numeroStr.length; i++) {
             const char = numeroStr[i];
             const esComa = char === ',';
             const claseColor = esComa ? 'color-coma' : claseDigito;
-            const leftPos = offsetHorizontal + (anchuraEnCeldas - numeroStr.length + i - 1) * tamCel + paddingLeft;
+            const leftPos = offsetHorizontal + (startCol + i) * tamCel + paddingLeft;
             fragment.appendChild(crearCelda(`${claseBase} ${claseColor}`, char, { left: `${leftPos}px`, top: `${y}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
         }
     };
 
+    // --- DIBUJO DE ELEMENTOS ---
     dibujarNumero(num1Display, yPos, 'output-grid__cell output-grid__cell--operando', 'color-operando');
     yPos += tamCel;
 
-    const signLeft = offsetHorizontal + (anchuraEnCeldas - num2Display.length - 2) * tamCel + paddingLeft;
-    fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--signo color-signo", "x", { left: `${signLeft}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
+    const signXCol = anchuraEnCeldas - rightPadding - num2Display.length - signPadding - 1;
+    const signXLeft = offsetHorizontal + signXCol * tamCel + paddingLeft;
+    fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--signo color-signo", "x", { left: `${signXLeft}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
     dibujarNumero(num2Display, yPos, 'output-grid__cell output-grid__cell--operando', 'color-operando');
     
     yPos += tamCel;
-    const lineWidth1 = Math.max(num1Display.length, num2Display.length + 2) * tamCel;
-    const lineLeft1 = offsetHorizontal + (anchuraEnCeldas * tamCel) - lineWidth1 + paddingLeft;
-    fragment.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft1}px`, top: `${yPos}px`, width: `${lineWidth1}px`, height: `2px` }));
+    const line1Width = Math.max(num1Display.length, num2BlockWidth) * tamCel;
+    const lineLeft1 = offsetHorizontal + (anchuraEnCeldas - rightPadding) * tamCel - line1Width + paddingLeft;
+    fragment.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft1}px`, top: `${yPos}px`, width: `${line1Width}px`, height: `2px` }));
     yPos += tamCel * 0.2;
     
     if (partialProducts.length > 1) {
         partialProducts.reverse().forEach(({ product, offset }, index) => {
             const colorClass = coloresParciales[index % coloresParciales.length];
-            
-            if (index === 1) {
-                const signPlusLeft = offsetHorizontal + (anchuraEnCeldas - maxPartialProductWidth - 1) * tamCel + paddingLeft;
+            // --- CORRECCIÓN: Mostrar el signo '+' solo una vez y en la posición correcta ---
+            if (index === 1) { // Mostrar '+' solo junto al segundo producto parcial para indicar la suma.
+                const signPlusCol = anchuraEnCeldas - rightPadding - maxPartialProductWidth - signPadding - 1;
+                const signPlusLeft = offsetHorizontal + signPlusCol * tamCel + paddingLeft;
                 fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--signo color-signo", "+", { left: `${signPlusLeft}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
             }
             
+            const startCol = anchuraEnCeldas - rightPadding - product.length - offset;
             for (let j = 0; j < product.length; j++) {
-                const leftPos = offsetHorizontal + (anchuraEnCeldas - product.length - offset + j) * tamCel + paddingLeft;
+                const leftPos = offsetHorizontal + (startCol + j) * tamCel + paddingLeft;
                 fragment.appendChild(crearCelda(`output-grid__cell output-grid__cell--producto-parcial ${colorClass}`, product[j], { left: `${leftPos}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
             }
 
-            // --- CORRECCIÓN APLICADA ---
-            // La línea se movió aquí, al final del bucle.
             yPos += tamCel; 
         });
 
-        // Se ajusta la posición de la línea final restando el último incremento.
-        yPos -= tamCel; 
-        yPos += tamCel;
-        const lineWidth2 = Math.max(resultadoDisplay.length, maxPartialProductWidth + (partialProducts.length > 1 ? 1 : 0)) * tamCel;
-        const lineLeft2 = offsetHorizontal + (anchuraEnCeldas * tamCel) - lineWidth2 + paddingLeft;
-        fragment.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft2}px`, top: `${yPos}px`, width: `${lineWidth2}px`, height: `2px` }));
+        const line2Width = Math.max(resultadoDisplay.length, partialsBlockWidth) * tamCel;
+        const lineLeft2 = offsetHorizontal + (anchuraEnCeldas - rightPadding) * tamCel - line2Width + paddingLeft;
+        fragment.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft2}px`, top: `${yPos}px`, width: `${line2Width}px`, height: `2px` }));
         yPos += tamCel * 0.2;
     } else if (partialProducts.length === 1 && num2.replace(/0/g, '').length > 0) {
         yPos += tamCel;
