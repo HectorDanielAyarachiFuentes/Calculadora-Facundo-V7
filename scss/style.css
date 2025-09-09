@@ -1246,7 +1246,7 @@ header[role=banner] .subtitle a:hover {
 .theme-toggle-btn {
   position: fixed;
   top: 20px;
-  right: 80px; /* Posicionado a la izquierda del botón de historial */
+  right: 140px; /* Posicionado a la izquierda del botón de historial */
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -1277,7 +1277,7 @@ header[role=banner] .subtitle a:hover {
 @media (max-width: 600px) {
   .theme-toggle-btn {
     top: 10px;
-    right: 78px; /* Ajustado para el nuevo tamaño del botón de historial (10px + 48px + 20px gap) */
+    right: 138px; /* Ajustado para el nuevo tamaño del botón de historial (10px + 48px + 80px gap) */
     width: 48px;
     height: 48px;
     font-size: 1.4rem;
