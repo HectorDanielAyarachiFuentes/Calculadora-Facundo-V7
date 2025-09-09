@@ -45,9 +45,6 @@ function alCargar() {
         cuerpoteclado.style.width = `${0.95 * w}px`;
         cuerpoteclado.style.height = `${0.95 * w}px`;
         teclado.style.fontSize = `${0.1 * w}px`;
-        const volver = document.getElementById("volver");
-        volver.style.fontSize = `${0.15 * w}px`;
-        volver.style.padding = `${0.05 * w}px ${0.03 * w}px`;
         botExp.style.fontSize = `${0.08 * w}px`;
         botExp.style.paddingTop = `${0.05 * w}px`;
         botNor.style.fontSize = `${0.08 * w}px`;
@@ -61,6 +58,10 @@ function alCargar() {
         const cuerpoteclado = document.getElementById("cuerpoteclado");
         cuerpoteclado.style.width = '';
         cuerpoteclado.style.height = '';
+        botExp.style.fontSize = '';
+        botExp.style.paddingTop = '';
+        botNor.style.fontSize = '';
+        botNor.style.paddingTop = '';
     }
 
     contenedor.style.opacity = "1";

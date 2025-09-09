@@ -264,15 +264,21 @@ $keyboard-gap: 2px;
 
         &--arrow {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
+            // Estilos base para escritorio, ahora controlados 100% por CSS
+            font-size: 1.8rem;
+
             @media (max-width: 600px) {
-                font-size: 2rem;
-                width: 50px;
-                height: 50px;
+                // Aumentamos significativamente el tamaño para una mejor experiencia táctil.
+                // Ya no se necesita !important porque JS no interfiere.
+                // MEJORA: Hacemos que el botón ocupe todo el ancho disponible en el contenedor padre.
+                font-size: 2.5rem; // Se ajusta el tamaño del ícono para el nuevo ancho.
+                width: auto;       // El ancho ahora es flexible.
+                height: 100%; // Ocupa toda la altura de la barra de navegación
+                padding: 0;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                flex-grow: 0;
+                flex-grow: 1; // Permite que el botón se expanda para llenar el espacio.
             }
         }
     }
