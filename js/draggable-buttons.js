@@ -10,11 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const circles = [];
-    const friction = 0.95;
-    const bounce = 0.8;
+    const friction = 0.97;
+    const bounce = 0.9;
+    const restitution = 1.1;
     const STORAGE_KEY = 'physicsCirclesState';
 
-    // --- INITIALIZATION ---
+    let prevMouseX = 0, prevMouseY = 0;
+
     const savedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
     elementConfigs.forEach(config => {
@@ -26,17 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const savedCircle = savedState.find(s => s.id === config.id);
 
         const circle = {
-            id: config.id,
-            el: element,
-            type: config.type,
-            x: savedCircle ? savedCircle.x : rect.left,
-            y: savedCircle ? savedCircle.y : rect.top,
-            vx: 0, vy: 0,
-            radius: rect.width / 2,
-            mass: 1,
-            isBeingDragged: false,
-            hasDragged: false,
-            physicsEnabled: !!savedCircle,
+            id: config.id, el: element, type: config.type,
+            x: savedCircle ? savedCircle.x : rect.left, y: savedCircle ? savedCircle.y : rect.top,
+            vx: 0, vy: 0, radius: rect.width / 2, mass: 1,
+            isBeingDragged: false, hasDragged: false, physicsEnabled: !!savedCircle,
             original: {
                 x: rect.left, y: rect.top,
                 position: computedStyle.position, top: computedStyle.top,
@@ -45,14 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         circles.push(circle);
 
-        if (circle.physicsEnabled) {
-            element.style.position = 'absolute';
-        }
+        if (circle.physicsEnabled) element.style.position = 'absolute';
 
-        // --- EVENT LISTENERS ---
         element.addEventListener('mousedown', (e) => {
             if (circle.type === 'collapse-toggle' && mainOptionsCollapseEl.classList.contains('show')) return;
-            
             if (!circle.physicsEnabled) {
                 circle.physicsEnabled = true;
                 element.style.position = 'absolute';
@@ -60,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
             element.style.zIndex = 1000;
             circle.isBeingDragged = true;
             circle.hasDragged = false;
+            prevMouseX = e.clientX;
+            prevMouseY = e.clientY;
         });
 
         element.addEventListener('click', (e) => {
@@ -82,10 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mousemove', (e) => {
         const draggedCircle = circles.find(c => c.isBeingDragged);
         if (draggedCircle) {
+            const mouseVX = e.clientX - prevMouseX;
+            const mouseVY = e.clientY - prevMouseY;
+
             draggedCircle.hasDragged = true;
             draggedCircle.x = e.clientX - draggedCircle.radius;
             draggedCircle.y = e.clientY - draggedCircle.radius;
+            draggedCircle.vx = mouseVX;
+            draggedCircle.vy = mouseVY;
         }
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
     });
 
     document.addEventListener('mouseup', () => {
@@ -95,13 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- SAVE STATE ON PAGE UNLOAD ---
     window.addEventListener('beforeunload', () => {
         const stateToSave = circles.map(c => ({ id: c.id, x: c.x, y: c.y }));
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     });
 
-    // --- PHYSICS ENGINE ---
     function update() {
         circles.forEach(circle => {
             if (!circle.physicsEnabled) return;
@@ -147,8 +145,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const finalVelX1 = ((c1.mass - c2.mass) * newVelX1 + (c2.mass + c2.mass) * newVelX2) / (c1.mass + c2.mass);
                     const finalVelX2 = ((c1.mass + c1.mass) * newVelX1 + (c2.mass - c1.mass) * newVelX2) / (c1.mass + c2.mass);
 
-                    if (!c1.isBeingDragged) { c1.vx = finalVelX2 * Math.cos(angle) - newVelY1 * Math.sin(angle); c1.vy = newVelY1 * Math.cos(angle) + finalVelX2 * Math.sin(angle); }
-                    if (!c2.isBeingDragged) { c2.vx = finalVelX1 * Math.cos(angle) - newVelY2 * Math.sin(angle); c2.vy = newVelY2 * Math.cos(angle) + finalVelX1 * Math.sin(angle); }
+                    if (!c1.isBeingDragged) {
+                        c1.vx = (finalVelX2 * Math.cos(angle) - newVelY1 * Math.sin(angle)) * restitution;
+                        c1.vy = (newVelY1 * Math.cos(angle) + finalVelX2 * Math.sin(angle)) * restitution;
+                    }
+                    if (!c2.isBeingDragged) {
+                        c2.vx = (finalVelX1 * Math.cos(angle) - newVelY2 * Math.sin(angle)) * restitution;
+                        c2.vy = (newVelY2 * Math.cos(angle) + finalVelX1 * Math.sin(angle)) * restitution;
+                    }
                 }
             }
         }
