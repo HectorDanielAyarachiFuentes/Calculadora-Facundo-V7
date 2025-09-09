@@ -1,9 +1,7 @@
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Get the collapse element and initialize a Bootstrap instance
     const mainOptionsCollapseEl = document.getElementById('mainOptions');
     const mainOptionsCollapse = new bootstrap.Collapse(mainOptionsCollapseEl, {
-        toggle: false // Initialize but don't toggle on creation
+        toggle: false
     });
 
     const draggableElements = [
@@ -15,11 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     draggableElements.forEach(({ el: element, id: storageKey, type }) => {
         if (!element) return;
 
+        // Correctly capture original styles using getComputedStyle for properties set in CSS
         const originalStyles = {
             position: window.getComputedStyle(element).position,
-            top: element.style.top,
-            left: element.style.left,
-            zIndex: element.style.zIndex
+            top: window.getComputedStyle(element).top,
+            left: window.getComputedStyle(element).left,
+            zIndex: window.getComputedStyle(element).zIndex
         };
 
         const savedPosition = localStorage.getItem(storageKey);
@@ -28,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             element.style.position = 'absolute';
             element.style.top = top;
             element.style.left = left;
-            element.style.zIndex = 1000;
+            element.style.zIndex = 1000; // High z-index for dragging
         }
 
         let isDragging = false;
@@ -36,6 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let offsetX, offsetY;
 
         element.addEventListener('mousedown', (e) => {
+            // 1. Disable dragging if the tools menu is already open
+            if (type === 'collapse-toggle' && mainOptionsCollapseEl.classList.contains('show')) {
+                return; // Do not start dragging
+            }
+
             isDragging = true;
             hasDragged = false;
             
@@ -49,15 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             element.style.position = 'absolute';
-            element.style.zIndex = 1000;
+            element.style.zIndex = 1000; // Set high z-index for dragging
         });
 
         document.addEventListener('mousemove', (e) => {
             if (isDragging) {
-                // Add a small threshold to prevent accidental drags
-                if (!hasDragged) {
-                    hasDragged = true;
-                }
+                hasDragged = true;
                 element.style.left = `${e.clientX - offsetX}px`;
                 element.style.top = `${e.clientY - offsetY}px`;
             }
@@ -75,25 +76,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         element.addEventListener('click', (e) => {
             if (hasDragged) {
-                // This was a drag, not a click. Prevent everything.
                 e.preventDefault();
                 e.stopImmediatePropagation();
             } else {
-                // This is a real click.
-                // 1. Reset position.
                 localStorage.removeItem(storageKey);
+                // Restore all original styles
                 element.style.position = originalStyles.position;
                 element.style.top = originalStyles.top;
                 element.style.left = originalStyles.left;
                 element.style.zIndex = originalStyles.zIndex;
 
-                // 2. Manually trigger the action for the specific button.
                 if (type === 'collapse-toggle') {
                     mainOptionsCollapse.toggle();
                 }
-                // For other buttons, their default behavior is not prevented
-                // so the theme will still switch and the history will still open.
             }
-        }, true); // Use capture phase.
+        }, true);
     });
 });
