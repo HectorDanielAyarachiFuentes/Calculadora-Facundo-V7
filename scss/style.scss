@@ -17,9 +17,10 @@
 // 3. Componentes de la UI.
 // Estilos para cada pieza individual y reutilizable de la interfaz.
 @use 'components/calculator';
+@use 'components/floating-buttons';
 @use 'components/history';
 @use 'components/sidebar';
 @use 'components/modal';
 @use 'components/multiplication';
 @use 'components/geometry';
-@use 'components/theme-switcher'; // Nuevo componente para el cambio de tema
+@use 'components/theme-switcher';

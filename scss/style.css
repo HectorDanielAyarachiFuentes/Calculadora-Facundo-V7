@@ -407,6 +407,9 @@ header[role=banner] .subtitle a:hover {
 /* ======================================================= */
 /* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
 /* ======================================================= */
+/* ======================================================= */
+/* --- MIXINS GLOBALES (Para Media Queries) --- */
+/* ======================================================= */
 .calculator-container {
   position: relative;
   width: 100%;
@@ -760,24 +763,75 @@ header[role=banner] .subtitle a:hover {
 }
 
 /* ======================================================= */
-/* --- COMPONENTE: PANEL DE HISTORIAL (Corregido) --- */
+/* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
 /* ======================================================= */
-.history-toggle-btn {
+/* ======================================================= */
+/* --- COMPONENTE: BOTONES FLOTANTES (Unificado) --- */
+/* ======================================================= */
+.bubble-main,
+.history-toggle-btn,
+.theme-toggle-btn {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1002;
+  z-index: 1001;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: grab;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.3s, top 0.3s ease, left 0.3s ease;
+}
+.bubble-main:active,
+.history-toggle-btn:active,
+.theme-toggle-btn:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.bubble-main.dragging,
+.history-toggle-btn.dragging,
+.theme-toggle-btn.dragging {
+  cursor: grabbing;
+  z-index: 1003;
+  transition: none;
+}
+@media (max-width: 600px) {
+  .bubble-main,
+  .history-toggle-btn,
+  .theme-toggle-btn {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.bubble-main {
+  top: 20px;
+  left: 20px;
+  background-color: var(--bubble-btn-primary-bg);
+  color: var(--bubble-btn-text-color);
+}
+.bubble-main[aria-expanded=true] {
+  transform: rotate(45deg);
+}
+.bubble-main:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+@media (max-width: 600px) {
+  .bubble-main {
+    top: 10px;
+    left: 10px;
+  }
+}
+
+.history-toggle-btn {
+  top: 20px;
+  right: 20px;
+  z-index: 1002;
   background-color: var(--nav-bg);
   border: 1px solid #555;
-  border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
 }
 .history-toggle-btn:hover {
   background-color: #4CAF50;
@@ -792,8 +846,6 @@ header[role=banner] .subtitle a:hover {
   .history-toggle-btn {
     top: 10px;
     right: 10px;
-    width: 48px;
-    height: 48px;
   }
   .history-toggle-btn svg {
     width: 26px;
@@ -801,6 +853,38 @@ header[role=banner] .subtitle a:hover {
   }
 }
 
+.theme-toggle-btn {
+  top: 80px;
+  right: 20px;
+  background-color: transparent;
+  color: var(--color-display-text);
+  font-size: 1.5rem;
+  border: 2px solid var(--color-display-text);
+}
+.theme-toggle-btn:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.theme-toggle-btn i {
+  transition: transform 0.5s ease;
+}
+.theme-toggle-btn:hover i {
+  transform: rotate(30deg);
+}
+@media (max-width: 600px) {
+  .theme-toggle-btn {
+    top: 70px;
+    right: 10px;
+    font-size: 1.4rem;
+  }
+}
+
+/* ======================================================= */
+/* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
+/* ======================================================= */
+/* ======================================================= */
+/* --- COMPONENTE: PANEL DE HISTORIAL (Corregido) --- */
+/* ======================================================= */
 .history-panel {
   position: fixed;
   top: 0;
@@ -915,21 +999,10 @@ header[role=banner] .subtitle a:hover {
   }
 }
 
+/* ======================================================= */
+/* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
+/* ======================================================= */
 /* --- COMPONENTE: BARRA LATERAL DE UTILIDADES (BURBUJAS) --- */
-.sidebar-wrapper {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1050;
-}
-.sidebar-wrapper .bubble-main {
-  width: 50px;
-  height: 50px;
-  transition: transform 0.3s ease-in-out;
-}
-.sidebar-wrapper .bubble-main[aria-expanded=true] {
-  transform: rotate(45deg);
-}
 .sidebar-wrapper .bubble-btn {
   width: 55px;
   height: 55px;
@@ -968,10 +1041,8 @@ header[role=banner] .subtitle a:hover {
 @media (max-width: 600px) {
   .sidebar-wrapper {
     --floating-btn-margin-mobile: 10px;
-    top: calc(env(safe-area-inset-top, 10px) + var(--floating-btn-margin-mobile));
-    left: var(--floating-btn-margin-mobile);
   }
-  .sidebar-wrapper .bubble-main, .sidebar-wrapper .bubble-btn, .sidebar-wrapper .bubble-sub {
+  .sidebar-wrapper .bubble-btn, .sidebar-wrapper .bubble-sub {
     width: 48px;
     height: 48px;
   }
@@ -1243,47 +1314,6 @@ header[role=banner] .subtitle a:hover {
 }
 
 /* --- COMPONENTE: BOTÓN DE CAMBIO DE TEMA --- */
-.theme-toggle-btn {
-  position: fixed;
-  top: 20px;
-  right: 140px; /* Posicionado a la izquierda del botón de historial */
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: transparent;
-  color: var(--color-display-text);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid var(--color-display-text);
-  z-index: 100;
-}
-.theme-toggle-btn:hover {
-  transform: scale(1.1);
-  background-color: rgba(255, 255, 255, 0.1);
-}
-.theme-toggle-btn:active {
-  transform: scale(0.95);
-}
-.theme-toggle-btn i {
-  transition: transform 0.5s ease;
-}
-.theme-toggle-btn:hover i {
-  transform: rotate(30deg);
-}
-@media (max-width: 600px) {
-  .theme-toggle-btn {
-    top: 10px;
-    right: 138px; /* Ajustado para el nuevo tamaño del botón de historial (10px + 48px + 80px gap) */
-    width: 48px;
-    height: 48px;
-    font-size: 1.4rem;
-  }
-}
-
 /* Animación para el cambio de tema */
 .theme-transition {
   transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;

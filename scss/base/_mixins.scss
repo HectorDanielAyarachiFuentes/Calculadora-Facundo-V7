@@ -1,0 +1,11 @@
+/* ======================================================= */
+/* --- MIXINS GLOBALES (Para Media Queries) --- */
+/* ======================================================= */
+
+// Mixin para estilos en dispositivos móviles
+// Se aplica a pantallas con un ancho máximo de 600px.
+@mixin mobile {
+    @media (max-width: 600px) {
+        @content;
+    }
+}

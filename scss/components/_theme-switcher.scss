@@ -1,50 +1,5 @@
 /* --- COMPONENTE: BOTÓN DE CAMBIO DE TEMA --- */
 
-.theme-toggle-btn {
-    position: fixed;
-    top: 20px;
-    right: 140px; /* Posicionado a la izquierda del botón de historial */
-    width: 50px;   // Unificado con el resto de botones flotantes
-    height: 50px;  // Unificado con el resto de botones flotantes
-    border-radius: 50%;
-    background-color: transparent;
-    color: var(--color-display-text);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem; // Ajustado para el nuevo tamaño
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid var(--color-display-text);
-    z-index: 100;
-    
-    &:hover {
-        transform: scale(1.1);
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    &:active {
-        transform: scale(0.95);
-    }
-    
-    i {
-        transition: transform 0.5s ease;
-    }
-    
-    &:hover i {
-        transform: rotate(30deg);
-    }
-    
-    @media (max-width: 600px) {
-        // MEJORA: Unificar el tamaño de los botones flotantes para consistencia en móvil.
-        top: 10px;
-        right: 138px; /* Ajustado para el nuevo tamaño del botón de historial (10px + 48px + 80px gap) */
-        width: 48px;
-        height: 48px;
-        font-size: 1.4rem; // Ajustado para el nuevo tamaño
-    }
-}
-
 /* Animación para el cambio de tema */
 .theme-transition {
     transition: background-color 0.5s ease,

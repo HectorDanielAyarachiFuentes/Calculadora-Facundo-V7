@@ -2,46 +2,7 @@
 /* --- COMPONENTE: PANEL DE HISTORIAL (Corregido) --- */
 /* ======================================================= */
 
-.history-toggle-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1002;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    background-color: var(--nav-bg); // Corregido
-    border: 1px solid #555;
-    border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
-
-    &:hover {
-        background-color: #4CAF50;
-        transform: scale(1.1);
-    }
-
-    svg {
-        width: 28px;
-        height: 28px;
-        fill: var(--history-text-color);
-    }
-
-    @media (max-width: 600px) {
-        top: 10px;
-        right: 10px;
-        // MEJORA: Unificar el tamaño de los botones flotantes para consistencia en móvil.
-        width: 48px;
-        height: 48px;
-        svg {
-            width: 26px; // Ajustado proporcionalmente
-            height: 26px;
-        }
-    }
-}
+@use '../base/mixins' as *;
 
 .history-panel {
     position: fixed;
@@ -75,7 +36,7 @@
         background-color: var(--history-header-bg); // Corregido
         border-bottom: 1px solid var(--history-border-color); // Corregido
         
-        @media (max-width: 600px) {
+        @include mobile {
             // MEJORA: Ajustar el layout para que el título y el botón "Limpiar" no se solapen
             // con los botones flotantes de la interfaz (sidebar y toggle de historial).
             justify-content: space-between; // Pone el título a la izquierda y el botón a la derecha.
@@ -105,7 +66,7 @@
         cursor: pointer;
         transition: background-color 0.2s, transform 0.1s;
 
-        @media (max-width: 600px) {
+        @include mobile {
             margin-left: 0; // En móvil, space-between ya gestiona el espaciado.
         }
 
@@ -162,7 +123,7 @@
         word-break: break-all;
     }
 
-    @media (max-width: 600px) {
+    @include mobile {
         width: 100%;
         max-width: 100vw;
     }

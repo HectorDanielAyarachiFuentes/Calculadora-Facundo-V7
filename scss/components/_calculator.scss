@@ -2,6 +2,8 @@
 /* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
 /* ======================================================= */
 
+@use '../base/mixins' as *;
+
 // --- Variables específicas del componente ---
 $nav-height: 60px;
 $keyboard-gap: 2px;
@@ -20,7 +22,7 @@ $keyboard-gap: 2px;
     animation: neon-pulse 5s infinite alternate;
 
     // Layout flexible para móviles
-    @media (max-width: 600px) {
+    @include mobile {
         max-width: none;
         margin-bottom: 0;
         flex-grow: 1;
@@ -64,7 +66,7 @@ $keyboard-gap: 2px;
         &::after { left: -2px; text-shadow: -2px 0 var(--btn-special-bg), 2px 2px var(--btn-equal-bg); animation: glitch-anim-2 0.6s infinite linear alternate-reverse; }
     }
 
-    @media (max-width: 600px) {
+    @include mobile {
         // MEJORA: Tipografía fluida y controlada
         width: 100%;
         margin: 0 0 15px;
@@ -85,7 +87,7 @@ $keyboard-gap: 2px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     overflow: hidden;
 
-    @media (max-width: 600px) {
+    @include mobile {
         // El teclado se vuelve flexible para ocupar el espacio restante
         width: 100%;
         margin: 0;
@@ -136,7 +138,7 @@ $keyboard-gap: 2px;
 
         .ripple { position: absolute; border-radius: 50%; background-color: rgba(255, 255, 255, 0.6); transform: scale(0); animation: ripple-effect 0.6s linear; pointer-events: none; }
 
-        @media (max-width: 600px) {
+        @include mobile {
             // MEJORA: Tipografía fluida y controlada
             font-size: 1.5rem;
             border-radius: 8px;
@@ -146,7 +148,7 @@ $keyboard-gap: 2px;
 
 // Estos botones deberían idealmente tener una clase, pero mantenemos los IDs
 #botexp, #botnor {
-    @media (max-width: 600px) {
+    @include mobile {
         font-size: 0.9rem;
         padding: 12px 8px;
         height: 50px;
@@ -171,7 +173,7 @@ $keyboard-gap: 2px;
 
     &__error-message {
         width: 90%; margin: auto; color: var(--color-error); font-size: 1.2rem; text-align: center;
-        @media (max-width: 600px) {
+        @include mobile {
             font-size: clamp(1rem, 4.5vw, 1.5rem);
             padding-top: 25%;
         }
@@ -224,7 +226,7 @@ $keyboard-gap: 2px;
         }
     }
     
-    @media (max-width: 600px) {
+    @include mobile {
         font-size: clamp(1.2rem, 5vw, 1.8rem);
         #divvolver {
             padding: 15px;
@@ -267,7 +269,7 @@ $keyboard-gap: 2px;
             // Estilos base para escritorio, ahora controlados 100% por CSS
             font-size: 1.8rem;
 
-            @media (max-width: 600px) {
+            @include mobile {
                 // Aumentamos significativamente el tamaño para una mejor experiencia táctil.
                 // Ya no se necesita !important porque JS no interfiere.
                 // MEJORA: Hacemos que el botón ocupe todo el ancho disponible en el contenedor padre.

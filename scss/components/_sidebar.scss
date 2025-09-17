@@ -1,18 +1,12 @@
 /* --- COMPONENTE: BARRA LATERAL DE UTILIDADES (BURBUJAS) --- */
-.sidebar-wrapper {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1050;
+@use '../base/mixins' as *;
 
-    .bubble-main {
-        width: 50px;  // Unificado con el resto de botones flotantes
-        height: 50px; // Unificado con el resto de botones flotantes
-        transition: transform 0.3s ease-in-out;
-        &[aria-expanded="true"] {
-            transform: rotate(45deg);
-        }
-    }
+.sidebar-wrapper {
+    // El posicionamiento del botón principal (.bubble-main) se gestiona ahora
+    // en _floating-buttons.scss para unificar todos los botones flotantes.
+    // Este wrapper sirve como contenedor para los sub-botones y el menú desplegable.
+    // NOTA: Al hacer que .bubble-main sea 'position: fixed', se saca del flujo
+    // de este contenedor, lo que puede afectar el posicionamiento del menú desplegable.
     .bubble-btn {
         width: 55px;
         height: 55px;
@@ -44,16 +38,12 @@
         }
     }
     
-    @media (max-width: 600px) {
+    @include mobile {
         --floating-btn-margin-mobile: 10px;
-        top: calc(env(safe-area-inset-top, 10px) + var(--floating-btn-margin-mobile));
-        left: var(--floating-btn-margin-mobile);
 
         // MEJORA: Unificar el tamaño de todos los botones de burbuja para consistencia en móvil.
-        .bubble-main, .bubble-btn, .bubble-sub {
-            width: 48px;
-            height: 48px;
-        }
+        // El tamaño de .bubble-main se gestiona en _floating-buttons.scss
+        .bubble-btn, .bubble-sub { width: 48px; height: 48px; }
         .bubble-btn i {
             font-size: 1.4rem; // Ajustar el tamaño del ícono al nuevo tamaño del botón
         }

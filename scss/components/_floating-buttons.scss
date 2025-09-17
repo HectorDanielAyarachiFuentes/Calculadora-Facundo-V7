@@ -1,0 +1,112 @@
+/* ======================================================= */
+/* --- COMPONENTE: BOTONES FLOTANTES (Unificado) --- */
+/* ======================================================= */
+
+@use '../base/mixins' as *;
+
+// --- Base compartida para los botones flotantes ---
+// Se definen los estilos comunes para todos los botones arrastrables.
+.bubble-main,
+.history-toggle-btn,
+.theme-toggle-btn {
+    position: fixed;
+    z-index: 1001; // Capa base para los botones flotantes.
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: grab; // Indica que se puede arrastrar.
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.3s, top 0.3s ease, left 0.3s ease;
+
+    &:active {
+        cursor: grabbing;
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    // Clase añadida vía JS durante el arrastre
+    &.dragging {
+        cursor: grabbing;
+        z-index: 1003; // Asegura que esté por encima de otros botones flotantes
+        transition: none; // Desactiva transiciones para un movimiento fluido
+    }
+
+    // En móvil, los hacemos un poco más pequeños.
+    @include mobile {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+// --- Estilos específicos para cada botón ---
+
+// 1. Botón de Herramientas (Menú principal)
+.bubble-main {
+    top: 20px;
+    left: 20px;
+    background-color: var(--bubble-btn-primary-bg);
+    color: var(--bubble-btn-text-color);
+    
+    &[aria-expanded="true"] {
+        transform: rotate(45deg);
+    }
+
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    @include mobile {
+        top: 10px;
+        left: 10px;
+    }
+}
+
+// 2. Botón de Historial
+.history-toggle-btn {
+    top: 20px;
+    right: 20px;
+    z-index: 1002;
+    background-color: var(--nav-bg);
+    border: 1px solid #555;
+
+    &:hover {
+        background-color: #4CAF50;
+        transform: scale(1.1);
+    }
+
+    svg {
+        width: 28px;
+        height: 28px;
+        fill: var(--history-text-color);
+    }
+
+    @include mobile {
+        top: 10px;
+        right: 10px;
+        svg { width: 26px; height: 26px; }
+    }
+}
+
+// 3. Botón de Tema
+.theme-toggle-btn {
+    top: 80px; // Lo posicionamos debajo del botón de historial.
+    right: 20px;
+    background-color: transparent;
+    color: var(--color-display-text);
+    font-size: 1.5rem;
+    border: 2px solid var(--color-display-text);
+    
+    &:hover { transform: scale(1.1); background-color: rgba(255, 255, 255, 0.1); }
+    i { transition: transform 0.5s ease; }
+    &:hover i { transform: rotate(30deg); }
+    
+    @include mobile {
+        top: 70px;
+        right: 10px;
+        font-size: 1.4rem;
+    }
+}
