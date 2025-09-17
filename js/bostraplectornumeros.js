@@ -332,6 +332,14 @@ class FormalMode {
         let currentX = startX;
         let svgContent = '';
 
+        // --- MEJORA DE ACCESIBILIDAD: Añadir título y descripción para lectores de pantalla ---
+        const titleId = "svg-title-" + Math.random().toString(36).substring(2, 9);
+        const descId = "svg-desc-" + Math.random().toString(36).substring(2, 9);
+        const fullNumberStr = pDecimalStr ? `${pEnteraStr},${pDecimalStr}` : pEnteraStr;
+
+        svgContent += `<title id="${titleId}">Representación gráfica del número ${fullNumberStr}</title>`;
+        svgContent += `<desc id="${descId}">Gráfico que muestra la parte entera (${pEnteraStr}) y la parte decimal (${pDecimalStr}).</desc>`;
+
         // Parte Entera
         const integerBlockWidth = pEnteraStr.length * digitWidth;
         const integerBlockCenterX = currentX + (integerBlockWidth / 2);
@@ -370,6 +378,8 @@ class FormalMode {
 
         svg.innerHTML = svgContent;
         svg.setAttribute('viewBox', `0 0 ${currentX + 20} ${viewBoxHeight}`);
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-labelledby', `${titleId} ${descId}`);
     }
 
     /**
@@ -555,11 +565,21 @@ class NumberReaderApp {
             const infoData = {
                 readNumbers: {
                     title: "Lector de Números Avanzado",
-                    body: `<div class="input-section"><label for="numero">Introduce el número:</label><input type="text" id="numero" placeholder="Ej: 1234,56" autocomplete="off"></div><div class="card"><h2>Lectura Simple</h2><div id="resultado" class="result-box"><span class="placeholder-text">...</span></div><button id="play-simple-btn" class="play-btn">▶️ Escuchar</button></div><div class="card"><h2>Modo de Aprendizaje Fonético</h2><div id="aprendizaje-fonetico-resultado" class="result-box phonetic-box"><span class="placeholder-text">...</span></div><button id="play-phonetic-btn" class="play-btn">▶️ Escuchar y Resaltar</button></div><div class="card"><h2>Modo de Aprendizaje Formal (Gráfico)</h2><div id="aprendizaje-formal-wrapper" class="result-box svg-box"><span class="placeholder-text">...</span></div><button id="play-formal-btn" class="play-btn">▶️ Escuchar y Resaltar</button></div>`,
+                    body: `
+                        <div class="input-section"><label for="numero">Introduce el número:</label><input type="text" id="numero" placeholder="Ej: 1234,56" autocomplete="off" aria-describedby="resultado-label fonetico-label formal-label"></div>
+                        <div class="card"><h2 id="resultado-label">Lectura Simple</h2><div id="resultado" class="result-box" aria-live="polite"><span class="placeholder-text">...</span></div><button id="play-simple-btn" class="play-btn" aria-label="Escuchar la lectura simple del número">▶️ Escuchar</button></div>
+                        <div class="card"><h2 id="fonetico-label">Modo de Aprendizaje Fonético</h2><div id="aprendizaje-fonetico-resultado" class="result-box phonetic-box" aria-live="polite"><span class="placeholder-text">...</span></div><button id="play-phonetic-btn" class="play-btn" aria-label="Escuchar el desglose fonético y resaltar sílabas">▶️ Escuchar y Resaltar</button></div>
+                        <div class="card"><h2 id="formal-label">Modo de Aprendizaje Formal (Gráfico)</h2><div id="aprendizaje-formal-wrapper" class="result-box svg-box" aria-live="polite"><span class="placeholder-text">...</span></div><button id="play-formal-btn" class="play-btn" aria-label="Escuchar la lectura formal y resaltar la gráfica">▶️ Escuchar y Resaltar</button></div>
+                    `,
                     onShow: () => {
-                        // La inicialización ahora es crear una nueva instancia de la app.
-                        // Esto asegura un estado limpio cada vez que se abre el modal.
                         new NumberReaderApp();
+                        // --- MEJORA DE ACCESIBILIDAD: Mover el foco al campo de entrada ---
+                        const numberInput = document.getElementById('numero');
+                        if (numberInput) {
+                            // Usamos un pequeño timeout para asegurar que el modal es completamente visible
+                            // antes de mover el foco, evitando conflictos con la animación del modal.
+                            setTimeout(() => numberInput.focus(), 150);
+                        }
                     }
                 },
                 geometry: { 
