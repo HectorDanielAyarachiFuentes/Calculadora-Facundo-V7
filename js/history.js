@@ -5,6 +5,61 @@
 "use strict";
 
 import { reExecuteOperationFromHistory } from './main.js';
+import { SpeechService } from './bostraplectornumeros.js';
+
+/**
+ * Genera textos legibles para la operación y para el lector de pantalla.
+ * @param {{input: string, result: string}} item - El objeto del historial.
+ * @returns {{operation: string, fullText: string}} - Objeto con el texto de la operación y el texto completo para hablar.
+ */
+function generateReadableText(item) {
+    const input = item.input;
+    const result = item.result;
+
+    // --- Helpers para frases y lectura de números ---
+    const getEqualsPhrase = () => {
+        const phrases = ["es igual a", "nos da como resultado", "resulta en", "es"];
+        return phrases[Math.floor(Math.random() * phrases.length)];
+    };
+    const readResult = (res) => res.replace(/,/g, ' coma ');
+
+    // --- Casos especiales ---
+    const primeMatch = input.match(/^factores\((\d+)\)$/);
+    if (primeMatch) {
+        const number = primeMatch[1];
+        const readableResult = result.replace(/\^/g, ' elevado a ').replace(/×/g, ' por ');
+        return {
+            operation: `Factores de ${number}`,
+            fullText: `La descomposición en factores primos de ${number} es ${readableResult}`
+        };
+    }
+
+    const sqrtMatch = input.match(/^√\((.+)\)$/);
+    if (sqrtMatch) {
+        const number = sqrtMatch[1];
+        return {
+            operation: `Raíz de ${number}`,
+            fullText: `La raíz cuadrada de ${number} ${getEqualsPhrase()} ${readResult(result)}`
+        };
+    }
+
+    if (input.includes('%')) {
+        const parts = input.split('%');
+        const dividendo = parts[0].trim();
+        const divisor = parts[1].trim();
+        return {
+            operation: `${dividendo} % ${divisor}`,
+            fullText: `El resto de dividir ${dividendo} entre ${divisor} ${getEqualsPhrase()} ${readResult(result)}`
+        };
+    }
+
+    // --- Default para operaciones aritméticas ---
+    const readableInput = input.replace(/\+/g, ' más ').replace(/(?<!^)-/g, ' menos ').replace(/x/g, ' por ').replace(/\//g, ' dividido entre ');
+    return {
+        operation: readableInput,
+        fullText: `La operación ${readableInput}, ${getEqualsPhrase()} ${readResult(result)}`
+    };
+}
 
 class HistoryManagerClass {
     constructor() {
@@ -116,35 +171,55 @@ class HistoryPanelClass {
             const li = document.createElement('li');
             li.className = 'history-panel__item';
             li.dataset.index = index;
-            li.setAttribute('role', 'button');
-            li.setAttribute('tabindex', '0');
-
-            const readableInput = item.input.replace('x', 'por').replace('/', 'dividido entre').replace('%', 'módulo');
-            li.setAttribute('aria-label', `Operación ${index + 1}: ${readableInput}, igual a ${item.result}. Presiona Enter para re-ejecutar.`);
-
+ 
+            const { fullText } = generateReadableText(item);
+ 
             li.innerHTML = `
-                <span class="history-panel__input">${item.input}</span>
-                <span class="history-panel__result">= ${item.result}</span>
+                <div class="history-panel__content" role="button" tabindex="0" aria-label="Re-ejecutar: ${item.input}">
+                    <span class="history-panel__input">${item.input}</span>
+                    <span class="history-panel__result">= ${item.result}</span>
+                </div>
+                <button class="history-panel__speak-btn" aria-label="Escuchar: ${fullText}">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
             `;
-            li.addEventListener('click', async () => {
-                await reExecuteOperationFromHistory(item.input);
-                this.close();
-            });
-            // Permitir activación con teclado
-            li.addEventListener('keydown', async (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
+ 
+            const contentDiv = li.querySelector('.history-panel__content');
+            const speakBtn = li.querySelector('.history-panel__speak-btn');
+ 
+            if (contentDiv) {
+                const reExecute = async () => {
                     await reExecuteOperationFromHistory(item.input);
                     this.close();
-                }
-            });
+                };
+                contentDiv.addEventListener('click', reExecute);
+                contentDiv.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        reExecute();
+                    }
+                });
+            }
+ 
+            if (speakBtn) {
+                speakBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Evita que el clic se propague y re-ejecute la operación
+                    // Detener cualquier otra reproducción en curso
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+                    SpeechService.speak(fullText, 'es-ES');
+                });
+            }
+ 
             this.list.appendChild(li);
         });
     }
 
     announceNewItem(item) {
         const announcer = document.getElementById('sr-announcer');
-        if (announcer) announcer.textContent = `Nueva operación guardada: ${item.input} es igual a ${item.result}`;
+        if (announcer) {
+            const { fullText } = generateReadableText(item);
+            announcer.textContent = `Nueva operación guardada: ${fullText}`;
+        }
     }
 
     // *** ¡FUNCIÓN CLAVE MEJORADA PARA RAÍZ CUADRADA, DIVISIÓN Y FACTORES! ***

@@ -955,11 +955,10 @@ header[role=banner] .subtitle a:hover {
 }
 .history-panel__item {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   padding: 12px 10px;
   border-bottom: 1px solid var(--history-border-color);
-  cursor: pointer;
   transition: background-color 0.2s;
 }
 .history-panel__item:last-child {
@@ -970,6 +969,19 @@ header[role=banner] .subtitle a:hover {
 }
 .history-panel__item.history-item-highlight {
   animation: history-item-highlight 1.5s ease-out forwards;
+}
+.history-panel__content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  outline: none;
+}
+.history-panel__content:focus-visible {
+  background-color: rgba(102, 255, 102, 0.2);
+  box-shadow: 0 0 0 2px var(--focus-color);
 }
 .history-panel__input {
   font-size: 0.95em;
@@ -984,6 +996,31 @@ header[role=banner] .subtitle a:hover {
   font-weight: bold;
   color: var(--color-display-text);
   word-break: break-all;
+}
+.history-panel__speak-btn {
+  flex-shrink: 0;
+  margin-left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--history-input-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+}
+.history-panel__speak-btn:hover {
+  color: var(--focus-color);
+  background-color: rgba(102, 255, 102, 0.1);
+  border-color: rgba(102, 255, 102, 0.3);
+}
+.history-panel__speak-btn:focus-visible {
+  color: var(--focus-color);
+  background-color: rgba(102, 255, 102, 0.2);
+  border-color: var(--focus-color);
 }
 @media (max-width: 600px) {
   .history-panel {

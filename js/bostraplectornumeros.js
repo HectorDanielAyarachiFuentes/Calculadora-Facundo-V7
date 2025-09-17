@@ -204,7 +204,7 @@ class Syllabifier {
  * Proporciona una interfaz estática para la API de Síntesis de Voz del navegador.
  * Permite reproducir texto con callbacks para eventos de límite de palabra y finalización.
  */
-class SpeechService {
+export class SpeechService {
     /**
      * Reproduce un texto utilizando la síntesis de voz del navegador.
      * @param {string} text - El texto a reproducir.
