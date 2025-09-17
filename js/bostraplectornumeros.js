@@ -625,33 +625,6 @@ class NumberReaderApp {
                         if (window.UnitConverterApp) new window.UnitConverterApp('unit-converter-container');
                     }
                 },
-                baseConverter: {
-                    title: "Conversor de Bases Numéricas",
-                    body: `
-                        <div id="base-converter-container" class="converter-app">
-                            <div class="input-group"><span class="input-group-text">Decimal</span><input type="text" id="base-dec" class="form-control" placeholder="Ej: 10"></div>
-                            <div class="input-group"><span class="input-group-text">Binario</span><input type="text" id="base-bin" class="form-control" placeholder="Ej: 1010"></div>
-                            <div class="input-group"><span class="input-group-text">Octal</span><input type="text" id="base-oct" class="form-control" placeholder="Ej: 12"></div>
-                            <div class="input-group"><span class="input-group-text">Hexadecimal</span><input type="text" id="base-hex" class="form-control" placeholder="Ej: A"></div>
-                        </div>
-                    `,
-                    onShow: () => {
-                        if (window.BaseConverterApp) new window.BaseConverterApp('base-converter-container');
-                    }
-                },
-                temperatureConverter: {
-                    title: "Conversor de Temperatura",
-                    body: `
-                        <div id="temperature-converter-container" class="converter-app">
-                            <div class="input-group"><span class="input-group-text">Celsius (°C)</span><input type="number" id="temp-celsius" class="form-control"></div>
-                            <div class="input-group"><span class="input-group-text">Fahrenheit (°F)</span><input type="number" id="temp-fahrenheit" class="form-control"></div>
-                            <div class="input-group"><span class="input-group-text">Kelvin (K)</span><input type="number" id="temp-kelvin" class="form-control"></div>
-                        </div>
-                    `,
-                    onShow: () => {
-                        if (window.TemperatureConverterApp) new window.TemperatureConverterApp('temperature-converter-container');
-                    }
-                },
                 config: { 
                     title: "Panel de Configuración", 
                     body: `
