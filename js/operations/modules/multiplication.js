@@ -6,7 +6,7 @@
 
 import { VisualOperation } from '../utils/VisualOperation.js';
 import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
-import { salida } from '../../config.js';
+import { salida } from '../../calculadora/config.js';
 
 export class MultiplicationOperation extends VisualOperation {
     constructor(numerosAR, salida) {

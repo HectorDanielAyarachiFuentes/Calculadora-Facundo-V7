@@ -6,8 +6,8 @@
 
 import { VisualOperation } from '../utils/VisualOperation.js';
 import { crearCelda, esperar } from '../utils/dom-helpers.js';
-import { salida, display } from '../../config.js';
-import { ErrorHandlerCentralized } from '../../error-handler-centralized.js';
+import { salida, display } from '../../calculadora/config.js';
+import { ErrorHandlerCentralized } from '../../calculadora/error-handler-centralized.js';
 
 const errorHandler = new ErrorHandlerCentralized(salida);
 

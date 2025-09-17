@@ -30,8 +30,8 @@ import { RestaOperation } from './modules/subtraction.js';
 import { MultiplicationOperation } from './modules/multiplication.js';
 import { DivisionOperation } from './modules/division.js';
 import { ModuloOperation } from './modules/modulo.js';
-import { salida } from '../config.js';
-import { ErrorHandlerCentralized } from '../error-handler-centralized.js';
+import { salida } from '../calculadora/config.js';
+import { ErrorHandlerCentralized } from '../calculadora/error-handler-centralized.js';
 
 const errorHandler = new ErrorHandlerCentralized(salida);
 

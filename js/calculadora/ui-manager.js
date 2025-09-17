@@ -10,7 +10,9 @@ import {
     calculatorContainer,
     keyboardContainer
 } from './dom-elements.js';
-import { esperar } from './operations/utils/dom-helpers.js';
+import { esperar } from '../operations/utils/dom-helpers.js';
+import { settingsManager } from './settings.js';
+import { soundManager } from './sound-manager.js';
  
 /**
  * Muestra la pantalla de resultados y oculta el teclado.
@@ -143,14 +145,9 @@ export function setupTitleAnimation() {
  * @param {Event} e - El evento de clic.
  */
 export function handleRippleEffect(e) {
-    // --- MEJORA: Disparar feedback sensorial ---
-    if (window.settingsManager) {
-        window.settingsManager.triggerHapticFeedback();
-    }
-    if (window.soundManager && window.settingsManager) {
-        window.soundManager.setMuted(!window.settingsManager.settings.soundEffectsEnabled);
-        window.soundManager.playSound('click');
-    }
+    // Disparar feedback sensorial usando los módulos importados
+    settingsManager.triggerHapticFeedback();
+    soundManager.playSound('click');
 
     const button = e.currentTarget;
     if (button.querySelector('.ripple')) button.querySelector('.ripple').remove();
@@ -168,8 +165,8 @@ export function handleRippleEffect(e) {
  * @param {string} text - El texto a mostrar durante el glitch.
  */
 export async function triggerGlitchEffect(text) {
-    // --- MEJORA: Respetar el ajuste del usuario ---
-    if (!window.settingsManager || !window.settingsManager.settings.glitchEffectEnabled) {
+    // Respetar el ajuste del usuario
+    if (!settingsManager.settings.glitchEffectEnabled) {
         return;
     }
 

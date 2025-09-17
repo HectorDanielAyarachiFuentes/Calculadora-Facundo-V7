@@ -1,7 +1,7 @@
 // =======================================================
 // --- CLASES DE UTILIDAD (Refactorizadas) ---
 // =======================================================
-import { settingsManager } from '../settings.js';
+import { settingsManager } from '../calculadora/settings.js';
 import { GeometryApp } from './geometry.js';
 import { UnitConverterApp } from './unit-converter.js';
 

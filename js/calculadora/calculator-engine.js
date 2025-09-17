@@ -1,6 +1,6 @@
 'use strict';
 
-import * as operations from './operations/index.js';
+import * as operations from '../operations/index.js';
 import { ErrorHandlerCentralized } from './error-handler-centralized.js';
 import { HistoryManager } from './history.js';
 import * as UIManager from './ui-manager.js';

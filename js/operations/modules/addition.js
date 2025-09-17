@@ -6,7 +6,7 @@
 
 import { crearCelda, crearFlechaLlevada, esperar } from '../utils/dom-helpers.js';
 import { VisualOperation } from '../utils/VisualOperation.js';
-import { salida } from '../../config.js';
+import { salida } from '../../calculadora/config.js';
 
 export class SumaOperation extends VisualOperation {
     constructor(numerosAR, salida) {

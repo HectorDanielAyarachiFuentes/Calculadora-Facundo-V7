@@ -7,7 +7,7 @@
 import { VisualOperation } from '../utils/VisualOperation.js';
 import { calculateLayout } from '../utils/layout-calculator.js';
 import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
-import { salida, errorMessages } from '../../config.js';
+import { salida, errorMessages } from '../../calculadora/config.js';
 
 // Configuración
 const DECIMAL_PLACES = 2; // Número de decimales a calcular en la división extendida
