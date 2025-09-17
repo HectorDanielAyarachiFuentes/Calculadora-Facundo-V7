@@ -1395,6 +1395,10 @@ header[role=banner] .subtitle a:hover {
   gap: 1rem;
 }
 
+.visualization-wrapper {
+  position: relative;
+}
+
 .geometry-results {
   padding: 1rem;
   background-color: var(--history-hover-bg);
@@ -1441,6 +1445,31 @@ header[role=banner] .subtitle a:hover {
 .copy-btn.copied {
   background-color: var(--focus-color);
   color: var(--btn-text-color);
+  border-color: var(--focus-color);
+  transform: scale(1.1);
+}
+
+.export-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 5;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--history-border-color);
+  color: var(--history-input-color);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.export-btn:hover {
+  background-color: var(--history-hover-bg);
+  color: var(--focus-color);
   border-color: var(--focus-color);
   transform: scale(1.1);
 }

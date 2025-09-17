@@ -85,7 +85,10 @@ class GeometryApp {
                         <div id="geometry-inputs" class="geometry-inputs"></div>
                     </div>
                     <div class="geometry-display-section">
-                        <div id="geometry-visualization" class="geometry-visualization"></div>
+                        <div class="visualization-wrapper">
+                            <div id="geometry-visualization" class="geometry-visualization"></div>
+                            <button id="export-svg-btn" class="export-btn" title="Exportar como PNG"><i class="fa-solid fa-download"></i></button>
+                        </div>
                         <div id="geometry-results" class="geometry-results"></div>
                     </div>
                 </div>
@@ -98,6 +101,7 @@ class GeometryApp {
             inputsContainer: document.getElementById('geometry-inputs'),
             visualizationContainer: document.getElementById('geometry-visualization'),
             resultsContainer: document.getElementById('geometry-results'),
+            exportBtn: document.getElementById('export-svg-btn'),
         };
     }
 
@@ -372,6 +376,52 @@ class GeometryApp {
             button.innerHTML = originalIcon;
             button.classList.remove('copied');
         }, 1500);
+    }
+    
+    async exportSVGAsImage(format = 'png') {
+        const svgElement = this.elements.visualizationContainer.querySelector('svg');
+        if (!svgElement) {
+            alert('No hay ninguna visualización para exportar.');
+            return;
+        }
+
+        // 1. Obtener datos del SVG
+        const svgData = new XMLSerializer().serializeToString(svgElement);
+
+        // 2. Crear un canvas con dimensiones adecuadas para una buena calidad
+        const canvas = document.createElement('canvas');
+        const desiredWidth = 600;
+        const { width, height } = svgElement.viewBox.baseVal;
+        canvas.width = desiredWidth;
+        canvas.height = (height / width) * desiredWidth;
+        const ctx = canvas.getContext('2d');
+
+        // 3. Crear una imagen a partir de los datos del SVG
+        const img = new Image();
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = () => {
+            // Aplicar el color de fondo del tema actual al canvas
+            const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--history-hover-bg').trim();
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+
+            // 4. Crear y simular clic en un enlace de descarga
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL(`image/${format}`);
+            link.download = `calculadora-facundo-${this.state.shape}.${format}`;
+            link.click();
+        };
+
+        img.onerror = () => {
+            console.error("Error al cargar la imagen SVG para exportación.");
+            URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
     }
 }
 
