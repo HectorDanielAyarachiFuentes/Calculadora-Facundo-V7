@@ -62,11 +62,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (draggable.hasDragged) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-            } else if (draggable.type === 'collapse-toggle') { // Esto aplica solo al botón de herramientas
-                // Si es un clic simple, resetea su posición a la original y alterna el menú.
-                // Los otros botones (tema, historial) no se resetean al hacerles clic.
+            } else {
+                // Para cualquier clic simple (sin arrastre), resetea la posición con la animación de rebote.
                 resetPosition(draggable);
-                mainOptionsCollapse.toggle();
+
+                // Si es el botón de herramientas, también se encarga de alternar el menú.
+                if (draggable.type === 'collapse-toggle') {
+                    mainOptionsCollapse.toggle();
+                }
+                // Para los otros botones (tema, historial), su acción de clic normal
+                // se ejecutará después, ya que no se detiene la propagación del evento.
             }
         }, true); // Usar fase de captura para detener la propagación antes
     });
@@ -128,11 +133,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Gestión de Posición ---
     function resetPosition(draggable) {
+        // Añade la clase para activar la animación de rebote en el CSS.
+        draggable.el.classList.add('bouncing-back');
+
         // Elimina los estilos en línea para que el botón vuelva a su posición original definida por CSS.
+        // El navegador aplicará la animación al cambiar de una posición fija a la original.
         draggable.el.style.position = '';
         draggable.el.style.top = '';
         draggable.el.style.left = '';
         draggable.el.style.right = '';
+
+        // Limpia la clase de animación una vez que termine para no interferir con futuros arrastres.
+        draggable.el.addEventListener('animationend', () => {
+            draggable.el.classList.remove('bouncing-back');
+        }, { once: true });
+
         // Elimina la posición guardada para que no se restaure en la próxima recarga.
         localStorage.removeItem(STORAGE_KEY_PREFIX + draggable.id);
     }

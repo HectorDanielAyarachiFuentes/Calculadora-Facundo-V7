@@ -93,3 +93,23 @@
     z-index: 1100 !important; // Asegura que esté por encima de todo al arrastrar
     transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; // Transición suave al estado de arrastre
 }
+
+/* --- ANIMACIÓN DE REBOTE AL RESETEAR POSICIÓN --- */
+@keyframes bounce-back {
+    0% { transform: scale(0.8); }   // Empieza un poco más pequeño
+    20% { transform: scale(1.2); }  // Se expande
+    40% { transform: scale(0.9); }  // Se contrae
+    60% { transform: scale(1.1); }  // Rebote secundario
+    80% { transform: scale(0.98); } // Ajuste final
+    100% { transform: scale(1); }   // Vuelve a la normalidad
+}
+
+// Clase temporal que se aplica al botón para activar la animación.
+// Se aplica al botón de herramientas cuando vuelve a su posición original.
+.bouncing-back {
+    // La animación se ejecuta una vez.
+    // La curva cúbica le da un efecto de "resorte" más natural.
+    animation: bounce-back 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    // Aseguramos que la transformación ocurra desde el centro del botón.
+    transform-origin: center center;
+}
