@@ -4,7 +4,7 @@
 "use strict";
 
 import { calculateLayout } from '../utils/layout-calculator.js';
-import { crearCelda } from '../utils/dom-helpers.js';
+import { crearCelda, esperar } from '../utils/dom-helpers.js';
 import { salida, display } from '../../config.js';
 import { ErrorHandlerCentralized } from '../../error-handler-centralized.js';
 
@@ -112,45 +112,50 @@ export async function desFacPri(numero = null) {
 
     // --- 7. VISUALIZACIÓN MEJORADA ---
     const startY = paddingTop + 50; // Espacio para el resultado
-
-    // Dibujar la columna izquierda (números que se van dividiendo)
-    numIzdaArray.forEach((n, idx) => {
-        let s = n.toString();
-        const xPos = offsetHorizontal + (maxDigitsIzda - s.length) * tamCel + paddingLeft;
-        const yPos = startY + idx * tamCel;
-        fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--dividendo", s, {
-            left: `${xPos}px`,
-            top: `${yPos}px`,
-            width: `${s.length * tamCel}px`,
-            height: `${tamCel}px`,
-            fontSize: `${tamFuente}px`
-        }));
-    });
-
+ 
     // Dibujar la línea vertical de separación
     const xLineaVertical = offsetHorizontal + maxDigitsIzda * tamCel + (separatorWidth * tamCel / 2) + paddingLeft;
-    fragment.appendChild(crearCelda("output-grid__line", "", {
+    const lineaVertical = crearCelda("output-grid__line", "", {
         left: `${xLineaVertical}px`,
         top: `${startY}px`,
         width: `2px`,
         height: `${numRows * tamCel}px`
-    }));
+    });
+    fragment.appendChild(lineaVertical);
+    salida.appendChild(fragment); // Dibujar resultado y línea primero
 
-    // Dibujar la columna derecha (factores primos)
-    numDchaArray.forEach((n, idx) => {
-        let s = n.toString();
-        const xPos = offsetHorizontal + (maxDigitsIzda + separatorWidth) * tamCel + paddingLeft;
+    // Dibujar las filas de la tabla de forma secuencial
+    for (let idx = 0; idx < numIzdaArray.length; idx++) {
+        // Dibujar número de la izquierda
+        const nIzda = numIzdaArray[idx];
+        let sIzda = nIzda.toString();
+        const xPosIzda = offsetHorizontal + (maxDigitsIzda - sIzda.length) * tamCel + paddingLeft;
         const yPos = startY + idx * tamCel;
-        fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--divisor", s, {
-            left: `${xPos}px`,
+        salida.appendChild(crearCelda("output-grid__cell output-grid__cell--dividendo", sIzda, {
+            left: `${xPosIzda}px`,
             top: `${yPos}px`,
-            width: `${s.length * tamCel}px`,
+            width: `${sIzda.length * tamCel}px`,
             height: `${tamCel}px`,
             fontSize: `${tamFuente}px`
         }));
-    });
 
-    salida.appendChild(fragment);
+        // Dibujar número de la derecha (factor primo) si existe
+        if (idx < numDchaArray.length) {
+            const nDcha = numDchaArray[idx];
+            let sDcha = nDcha.toString();
+            const xPosDcha = offsetHorizontal + (maxDigitsIzda + separatorWidth) * tamCel + paddingLeft;
+            salida.appendChild(crearCelda("output-grid__cell output-grid__cell--divisor", sDcha, {
+                left: `${xPosDcha}px`,
+                top: `${yPos}px`,
+                width: `${sDcha.length * tamCel}px`,
+                height: `${tamCel}px`,
+                fontSize: `${tamFuente}px`
+            }));
+        }
+
+        // Esperar antes de dibujar la siguiente fila
+        await esperar(400);
+    }
 }
 
 /**

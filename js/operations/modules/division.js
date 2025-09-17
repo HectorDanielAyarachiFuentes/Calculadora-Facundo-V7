@@ -8,7 +8,7 @@
 "use strict";
 
 import { calculateLayout } from '../utils/layout-calculator.js';
-import { crearCelda } from '../utils/dom-helpers.js';
+import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
 import { salida, errorMessages } from '../../config.js';
 
 // Configuración
@@ -350,19 +350,20 @@ function drawHeader(fragment, { divisorStr, cociente, tamCel, tamFuente, offsetH
  * @param {string} dividendoStr - Se necesita para calcular la posición del punto decimal
  * @param {string} cocienteStr - Se necesita para ubicar el punto decimal en el cociente
  */
-function renderFullDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset }, dividendoStr, cocienteStr) {
+async function renderFullDivisionSteps(container, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset }, dividendoStr, cocienteStr) {
     // Detectar la posición del punto decimal en el cociente para ajustar `colEnd` si es necesario
     const decimalPointIndexInCociente = cocienteStr.indexOf('.');
     
-    displaySteps.forEach(step => {
+    for (const step of displaySteps) {
         const yStart = paddingTop + step.row * tamCel;
         const clase = `output-grid__cell output-grid__cell--${step.type}`;
 
         if (step.type === 'dividendo') {
              // El dividendo va al inicio del bloque izquierdo
             const xStart = offsetHorizontal + 0 * tamCel + paddingLeft; 
+            const fragmento = document.createDocumentFragment();
             for (let i = 0; i < step.text.length; i++) {
-                fragment.appendChild(crearCelda(clase, step.text[i], {
+                fragmento.appendChild(crearCelda(clase, step.text[i], {
                     left: `${xStart + i * tamCel}px`, 
                     top: `${yStart}px`,
                     width: `${tamCel}px`, 
@@ -370,6 +371,7 @@ function renderFullDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, of
                     fontSize: `${tamFuente}px`
                 }));
             }
+            container.appendChild(fragmento);
         } else {
             // Para productos y restos, `colEnd` indica dónde termina el número en relación al dividendo original
             // o a la posición donde se "baja" el siguiente dígito (incluidos los ceros para decimales).
@@ -385,20 +387,23 @@ function renderFullDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, of
 
             const colStart = actualColEnd - step.text.length + signColumnOffset;
             const xStart = offsetHorizontal + colStart * tamCel + paddingLeft;
-
+            
+            const fragmento = document.createDocumentFragment();
             for (let i = 0; i < step.text.length; i++) {
-                fragment.appendChild(crearCelda(clase, step.text[i], {
+                // Usamos crearCeldaAnimada para los pasos de la resta
+                fragmento.appendChild(crearCeldaAnimada(clase, step.text[i], {
                     left: `${xStart + i * tamCel}px`, 
                     top: `${yStart}px`,
                     width: `${tamCel}px`, 
                     height: `${tamCel}px`, 
                     fontSize: `${tamFuente}px`
-                }));
+                }, i * 50));
             }
+            container.appendChild(fragmento);
 
             // Si es un producto, añadir el signo menos y la línea
             if (step.type === 'producto') {
-                fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--producto", "-", {
+                container.appendChild(crearCelda("output-grid__cell output-grid__cell--producto", "-", {
                     left: `${xStart - tamCel}px`, 
                     top: `${yStart}px`,
                     width: `${tamCel}px`, 
@@ -406,15 +411,18 @@ function renderFullDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, of
                     fontSize: `${tamFuente}px`
                 }));
                 
-                fragment.appendChild(crearCelda("output-grid__line", "", {
+                container.appendChild(crearCelda("output-grid__line", "", {
                     left: `${xStart}px`, 
                     top: `${yStart + tamCel}px`,
                     width: `${step.text.length * tamCel}px`, 
                     height: `2px`
                 }));
+                await esperar(800); // Pausa después de mostrar el número a restar
+            } else if (step.type === 'resto') {
+                await esperar(1200); // Pausa más larga después de mostrar el resto
             }
         }
-    });
+    }
 }
 
 /**
@@ -423,8 +431,8 @@ function renderFullDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, of
  * @param {Array<object>} displaySteps - Array de objetos con {text, row, colEnd, type} (de `calculateShortDivisionSteps`)
  * @param {object} layoutParams - Contiene tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset (que aquí será 0)
  */
-function renderShortDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset }) {
-    displaySteps.forEach(step => {
+async function renderShortDivisionSteps(container, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset }) {
+    for (const step of displaySteps) {
         const yStart = paddingTop + step.row * tamCel;
         const clase = `output-grid__cell output-grid__cell--${step.type}`;
 
@@ -432,24 +440,27 @@ function renderShortDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, o
         // Restamos `text.length` para encontrar el inicio. `signColumnOffset` es 0 aquí.
         const colStart = step.colEnd - step.text.length + signColumnOffset; 
         const xStart = offsetHorizontal + colStart * tamCel + paddingLeft;
-
+        
+        const fragmento = document.createDocumentFragment();
         for (let i = 0; i < step.text.length; i++) {
-            fragment.appendChild(crearCelda(clase, step.text[i], {
-                left: `${xStart + i * tamCel}px`, 
-                top: `${yStart}px`,
-                width: `${tamCel}px`, 
-                height: `${tamCel}px`, 
-                fontSize: `${tamFuente}px`
-            }));
+            const celda = (step.type === 'dividendo') 
+                ? crearCelda(clase, step.text[i], { left: `${xStart + i * tamCel}px`, top: `${yStart}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` })
+                : crearCeldaAnimada(clase, step.text[i], { left: `${xStart + i * tamCel}px`, top: `${yStart}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }, i * 50);
+            fragmento.appendChild(celda);
         }
-    });
+        container.appendChild(fragmento);
+
+        if (step.type === 'resto') {
+            await esperar(1000); // Pausa después de mostrar cada resto/número bajado
+        }
+    }
 }
 
 /**
  * `divide` (DIVISIÓN EXTENDIDA "EXPAND"): Muestra el proceso de la división larga paso a paso, incluyendo decimales configurables.
  * @param {Array<[string, number]>} numerosAR - Array con [dividendo, posición] y [divisor, posición]
  */
-export function divide(numerosAR) {
+export async function divide(numerosAR) {
     salida.innerHTML = "";
     const fragment = document.createDocumentFragment();
 
@@ -484,28 +495,27 @@ export function divide(numerosAR) {
 
     // Mostrar el resultado final con estilo mejorado
     const resultadoFinal = `${dividendoStr} ÷ ${divisorStr} = ${cociente}`;
-    const resultadoElement = crearCelda("output-grid__result--division-final", resultadoFinal, {});
-    fragment.appendChild(resultadoElement);
+    salida.appendChild(crearCelda("output-grid__result--division-final", resultadoFinal, {}));
 
     // Dibujar el Header (Divisor, Cociente y Galera) con mejor alineación y colores
     const headerTop = paddingTop + 50; // Espacio para el resultado
-    drawHeader(fragment, {
+    const headerFragment = document.createDocumentFragment();
+    drawHeader(headerFragment, {
         divisorStr, cociente, tamCel, tamFuente,
         offsetHorizontal, paddingLeft, paddingTop: headerTop, xBloqueDerecho,
         anchoIzquierdo, anchoDerecho, separatorWidth
     });
+    salida.appendChild(headerFragment);
 
     // Dibujar los pasos completos de la división con mejor visualización
-    renderFullDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop: headerTop, signColumnOffset }, dividendoStr, cociente);
-    
-    salida.appendChild(fragment);
+    await renderFullDivisionSteps(salida, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop: headerTop, signColumnOffset }, dividendoStr, cociente);
 }
 
 /**
  * `divideExt` (DIVISIÓN NORMAL): Muestra el proceso paso a paso, pero sin signos de resta ni líneas bajo los productos.
  * @param {Array<[string, number]>} numerosAR - Array con [dividendo, posición] y [divisor, posición]
  */
-export function divideExt(numerosAR) {
+export async function divideExt(numerosAR) {
     salida.innerHTML = "";
     const fragment = document.createDocumentFragment();
 
@@ -548,13 +558,13 @@ export function divideExt(numerosAR) {
     const xBloqueDerecho = offsetHorizontal + (anchoIzquierdo + separatorWidth) * tamCel + paddingLeft;
 
     // Dibujar Header (Divisor, Cociente y Galera)
-    drawHeader(fragment, { 
+    const headerFragment = document.createDocumentFragment();
+    drawHeader(headerFragment, { 
         divisorStr, cociente, tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, 
         xBloqueDerecho, anchoIzquierdo, anchoDerecho, separatorWidth 
     });
+    salida.appendChild(headerFragment);
 
     // Dibujar los pasos de la división corta
-    renderShortDivisionSteps(fragment, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset });
-    
-    salida.appendChild(fragment);
+    await renderShortDivisionSteps(salida, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset });
 }

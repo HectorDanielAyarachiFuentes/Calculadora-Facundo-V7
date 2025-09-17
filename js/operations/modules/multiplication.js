@@ -4,12 +4,11 @@
 "use strict";
 
 import { calculateLayout } from '../utils/layout-calculator.js';
-import { crearCelda } from '../utils/dom-helpers.js';
+import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
 import { salida, errorMessages } from '../../config.js';
 
-export function multiplica(numerosAR) {
+export async function multiplica(numerosAR) {
     salida.innerHTML = "";
-    const fragment = document.createDocumentFragment();
 
     const coloresParciales = ['color-parcial-1', 'color-parcial-2', 'color-parcial-3'];
 
@@ -66,60 +65,70 @@ export function multiplica(numerosAR) {
     let yPos = paddingTop;
 
     // MEJORA: Función de dibujo unificada y corregida para alinear a la derecha del grid.
-    const dibujarNumero = (numeroStr, y, claseBase, claseDigito) => {
+    const dibujarNumero = (fragment, numeroStr, y, claseBase, claseDigito, animado = false) => {
         const startCol = anchuraEnCeldas - rightPadding - numeroStr.length;
         for (let i = 0; i < numeroStr.length; i++) {
             const char = numeroStr[i];
             const esComa = char === ',';
             const claseColor = esComa ? 'color-coma' : claseDigito;
             const leftPos = offsetHorizontal + (startCol + i) * tamCel + paddingLeft;
-            fragment.appendChild(crearCelda(`${claseBase} ${claseColor}`, char, { left: `${leftPos}px`, top: `${y}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
+            const celda = animado
+                ? crearCeldaAnimada(`${claseBase} ${claseColor}`, char, { left: `${leftPos}px`, top: `${y}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }, i * 50)
+                : crearCelda(`${claseBase} ${claseColor}`, char, { left: `${leftPos}px`, top: `${y}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` });
+            fragment.appendChild(celda);
         }
     };
 
     // --- DIBUJO DE ELEMENTOS ---
-    dibujarNumero(num1Display, yPos, 'output-grid__cell output-grid__cell--operando', 'color-operando');
+    const fragmentOperandos = document.createDocumentFragment();
+    dibujarNumero(fragmentOperandos, num1Display, yPos, 'output-grid__cell output-grid__cell--operando', 'color-operando');
     yPos += tamCel;
 
     const signXCol = anchuraEnCeldas - rightPadding - num2Display.length - signPadding - 1;
     const signXLeft = offsetHorizontal + signXCol * tamCel + paddingLeft;
-    fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--signo color-signo", "x", { left: `${signXLeft}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
-    dibujarNumero(num2Display, yPos, 'output-grid__cell output-grid__cell--operando', 'color-operando');
+    fragmentOperandos.appendChild(crearCelda("output-grid__cell output-grid__cell--signo color-signo", "x", { left: `${signXLeft}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
+    dibujarNumero(fragmentOperandos, num2Display, yPos, 'output-grid__cell output-grid__cell--operando', 'color-operando');
+    salida.appendChild(fragmentOperandos);
+    await esperar(800);
     
     yPos += tamCel;
     const line1Width = Math.max(num1Display.length, num2BlockWidth) * tamCel;
     const lineLeft1 = offsetHorizontal + (anchuraEnCeldas - rightPadding) * tamCel - line1Width + paddingLeft;
-    fragment.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft1}px`, top: `${yPos}px`, width: `${line1Width}px`, height: `2px` }));
+    salida.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft1}px`, top: `${yPos}px`, width: `${line1Width}px`, height: `2px` }));
     yPos += tamCel * 0.2;
+    await esperar(500);
     
     if (partialProducts.length > 1) {
-        partialProducts.reverse().forEach(({ product, offset }, index) => {
+        for (const [index, { product, offset }] of partialProducts.reverse().entries()) {
+            const fragmentParcial = document.createDocumentFragment();
             const colorClass = coloresParciales[index % coloresParciales.length];
             // --- CORRECCIÓN: Mostrar el signo '+' solo una vez y en la posición correcta ---
             if (index === 1) { // Mostrar '+' solo junto al segundo producto parcial para indicar la suma.
                 const signPlusCol = anchuraEnCeldas - rightPadding - maxPartialProductWidth - signPadding - 1;
                 const signPlusLeft = offsetHorizontal + signPlusCol * tamCel + paddingLeft;
-                fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--signo color-signo", "+", { left: `${signPlusLeft}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
+                fragmentParcial.appendChild(crearCeldaAnimada("output-grid__cell output-grid__cell--signo color-signo", "+", { left: `${signPlusLeft}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
             }
             
             const startCol = anchuraEnCeldas - rightPadding - product.length - offset;
             for (let j = 0; j < product.length; j++) {
                 const leftPos = offsetHorizontal + (startCol + j) * tamCel + paddingLeft;
-                fragment.appendChild(crearCelda(`output-grid__cell output-grid__cell--producto-parcial ${colorClass}`, product[j], { left: `${leftPos}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }));
+                fragmentParcial.appendChild(crearCeldaAnimada(`output-grid__cell output-grid__cell--producto-parcial ${colorClass}`, product[j], { left: `${leftPos}px`, top: `${yPos}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: `${tamFuente}px` }, j * 50));
             }
-
+            salida.appendChild(fragmentParcial);
             yPos += tamCel; 
-        });
+            await esperar(1200);
+        }
 
         const line2Width = Math.max(resultadoDisplay.length, partialsBlockWidth) * tamCel;
         const lineLeft2 = offsetHorizontal + (anchuraEnCeldas - rightPadding) * tamCel - line2Width + paddingLeft;
-        fragment.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft2}px`, top: `${yPos}px`, width: `${line2Width}px`, height: `2px` }));
+        salida.appendChild(crearCelda("output-grid__line", "", { left: `${lineLeft2}px`, top: `${yPos}px`, width: `${line2Width}px`, height: `2px` }));
         yPos += tamCel * 0.2;
+        await esperar(500);
     } else if (partialProducts.length === 1 && num2.replace(/0/g, '').length > 0) {
         yPos += tamCel;
     }
     
-    dibujarNumero(resultadoDisplay, yPos, 'output-grid__cell output-grid__cell--cociente', 'color-resultado');
-
-    salida.appendChild(fragment);
+    const fragmentResultado = document.createDocumentFragment();
+    dibujarNumero(fragmentResultado, resultadoDisplay, yPos, 'output-grid__cell output-grid__cell--cociente', 'color-resultado', true);
+    salida.appendChild(fragmentResultado);
 }
