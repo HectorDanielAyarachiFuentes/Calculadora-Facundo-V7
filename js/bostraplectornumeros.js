@@ -588,6 +588,26 @@ class NumberReaderApp {
                                 </select>
                             </div>
                             <div class="settings-group">
+                                <h4><i class="fa-solid fa-volume-high"></i> Experiencia Sensorial</h4>
+                                <p>Activa o desactiva los efectos de sonido y la vibración en los botones.</p>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="soundEffectsToggle">
+                                    <label class="form-check-label" for="soundEffectsToggle">Efectos de Sonido</label>
+                                </div>
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="hapticFeedbackToggle">
+                                    <label class="form-check-label" for="hapticFeedbackToggle">Respuesta Táctil (Vibración)</label>
+                                </div>
+                            </div>
+                            <div class="settings-group">
+                                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Efectos Visuales</h4>
+                                <p>Activa o desactiva efectos visuales como el "glitch" en el display.</p>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="glitchEffectToggle">
+                                    <label class="form-check-label" for="glitchEffectToggle">Efecto Glitch del Display</label>
+                                </div>
+                            </div>
+                            <div class="settings-group">
                                 <h4><i class="fa-solid fa-arrows-up-down-left-right"></i> Posiciones de Botones</h4>
                                 <p>Restaura la posición original de los botones flotantes (herramientas, tema, historial).</p>
                                 <button id="resetPositionsBtn" class="btn btn-warning">Restaurar Posiciones</button>

@@ -142,6 +142,15 @@ export function setupTitleAnimation() {
  * @param {Event} e - El evento de clic.
  */
 export function handleRippleEffect(e) {
+    // --- MEJORA: Disparar feedback sensorial ---
+    if (window.settingsManager) {
+        window.settingsManager.triggerHapticFeedback();
+    }
+    if (window.soundManager && window.settingsManager) {
+        window.soundManager.setMuted(!window.settingsManager.settings.soundEffectsEnabled);
+        window.soundManager.playSound('click');
+    }
+
     const button = e.currentTarget;
     if (button.querySelector('.ripple')) button.querySelector('.ripple').remove();
     const rect = button.getBoundingClientRect();
@@ -158,6 +167,11 @@ export function handleRippleEffect(e) {
  * @param {string} text - El texto a mostrar durante el glitch.
  */
 export function triggerGlitchEffect(text) {
+    // --- MEJORA: Respetar el ajuste del usuario ---
+    if (!window.settingsManager || !window.settingsManager.settings.glitchEffectEnabled) {
+        return;
+    }
+
     display.setAttribute('data-text', text);
     display.classList.add('glitch');
     setTimeout(() => display.classList.remove('glitch'), 300);

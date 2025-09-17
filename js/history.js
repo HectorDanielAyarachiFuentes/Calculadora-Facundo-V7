@@ -50,6 +50,11 @@ class HistoryManagerClass {
         this.saveHistory();
         HistoryPanel.renderHistory();
         HistoryPanel.highlightLastItem();
+
+        // --- MEJORA: Reproducir sonido de éxito ---
+        if (window.soundManager) {
+            window.soundManager.playSound('success');
+        }
     }
 
     getHistory() { return this.history; }
