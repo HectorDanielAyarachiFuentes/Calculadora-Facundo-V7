@@ -37,6 +37,12 @@ class HistoryManagerClass {
             item.result = HistoryPanel.extractResultText(item.visualHtml);
         }
 
+        // SOLUCIÓN: Eliminar el HTML visual antes de guardar en el historial.
+        // El `visualHtml` es muy grande y llena el localStorage rápidamente.
+        // Solo lo necesitamos para extraer el texto del resultado; una vez hecho,
+        // podemos descartarlo para evitar el error 'QuotaExceededError'.
+        delete item.visualHtml;
+
         this.history.unshift(item);
         if (this.history.length > this.MAX_HISTORY_ITEMS) {
             this.history.pop();
