@@ -1072,6 +1072,17 @@ header[role=banner] .subtitle a:hover {
   }
 }
 
+/* --- ESTILOS PARA BOTONES ARRASTRABLES --- */
+.bubble-btn.dragging,
+#theme-toggle-btn.dragging,
+#history-toggle-btn.dragging {
+  cursor: grabbing;
+  transform: scale(1.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 1100 !important;
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+}
+
 /* --- COMPONENTE: MODAL Y LECTOR DE NÚMEROS --- */
 .modal-content {
   background-color: var(--history-panel-bg);

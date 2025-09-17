@@ -81,3 +81,15 @@
         }
     }
 }
+
+/* --- ESTILOS PARA BOTONES ARRASTRABLES --- */
+// Se aplica a cualquier botón que tenga la clase .dragging para dar feedback visual.
+.bubble-btn.dragging,
+#theme-toggle-btn.dragging,
+#history-toggle-btn.dragging {
+    cursor: grabbing;
+    transform: scale(1.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 1100 !important; // Asegura que esté por encima de todo al arrastrar
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; // Transición suave al estado de arrastre
+}

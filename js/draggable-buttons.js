@@ -1,175 +1,153 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Instancia de Bootstrap Collapse para el menú principal
     const mainOptionsCollapseEl = document.getElementById('mainOptions');
     const mainOptionsCollapse = new bootstrap.Collapse(mainOptionsCollapseEl, { toggle: false });
 
+    // Configuración para todos los elementos arrastrables
     const elementConfigs = [
         { id: 'bubble-main', selector: '.bubble-main', type: 'collapse-toggle' },
         { id: 'theme-toggle-btn', selector: '#theme-toggle-btn', type: 'button' },
         { id: 'history-toggle-btn', selector: '#history-toggle-btn', type: 'button' }
     ];
 
-    const circles = [];
-    const friction = 0.97;
-    const bounce = 0.9;
-    const restitution = 1.1;
-    const STORAGE_KEY = 'physicsCirclesState';
-    const dragThreshold = 5; // Pixels to move before a drag starts
+    const draggables = [];
+    const STORAGE_KEY_PREFIX = 'draggable_pos_';
+    const DRAG_THRESHOLD = 5; // Píxeles a mover antes de que comience un arrastre
 
-    let prevMouseX = 0, prevMouseY = 0;
-
-    const savedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-
+    // Inicializa cada elemento arrastrable
     elementConfigs.forEach(config => {
         const element = document.querySelector(config.selector);
         if (!element) return;
 
-        const rect = element.getBoundingClientRect();
-        const computedStyle = window.getComputedStyle(element);
-        const savedCircle = savedState.find(s => s.id === config.id);
-
-        const circle = {
-            id: config.id, el: element, type: config.type,
-            x: rect.left, y: rect.top,
-            vx: 0, vy: 0, radius: rect.width / 2, mass: 1,
-            isBeingDragged: false, hasDragged: false, physicsEnabled: false,
-            startX: 0, startY: 0, // For drag threshold
-            original: {
-                x: rect.left, y: rect.top,
-                position: computedStyle.position, top: computedStyle.top,
-                left: computedStyle.left, zIndex: computedStyle.zIndex
-            }
+        const draggable = {
+            id: config.id,
+            el: element,
+            type: config.type,
+            isDragging: false,
+            hasDragged: false,
+            startX: 0,
+            startY: 0,
+            offsetX: 0,
+            offsetY: 0,
         };
-        circles.push(circle);
+        draggables.push(draggable);
 
-        if (circle.physicsEnabled) element.style.position = 'absolute';
+        // Cargar posición guardada
+        loadPosition(draggable);
 
+        // --- Event Listeners ---
         element.addEventListener('mousedown', (e) => {
-            if (circle.type === 'collapse-toggle' && mainOptionsCollapseEl.classList.contains('show')) return;
-            
-            circle.isBeingDragged = true;
-            circle.hasDragged = false;
-            circle.startX = e.clientX;
-            circle.startY = e.clientY;
-            prevMouseX = e.clientX;
-            prevMouseY = e.clientY;
+            // Prevenir arrastre si el menú principal está abierto
+            if (draggable.type === 'collapse-toggle' && mainOptionsCollapseEl.classList.contains('show')) {
+                return;
+            }
+            // Prevenir arrastre con clic derecho
+            if (e.button !== 0) return;
+
+            draggable.isDragging = true;
+            draggable.hasDragged = false;
+            draggable.startX = e.clientX;
+            draggable.startY = e.clientY;
+
+            const rect = element.getBoundingClientRect();
+            draggable.offsetX = e.clientX - rect.left;
+            draggable.offsetY = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp, { once: true });
         });
 
         element.addEventListener('click', (e) => {
-            if (circle.hasDragged) {
+            // Si el elemento fue arrastrado, prevenir la acción de clic (ej. abrir menú)
+            if (draggable.hasDragged) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-            } else {
-                circle.physicsEnabled = false;
-                circle.x = circle.original.x; circle.y = circle.original.y;
-                circle.vx = 0; circle.vy = 0;
-                element.style.position = circle.original.position;
-                element.style.top = circle.original.top;
-                element.style.left = circle.original.left;
-                element.style.zIndex = circle.original.zIndex;
-                if (circle.type === 'collapse-toggle') mainOptionsCollapse.toggle();
+            } else if (draggable.type === 'collapse-toggle') {
+                // Si fue un clic simple, alternar el menú
+                mainOptionsCollapse.toggle();
             }
-        }, true);
+        }, true); // Usar fase de captura para detener la propagación antes
     });
 
-    document.addEventListener('mousemove', (e) => {
-        const draggedCircle = circles.find(c => c.isBeingDragged);
-        if (draggedCircle) {
-            if (!draggedCircle.hasDragged) {
-                const dx = e.clientX - draggedCircle.startX;
-                const dy = e.clientY - draggedCircle.startY;
-                if (Math.sqrt(dx * dx + dy * dy) > dragThreshold) {
-                    draggedCircle.hasDragged = true;
-                    if (!draggedCircle.physicsEnabled) {
-                        draggedCircle.physicsEnabled = true;
-                        draggedCircle.el.style.position = 'absolute';
-                    }
-                    draggedCircle.el.style.zIndex = 1000;
-                }
-            }
+    // --- Manejadores Globales de Arrastre ---
+    function onMouseMove(e) {
+        const activeDraggable = draggables.find(d => d.isDragging);
+        if (!activeDraggable) return;
 
-            if (draggedCircle.hasDragged) {
-                const mouseVX = e.clientX - prevMouseX;
-                const mouseVY = e.clientY - prevMouseY;
-
-                draggedCircle.x = e.clientX - draggedCircle.radius;
-                draggedCircle.y = e.clientY - draggedCircle.radius;
-                draggedCircle.vx = mouseVX;
-                draggedCircle.vy = mouseVY;
+        // Comprobar si se ha superado el umbral de arrastre
+        if (!activeDraggable.hasDragged) {
+            const dx = e.clientX - activeDraggable.startX;
+            const dy = e.clientY - activeDraggable.startY;
+            if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
+                activeDraggable.hasDragged = true;
+                activeDraggable.el.classList.add('dragging'); // Añadir feedback visual
+                document.body.style.userSelect = 'none'; // Prevenir selección de texto
             }
         }
-        prevMouseX = e.clientX;
-        prevMouseY = e.clientY;
-    });
 
-    document.addEventListener('mouseup', () => {
-        const draggedCircle = circles.find(c => c.isBeingDragged);
-        if (draggedCircle) {
-            draggedCircle.isBeingDragged = false;
+        // Si se está arrastrando, actualizar posición
+        if (activeDraggable.hasDragged) {
+            let newLeft = e.clientX - activeDraggable.offsetX;
+            let newTop = e.clientY - activeDraggable.offsetY;
+
+            // Limitar al viewport
+            const elemWidth = activeDraggable.el.offsetWidth;
+            const elemHeight = activeDraggable.el.offsetHeight;
+            const winWidth = window.innerWidth;
+            const winHeight = window.innerHeight;
+
+            if (newLeft < 0) newLeft = 0;
+            if (newTop < 0) newTop = 0;
+            if (newLeft + elemWidth > winWidth) newLeft = winWidth - elemWidth;
+            if (newTop + elemHeight > winHeight) newTop = winHeight - elemHeight;
+
+            activeDraggable.el.style.left = `${newLeft}px`;
+            activeDraggable.el.style.top = `${newTop}px`;
+            // Asegurar que la posición sea fija para que no se mueva con el scroll
+            activeDraggable.el.style.position = 'fixed';
+            activeDraggable.el.style.right = 'auto';
         }
-    });
-
-    window.addEventListener('beforeunload', () => {
-        const stateToSave = circles.map(c => ({ id: c.id, x: c.x, y: c.y }));
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-    });
-
-    function update() {
-        circles.forEach(circle => {
-            if (!circle.physicsEnabled) return;
-
-            if (!circle.isBeingDragged) {
-                circle.vx *= friction;
-                circle.vy *= friction;
-                circle.x += circle.vx;
-                circle.y += circle.vy;
-                circle.el.style.zIndex = circle.original.zIndex;
-            }
-
-            if (circle.x < 0) { circle.x = 0; circle.vx *= -bounce; }
-            if (circle.x > window.innerWidth - circle.radius * 2) { circle.x = window.innerWidth - circle.radius * 2; circle.vx *= -bounce; }
-            if (circle.y < 0) { circle.y = 0; circle.vy *= -bounce; }
-            if (circle.y > window.innerHeight - circle.radius * 2) { circle.y = window.innerHeight - circle.radius * 2; circle.vy *= -bounce; }
-
-            circle.el.style.left = `${circle.x}px`;
-            circle.el.style.top = `${circle.y}px`;
-        });
-
-        for (let i = 0; i < circles.length; i++) {
-            const c1 = circles[i];
-            if (!c1.physicsEnabled) continue;
-            for (let j = i + 1; j < circles.length; j++) {
-                const c2 = circles[j];
-                if (!c2.physicsEnabled) continue;
-
-                const dx = c2.x - c1.x, dy = c2.y - c1.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const minDistance = c1.radius + c2.radius;
-
-                if (distance < minDistance) {
-                    const angle = Math.atan2(dy, dx);
-                    const overlap = minDistance - distance;
-                    const separateX = overlap * Math.cos(angle), separateY = overlap * Math.sin(angle);
-
-                    if (!c1.isBeingDragged) { c1.x -= separateX / 2; c1.y -= separateY / 2; }
-                    if (!c2.isBeingDragged) { c2.x += separateX / 2; c2.y += separateY / 2; }
-                    
-                    const newVelX1 = c1.vx * Math.cos(angle) + c1.vy * Math.sin(angle), newVelY1 = c1.vy * Math.cos(angle) - c1.vx * Math.sin(angle);
-                    const newVelX2 = c2.vx * Math.cos(angle) + c2.vy * Math.sin(angle), newVelY2 = c2.vy * Math.cos(angle) - c2.vx * Math.sin(angle);
-                    const finalVelX1 = ((c1.mass - c2.mass) * newVelX1 + (c2.mass + c2.mass) * newVelX2) / (c1.mass + c2.mass);
-                    const finalVelX2 = ((c1.mass + c1.mass) * newVelX1 + (c2.mass - c1.mass) * newVelX2) / (c1.mass + c2.mass);
-
-                    if (!c1.isBeingDragged) {
-                        c1.vx = (finalVelX2 * Math.cos(angle) - newVelY1 * Math.sin(angle)) * restitution;
-                        c1.vy = (newVelY1 * Math.cos(angle) + finalVelX2 * Math.sin(angle)) * restitution;
-                    }
-                    if (!c2.isBeingDragged) {
-                        c2.vx = (finalVelX1 * Math.cos(angle) - newVelY2 * Math.sin(angle)) * restitution;
-                        c2.vy = (newVelY2 * Math.cos(angle) + finalVelX1 * Math.sin(angle)) * restitution;
-                    }
-                }
-            }
-        }
-        requestAnimationFrame(update);
     }
-    update();
+
+    function onMouseUp() {
+        const activeDraggable = draggables.find(d => d.isDragging);
+        if (!activeDraggable) return;
+
+        activeDraggable.isDragging = false;
+        activeDraggable.el.classList.remove('dragging');
+        document.body.style.userSelect = '';
+
+        if (activeDraggable.hasDragged) {
+            savePosition(activeDraggable);
+        }
+
+        document.removeEventListener('mousemove', onMouseMove);
+    }
+
+    // --- Gestión de Posición ---
+    function savePosition(draggable) {
+        const rect = draggable.el.getBoundingClientRect();
+        const pos = {
+            // Guardar como porcentaje para ser responsivo
+            top: `${(rect.top / window.innerHeight) * 100}%`,
+            left: `${(rect.left / window.innerWidth) * 100}%`,
+        };
+        localStorage.setItem(STORAGE_KEY_PREFIX + draggable.id, JSON.stringify(pos));
+    }
+
+    function loadPosition(draggable) {
+        const savedPosition = localStorage.getItem(STORAGE_KEY_PREFIX + draggable.id);
+        if (savedPosition) {
+            const { top, left } = JSON.parse(savedPosition);
+            draggable.el.style.position = 'fixed';
+            draggable.el.style.top = top;
+            draggable.el.style.left = left;
+            draggable.el.style.right = 'auto'; // Sobrescribir CSS que use 'right'
+        }
+    }
+
+    // Recalcular posiciones si la ventana cambia de tamaño
+    window.addEventListener('resize', () => {
+        draggables.forEach(loadPosition);
+    });
 });
