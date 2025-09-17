@@ -1,4 +1,8 @@
 .help-center {
+  // Define a CSS variable for the accordion arrow filter.
+  // The default value is for the dark theme.
+  --accordion-arrow-filter: invert(1) grayscale(1) brightness(2);
+
   .help-intro {
     font-size: 1.1rem;
     color: var(--history-input-color);
@@ -32,9 +36,7 @@
         box-shadow: none;
       }
 
-      &::after { // Customizing the accordion arrow
-        filter: var(--data-theme, 'dark') == 'dark' ? invert(1) grayscale(1) brightness(2) : none;
-      }
+      &::after { filter: var(--accordion-arrow-filter); }
     }
   }
 
@@ -60,4 +62,9 @@
       margin-top: 0.5rem;
     }
   }
+}
+
+// Override the CSS variable for the light theme.
+[data-theme="light"] .help-center {
+  --accordion-arrow-filter: none;
 }
