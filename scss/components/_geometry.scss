@@ -126,15 +126,54 @@
   padding: 1rem;
   background-color: var(--history-hover-bg);
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
 
   p {
-    margin: 0.5rem 0;
+    margin: 0;
     font-weight: bold;
+    flex-grow: 1;
   }
 
   span {
     color: var(--focus-color);
     float: right;
+  }
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--history-border-color);
+  color: var(--history-input-color);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--history-hover-bg);
+    color: var(--focus-color);
+    border-color: var(--focus-color);
+  }
+
+  &.copied {
+    background-color: var(--focus-color);
+    color: var(--btn-text-color);
+    border-color: var(--focus-color);
+    transform: scale(1.1);
   }
 }
 
@@ -147,11 +186,27 @@
   padding: 1rem;
   min-height: 220px;
 
+  // --- MEJORA INTERACTIVA ---
+  // Estilos para resaltar el área o el perímetro
+  &.highlight-area .shape {
+    fill: rgba(102, 255, 102, 0.6); // Relleno más opaco
+    stroke-width: 1.5;
+    stroke: rgba(102, 255, 102, 0.8);
+  }
+
+  &.highlight-perimeter .shape {
+    fill: rgba(102, 255, 102, 0.1); // Relleno más transparente
+    stroke-width: 4; // Borde más grueso
+    stroke: var(--focus-color);
+  }
+
   svg {
     .shape {
       fill: rgba(102, 255, 102, 0.2);
       stroke: var(--focus-color);
       stroke-width: 2;
+      // Añadimos una transición suave para el cambio de resaltado
+      transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
     }
 
     .helper-line {

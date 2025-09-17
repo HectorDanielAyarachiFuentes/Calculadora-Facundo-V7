@@ -587,7 +587,16 @@ class NumberReaderApp {
                 });
             });
 
-            infoModalEl.addEventListener('hide.bs.modal', () => { if (window.speechSynthesis) window.speechSynthesis.cancel(); });
+            infoModalEl.addEventListener('hide.bs.modal', () => {
+                // Detener cualquier síntesis de voz en curso al cerrar el modal.
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                // SOLUCIÓN: Eliminar el foco del elemento activo antes de que el modal se oculte.
+                // Esto previene la advertencia de accesibilidad donde un elemento con foco
+                // está dentro de un contenedor con `aria-hidden="true"`.
+                if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+            });
             
             // ===================================================================
             // === LÓGICA PARA CONECTAR HISTORIAL CON LECTOR DE NÚMEROS ===

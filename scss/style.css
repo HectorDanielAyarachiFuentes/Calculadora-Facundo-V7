@@ -1399,14 +1399,50 @@ header[role=banner] .subtitle a:hover {
   padding: 1rem;
   background-color: var(--history-hover-bg);
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.geometry-results .result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 .geometry-results p {
-  margin: 0.5rem 0;
+  margin: 0;
   font-weight: bold;
+  flex-grow: 1;
 }
 .geometry-results span {
   color: var(--focus-color);
   float: right;
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--history-border-color);
+  color: var(--history-input-color);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.copy-btn:hover {
+  background-color: var(--history-hover-bg);
+  color: var(--focus-color);
+  border-color: var(--focus-color);
+}
+.copy-btn.copied {
+  background-color: var(--focus-color);
+  color: var(--btn-text-color);
+  border-color: var(--focus-color);
+  transform: scale(1.1);
 }
 
 .geometry-visualization {
@@ -1418,10 +1454,21 @@ header[role=banner] .subtitle a:hover {
   padding: 1rem;
   min-height: 220px;
 }
+.geometry-visualization.highlight-area .shape {
+  fill: rgba(102, 255, 102, 0.6);
+  stroke-width: 1.5;
+  stroke: rgba(102, 255, 102, 0.8);
+}
+.geometry-visualization.highlight-perimeter .shape {
+  fill: rgba(102, 255, 102, 0.1);
+  stroke-width: 4;
+  stroke: var(--focus-color);
+}
 .geometry-visualization svg .shape {
   fill: rgba(102, 255, 102, 0.2);
   stroke: var(--focus-color);
   stroke-width: 2;
+  transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
 }
 .geometry-visualization svg .helper-line {
   stroke: var(--history-input-color);

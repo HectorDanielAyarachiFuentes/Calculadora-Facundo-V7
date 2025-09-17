@@ -19,6 +19,14 @@ const GeometryCalculator = {
     circle: {
         area: (radius) => Math.PI * radius * radius,
         perimeter: (radius) => 2 * Math.PI * radius
+    },
+    trapezoid: {
+        area: (base1, base2, height) => ((base1 + base2) / 2) * height,
+        perimeter: (side1, side2, base1, base2) => side1 + side2 + base1 + base2
+    },
+    rhombus: {
+        area: (d1, d2) => (d1 * d2) / 2,
+        perimeter: (side) => 4 * side
     }
 };
 
@@ -58,6 +66,8 @@ class GeometryApp {
                             <option value="rectangle">Rectángulo</option>
                             <option value="triangle">Triángulo</option>
                             <option value="circle">Círculo</option>
+                            <option value="trapezoid">Trapecio</option>
+                            <option value="rhombus">Rombo</option>
                         </select>
                     </div>
                     <div class="control-group">
@@ -114,6 +124,18 @@ class GeometryApp {
                 this.calculate();
             }
         });
+
+        // Listener para los botones de copiar
+        this.elements.resultsContainer.addEventListener('click', (e) => {
+            const copyBtn = e.target.closest('.copy-btn');
+            if (copyBtn) {
+                const resultType = copyBtn.dataset.resultType;
+                const resultElement = document.getElementById(`${resultType}Result`);
+                if (resultElement) {
+                    this.copyToClipboard(resultElement.textContent, copyBtn);
+                }
+            }
+        });
     }
 
     updateUIForShape(shape) {
@@ -139,6 +161,14 @@ class GeometryApp {
             tab.classList.toggle('active', tab.dataset.type === calculationType);
         });
 
+        // --- MEJORA INTERACTIVA ---
+        // Añadimos una clase al contenedor de la visualización para poder
+        // resaltar el área o el perímetro con CSS según la pestaña activa.
+        this.elements.visualizationContainer.classList.remove('highlight-area', 'highlight-perimeter');
+        this.elements.visualizationContainer.classList.add(
+            calculationType === 'area' ? 'highlight-area' : 'highlight-perimeter'
+        );
+
         const inputConfigs = {
             square: {
                 area: [{ label: 'Lado', id: 'side' }],
@@ -155,6 +185,14 @@ class GeometryApp {
             circle: {
                 area: [{ label: 'Radio', id: 'radius' }],
                 perimeter: [{ label: 'Radio', id: 'radius' }]
+            },
+            trapezoid: {
+                area: [{ label: 'Base Mayor', id: 'base1' }, { label: 'Base Menor', id: 'base2' }, { label: 'Altura', id: 'height' }],
+                perimeter: [{ label: 'Lado 1', id: 'side1' }, { label: 'Lado 2', id: 'side2' }, { label: 'Base Mayor', id: 'base1' }, { label: 'Base Menor', id: 'base2' }]
+            },
+            rhombus: {
+                area: [{ label: 'Diagonal Mayor', id: 'd1' }, { label: 'Diagonal Menor', id: 'd2' }],
+                perimeter: [{ label: 'Lado', id: 'side' }]
             }
         };
 
@@ -172,12 +210,17 @@ class GeometryApp {
         this.calculate();
     }
 
+    _getValue(id) {
+        const el = document.getElementById(id);
+        return el ? parseFloat(el.value) || 0 : 0;
+    }
+
     calculate() {
         const values = {};
         this.elements.inputsContainer.querySelectorAll('.geometry-input').forEach(input => {
             values[input.id] = parseFloat(input.value) || 0;
         });
-        this.state.values = values;
+        this.state.values = { ...this.state.values, ...values };
 
         let area = 0;
         let perimeter = 0;
@@ -194,11 +237,11 @@ class GeometryApp {
                 break;
             case 'triangle':
                 const allTriangleValues = {
-                    base: parseFloat(document.getElementById('base')?.value) || 0,
-                    height: parseFloat(document.getElementById('height')?.value) || 0,
-                    side1: parseFloat(document.getElementById('side1')?.value) || 0,
-                    side2: parseFloat(document.getElementById('side2')?.value) || 0,
-                    side3: parseFloat(document.getElementById('side3')?.value) || 0,
+                    base: this._getValue('base'),
+                    height: this._getValue('height'),
+                    side1: this._getValue('side1'),
+                    side2: this._getValue('side2'),
+                    side3: this._getValue('side3'),
                 };
                 area = GeometryCalculator.triangle.area(allTriangleValues.base, allTriangleValues.height);
                 perimeter = GeometryCalculator.triangle.perimeter(allTriangleValues.side1, allTriangleValues.side2, allTriangleValues.side3);
@@ -208,11 +251,39 @@ class GeometryApp {
                 area = GeometryCalculator.circle.area(values.radius);
                 perimeter = GeometryCalculator.circle.perimeter(values.radius);
                 break;
+            case 'trapezoid':
+                const allTrapezoidValues = {
+                    base1: this._getValue('base1'),
+                    base2: this._getValue('base2'),
+                    height: this._getValue('height'),
+                    side1: this._getValue('side1'),
+                    side2: this._getValue('side2'),
+                };
+                area = GeometryCalculator.trapezoid.area(allTrapezoidValues.base1, allTrapezoidValues.base2, allTrapezoidValues.height);
+                perimeter = GeometryCalculator.trapezoid.perimeter(allTrapezoidValues.side1, allTrapezoidValues.side2, allTrapezoidValues.base1, allTrapezoidValues.base2);
+                this.state.values = allTrapezoidValues;
+                break;
+            case 'rhombus':
+                const allRhombusValues = {
+                    d1: this._getValue('d1'),
+                    d2: this._getValue('d2'),
+                    side: this._getValue('side'),
+                };
+                area = GeometryCalculator.rhombus.area(allRhombusValues.d1, allRhombusValues.d2);
+                perimeter = GeometryCalculator.rhombus.perimeter(allRhombusValues.side);
+                this.state.values = allRhombusValues;
+                break;
         }
 
         this.elements.resultsContainer.innerHTML = `
-            <p>Área: <span id="areaResult">${area.toFixed(2)} ${unit}²</span></p>
-            <p>Perímetro: <span id="perimeterResult">${perimeter.toFixed(2)} ${unit}</span></p>
+            <div class="result-item">
+                <p>Área: <span id="areaResult">${area.toFixed(2)} ${unit}²</span></p>
+                <button class="copy-btn" data-result-type="area" title="Copiar área"><i class="fa-regular fa-copy"></i></button>
+            </div>
+            <div class="result-item">
+                <p>Perímetro: <span id="perimeterResult">${perimeter.toFixed(2)} ${unit}</span></p>
+                <button class="copy-btn" data-result-type="perimeter" title="Copiar perímetro"><i class="fa-regular fa-copy"></i></button>
+            </div>
         `;
         this.updateVisualization();
     }
@@ -260,8 +331,47 @@ class GeometryApp {
                     <text x="${60 + (r*circleScale/2)}" y="55" class="label">r: ${r || 'r'}</text>
                 </svg>`;
                 break;
+            case 'trapezoid':
+                const b1 = (values.base1 || 16);
+                const b2 = (values.base2 || 10);
+                const h_trap = (values.height || 8);
+                const trapScale = 80 / Math.max(b1, b2, h_trap, 1);
+                const scaledB1 = b1 * trapScale;
+                const scaledB2 = b2 * trapScale;
+                const scaledH = h_trap * trapScale;
+                const offset = (scaledB1 - scaledB2) / 2;
+                svg = `<svg viewBox="0 0 120 120">
+                    <path d="M${(120-scaledB1)/2} ${60+scaledH/2} L${(120+scaledB1)/2} ${60+scaledH/2} L${(120+scaledB1)/2 - offset} ${60-scaledH/2} L${(120-scaledB1)/2 + offset} ${60-scaledH/2} Z" class="shape"/>
+                    <text x="60" y="${60+scaledH/2 + 15}" class="label">B: ${values.base1 || 'B'}</text>
+                    <text x="60" y="${60-scaledH/2 - 5}" class="label">b: ${values.base2 || 'b'}</text>
+                    <line x1="${(120-scaledB1)/2 + offset}" y1="${60+scaledH/2}" x2="${(120-scaledB1)/2 + offset}" y2="${60-scaledH/2}" class="helper-line"/>
+                    <text x="${(120-scaledB1)/2 + offset + 10}" y="60" class="label">h: ${values.height || 'h'}</text>
+                </svg>`;
+                break;
+            case 'rhombus':
+                const d1 = (values.d1 || 16) * scale;
+                const d2 = (values.d2 || 10) * scale;
+                svg = `<svg viewBox="0 0 120 120">
+                    <path d="M60 ${60-d2/2} L${60+d1/2} 60 L60 ${60+d2/2} L${60-d1/2} 60 Z" class="shape"/>
+                    <line x1="${60-d1/2}" y1="60" x2="${60+d1/2}" y2="60" class="helper-line"/>
+                    <line x1="60" y1="${60-d2/2}" x2="60" y2="${60+d2/2}" class="helper-line"/>
+                    <text x="60" y="${60-d2/2 - 5}" class="label">d2: ${values.d2 || 'd2'}</text>
+                    <text x="${60+d1/2 + 10}" y="65" class="label">d1: ${values.d1 || 'd1'}</text>
+                </svg>`;
+                break;
         }
         this.elements.visualizationContainer.innerHTML = svg;
+    }
+
+    async copyToClipboard(text, button) {
+        await navigator.clipboard.writeText(text);
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-check"></i>';
+        button.classList.add('copied');
+        setTimeout(() => {
+            button.innerHTML = originalIcon;
+            button.classList.remove('copied');
+        }, 1500);
     }
 }
 
