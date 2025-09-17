@@ -3,8 +3,8 @@
 // =======================================================
 
 /**
- * Convierte números a su representación en letras.
- * Es una clase con métodos estáticos, ya que no necesita estado.
+ * Proporciona métodos estáticos para convertir números a su representación en letras.
+ * No necesita ser instanciada.
  */
 class NumberConverter {
     static _unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
@@ -13,6 +13,11 @@ class NumberConverter {
     static _centenas = ["", "cien", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
     static _decimalPlaces = ["", "DÉCIMOS", "CENTÉSIMOS", "MILÉSIMOS", "DIEZMILÉSIMOS", "CIENMILÉSIMOS", "MILLONÉSIMOS"];
 
+    /**
+     * Convierte un número (entero o parte entera de un decimal) a su forma escrita en español.
+     * @param {number} n - El número a convertir.
+     * @returns {string} El número en letras.
+     */
     static toLetters(n) {
         if (isNaN(n) || n === null) return "";
         if (n === 0) return "cero";
@@ -71,6 +76,11 @@ class NumberConverter {
         return letters.trim();
     }
 
+    /**
+     * Convierte la parte decimal de un número a su forma escrita formal (ej: "doce centésimos").
+     * @param {string} d - La parte decimal como una cadena de texto.
+     * @returns {{texto: string, unidad: string}} Un objeto con el texto y la unidad decimal.
+     */
     static formalDecimalsToLetters(d) {
         if (!d) return { texto: "", unidad: "" };
         const n = parseInt(d, 10);
@@ -83,15 +93,26 @@ class NumberConverter {
         return { texto, unidad };
     }
 
+    /**
+     * Convierte la parte decimal de un número a su forma simple, dígito por dígito (ej: "uno dos").
+     * @param {string} d - La parte decimal como una cadena de texto.
+     * @returns {string} Los dígitos en letras, separados por espacios.
+     */
     static simpleDecimalsToLetters(d) {
         return d.split('').map(c => this._unidades[parseInt(c, 10)]).join(' ');
     }
 }
 
 /**
- * Separa palabras en sílabas.
+ * Proporciona un método estático para separar palabras en sílabas.
+ * Utiliza un algoritmo simple basado en vocales y consonantes.
  */
 class Syllabifier {
+    /**
+     * Separa una palabra en un array de sílabas.
+     * @param {string} word - La palabra a silabificar.
+     * @returns {string[]} Un array con las sílabas de la palabra.
+     */
     static syllabify(word) {
         word = word.toLowerCase().trim();
         if (word.length <= 3) return [word];
@@ -124,9 +145,17 @@ class Syllabifier {
 }
 
 /**
- * Servicio para la síntesis de voz del navegador.
+ * Proporciona una interfaz estática para la API de Síntesis de Voz del navegador.
+ * Permite reproducir texto con callbacks para eventos de límite de palabra y finalización.
  */
 class SpeechService {
+    /**
+     * Reproduce un texto utilizando la síntesis de voz del navegador.
+     * @param {string} text - El texto a reproducir.
+     * @param {string} [lang='es-ES'] - El código de idioma para la voz.
+     * @param {function(SpeechSynthesisEvent): void | null} [onBoundaryCallback=null] - Callback que se ejecuta en los límites de las palabras.
+     * @param {function(SpeechSynthesisEvent): void | null} [onEndCallback=null] - Callback que se ejecuta cuando la reproducción termina.
+     */
     static speak(text, lang = 'es-ES', onBoundaryCallback = null, onEndCallback = null) {
         if (!text || typeof window.speechSynthesis === 'undefined') {
             if (onEndCallback) onEndCallback();
@@ -150,19 +179,30 @@ class SpeechService {
 // =======================================================
 
 /**
- * Gestiona la UI y la reproducción del modo fonético.
+ * Gestiona la interfaz de usuario y la lógica para el "Modo de Aprendizaje Fonético".
+ * Muestra las palabras separadas por sílabas y las resalta durante la reproducción de voz.
  */
 class PhoneticMode {
+    /**
+     * @param {string} selector - El selector CSS del elemento contenedor para este modo.
+     */
     constructor(selector) {
         this.element = document.querySelector(selector);
         this.placeholder = '<span class="placeholder-text">Desglose fonético...</span>';
         this.reset();
     }
 
+    /**
+     * Restablece el contenido del elemento al marcador de posición inicial.
+     */
     reset() {
         this.element.innerHTML = this.placeholder;
     }
 
+    /**
+     * Renderiza el texto de entrada como una serie de palabras silabificadas.
+     * @param {string} text - El texto completo a renderizar.
+     */
     render(text) {
         this.element.innerHTML = '';
         if (!text) {
@@ -178,6 +218,10 @@ class PhoneticMode {
         });
     }
 
+    /**
+     * Reproduce el texto y resalta cada palabra a medida que se pronuncia.
+     * @param {string} text - El texto a reproducir.
+     */
     play(text) {
         if (!text) return;
         const syllables = Array.from(this.element.querySelectorAll('.palabra-fonetica'));
@@ -197,19 +241,32 @@ class PhoneticMode {
 }
 
 /**
- * Gestiona la UI y la reproducción del modo formal (gráfico SVG).
+ * Gestiona la interfaz de usuario y la lógica para el "Modo de Aprendizaje Formal".
+ * Crea una representación gráfica en SVG del número, separando partes enteras y decimales,
+ * y las resalta durante la reproducción de voz.
  */
 class FormalMode {
+    /**
+     * @param {string} selector - El selector CSS del elemento contenedor para este modo.
+     */
     constructor(selector) {
         this.element = document.querySelector(selector);
         this.placeholder = '<span class="placeholder-text">Representación gráfica...</span>';
         this.reset();
     }
 
+    /**
+     * Restablece el contenido del elemento al marcador de posición inicial.
+     */
     reset() {
         this.element.innerHTML = this.placeholder;
     }
 
+    /**
+     * Renderiza la representación gráfica SVG del número.
+     * @param {string} pEnteraStr - La parte entera del número como cadena.
+     * @param {string} pDecimalStr - La parte decimal del número como cadena.
+     */
     render(pEnteraStr, pDecimalStr) {
         this.element.innerHTML = '';
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -259,6 +316,14 @@ class FormalMode {
         svg.setAttribute('viewBox', `0 0 ${currentX + 20} ${viewBoxHeight}`);
     }
 
+    /**
+     * Reproduce la lectura formal del número y resalta las partes correspondientes en el SVG.
+     * @param {object} params - Objeto con los textos a reproducir.
+     * @param {string} params.fullText - El texto completo para la síntesis de voz.
+     * @param {string} params.integerText - El texto de la parte entera.
+     * @param {string} params.decimalText - El texto de la parte decimal.
+     * @param {string} params.unitText - El texto de la unidad decimal (ej: "centésimos").
+     */
     play({ fullText, integerText, decimalText, unitText }) {
         if (!fullText) return;
         const enteroSVG = document.getElementById('svg-entero-texto');
@@ -288,9 +353,15 @@ class FormalMode {
 // =======================================================
 
 /**
- * Orquesta la aplicación del Lector de Números.
+ * Clase principal que orquesta toda la funcionalidad del "Lector de Números".
+ * Se instancia cada vez que se abre el modal para asegurar un estado limpio.
+ * Gestiona la entrada del usuario, el estado de la aplicación y la interacción entre los diferentes modos.
  */
 class NumberReaderApp {
+    /**
+     * Inicializa la aplicación, obtiene referencias a los elementos del DOM,
+     * instancia los modos de aprendizaje y vincula los eventos.
+     */
     constructor() {
         this.elements = {
             input: document.getElementById("numero"),
@@ -312,6 +383,9 @@ class NumberReaderApp {
         this.resetUI();
     }
 
+    /**
+     * Vincula los manejadores de eventos a los elementos de la interfaz (input, botones de play).
+     */
     bindEvents() {
         this.elements.input.addEventListener("input", this.handleInput.bind(this));
         this.elements.playSimpleBtn.addEventListener("click", this.playSimple.bind(this));
@@ -319,6 +393,10 @@ class NumberReaderApp {
         this.elements.playFormalBtn.addEventListener("click", this.playFormal.bind(this));
     }
 
+    /**
+     * Maneja el evento 'input' del campo de texto.
+     * Limpia la entrada, procesa el número, actualiza el estado y dispara el renderizado.
+     */
     handleInput() {
         let val = this.elements.input.value.replace(/[^0-9,]/g, '').replace(/,/g, (m, o, s) => o === s.indexOf(',') ? ',' : '');
         if (this.elements.input.value !== val) {
@@ -354,12 +432,21 @@ class NumberReaderApp {
         this.renderUI(pEnteraStr, pDecimalStr);
     }
 
+    /**
+     * Actualiza todas las partes de la interfaz de usuario con el estado actual.
+     * Llama a los métodos `render` de los modos fonético y formal.
+     * @param {string} pEnteraStr - La parte entera del número para pasar al modo formal.
+     * @param {string} pDecimalStr - La parte decimal del número para pasar al modo formal.
+     */
     renderUI(pEnteraStr, pDecimalStr) {
         this.elements.simpleResultDiv.textContent = this.state.simpleText.charAt(0).toUpperCase() + this.state.simpleText.slice(1);
         this.phoneticMode.render(this.state.simpleText);
         this.formalMode.render(pEnteraStr, pDecimalStr);
     }
 
+    /**
+     * Restablece el estado de la aplicación y la interfaz a sus valores iniciales.
+     */
     resetUI() {
         this.state = { simpleText: "", formalText: "", integerText: "", decimalText: "", unitText: "" };
         if (this.elements.simpleResultDiv) this.elements.simpleResultDiv.innerHTML = this.placeholders.simple;
@@ -367,16 +454,25 @@ class NumberReaderApp {
         this.formalMode.reset();
     }
 
+    /**
+     * Inicia la reproducción de la lectura simple del número.
+     */
     playSimple() {
         if (!this.state.simpleText) return;
         SpeechService.speak(this.state.simpleText);
     }
 
+    /**
+     * Inicia la reproducción y el resaltado en el modo fonético.
+     */
     playPhonetic() {
         if (!this.state.simpleText) return;
         this.phoneticMode.play(this.state.simpleText);
     }
 
+    /**
+     * Inicia la reproducción y el resaltado en el modo formal (gráfico).
+     */
     playFormal() {
         if (!this.state.formalText) return;
         this.formalMode.play({
