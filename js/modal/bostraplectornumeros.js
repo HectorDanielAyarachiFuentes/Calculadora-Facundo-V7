@@ -1,9 +1,9 @@
 // =======================================================
 // --- CLASES DE UTILIDAD (Refactorizadas) ---
 // =======================================================
-import { settingsManager } from './settings.js';
+import { settingsManager } from '../settings.js';
 import { GeometryApp } from './geometry.js';
-import { UnitConverterApp } from './modal/unit-converter.js';
+import { UnitConverterApp } from './unit-converter.js';
 
 /**
  * Proporciona métodos estáticos para convertir números a su representación en letras.

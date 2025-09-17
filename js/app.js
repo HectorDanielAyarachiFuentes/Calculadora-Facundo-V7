@@ -1,7 +1,7 @@
 'use strict';
 
 import { initDraggableButtons } from './draggable-buttons.js';
-import { initInfoModal } from './bostraplectornumeros.js';
+import { initInfoModal } from './modal/bostraplectornumeros.js';
 
 // Los otros scripts (sound-manager, settings, geometry, etc.) son cargados
 // como dependencias de los módulos importados a continuación, por lo que no necesitamos

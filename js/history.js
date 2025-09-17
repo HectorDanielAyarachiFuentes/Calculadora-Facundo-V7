@@ -5,7 +5,7 @@
 "use strict";
 
 import { reExecuteOperationFromHistory } from './main.js';
-import { SpeechService } from './bostraplectornumeros.js';
+import { SpeechService } from './modal/bostraplectornumeros.js';
 
 /**
  * Genera textos legibles para la operación y para el lector de pantalla.
