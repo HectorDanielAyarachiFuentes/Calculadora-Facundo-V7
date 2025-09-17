@@ -62,8 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (draggable.hasDragged) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-            } else if (draggable.type === 'collapse-toggle') {
-                // Si fue un clic simple, alternar el menú
+            } else if (draggable.type === 'collapse-toggle') { // Esto aplica solo al botón de herramientas
+                // Si es un clic simple, resetea su posición a la original y alterna el menú.
+                // Los otros botones (tema, historial) no se resetean al hacerles clic.
+                resetPosition(draggable);
                 mainOptionsCollapse.toggle();
             }
         }, true); // Usar fase de captura para detener la propagación antes
@@ -125,6 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Gestión de Posición ---
+    function resetPosition(draggable) {
+        // Elimina los estilos en línea para que el botón vuelva a su posición original definida por CSS.
+        draggable.el.style.position = '';
+        draggable.el.style.top = '';
+        draggable.el.style.left = '';
+        draggable.el.style.right = '';
+        // Elimina la posición guardada para que no se restaure en la próxima recarga.
+        localStorage.removeItem(STORAGE_KEY_PREFIX + draggable.id);
+    }
+
     function savePosition(draggable) {
         const rect = draggable.el.getBoundingClientRect();
         const pos = {
