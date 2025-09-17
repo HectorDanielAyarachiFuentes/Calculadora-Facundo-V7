@@ -112,5 +112,4 @@ class UnitConverterApp {
         toInput.value = parseFloat(result.toPrecision(6));
     }
 }
-
-window.UnitConverterApp = UnitConverterApp;
+export { UnitConverterApp };

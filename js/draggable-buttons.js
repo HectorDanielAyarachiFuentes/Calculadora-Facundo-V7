@@ -1,18 +1,117 @@
-document.addEventListener('DOMContentLoaded', () => {
+const elementConfigs = [
+    { id: 'bubble-main', selector: '.bubble-main', type: 'collapse-toggle' },
+    { id: 'theme-toggle-btn', selector: '#theme-toggle-btn', type: 'button' },
+    { id: 'history-toggle-btn', selector: '#history-toggle-btn', type: 'button' }
+];
+
+const draggables = [];
+const STORAGE_KEY_PREFIX = 'draggable_pos_';
+const DRAG_THRESHOLD = 5; // Píxeles a mover antes de que comience un arrastre
+
+// --- Manejadores Globales de Arrastre ---
+function onMouseMove(e) {
+    const activeDraggable = draggables.find(d => d.isDragging);
+    if (!activeDraggable) return;
+
+    // Comprobar si se ha superado el umbral de arrastre
+    if (!activeDraggable.hasDragged) {
+        const dx = e.clientX - activeDraggable.startX;
+        const dy = e.clientY - activeDraggable.startY;
+        if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
+            activeDraggable.hasDragged = true;
+            activeDraggable.el.classList.add('dragging'); // Añadir feedback visual
+            document.body.style.userSelect = 'none'; // Prevenir selección de texto
+        }
+    }
+
+    // Si se está arrastrando, actualizar posición
+    if (activeDraggable.hasDragged) {
+        let newLeft = e.clientX - activeDraggable.offsetX;
+        let newTop = e.clientY - activeDraggable.offsetY;
+
+        // Limitar al viewport
+        const elemWidth = activeDraggable.el.offsetWidth;
+        const elemHeight = activeDraggable.el.offsetHeight;
+        const winWidth = window.innerWidth;
+        const winHeight = window.innerHeight;
+
+        if (newLeft < 0) newLeft = 0;
+        if (newTop < 0) newTop = 0;
+        if (newLeft + elemWidth > winWidth) newLeft = winWidth - elemWidth;
+        if (newTop + elemHeight > winHeight) newTop = winHeight - elemHeight;
+
+        activeDraggable.el.style.left = `${newLeft}px`;
+        activeDraggable.el.style.top = `${newTop}px`;
+        // Asegurar que la posición sea fija para que no se mueva con el scroll
+        activeDraggable.el.style.position = 'fixed';
+        activeDraggable.el.style.right = 'auto';
+    }
+}
+
+function onMouseUp() {
+    const activeDraggable = draggables.find(d => d.isDragging);
+    if (!activeDraggable) return;
+
+    activeDraggable.isDragging = false;
+    activeDraggable.el.classList.remove('dragging');
+    document.body.style.userSelect = '';
+
+    if (activeDraggable.hasDragged) {
+        savePosition(activeDraggable);
+    }
+
+    document.removeEventListener('mousemove', onMouseMove);
+}
+
+// --- Gestión de Posición ---
+function resetPosition(draggable) {
+    // Añade la clase para activar la animación de rebote en el CSS.
+    draggable.el.classList.add('bouncing-back');
+
+    // Elimina los estilos en línea para que el botón vuelva a su posición original definida por CSS.
+    // El navegador aplicará la animación al cambiar de una posición fija a la original.
+    draggable.el.style.position = '';
+    draggable.el.style.top = '';
+    draggable.el.style.left = '';
+    draggable.el.style.right = '';
+
+    // Limpia la clase de animación una vez que termine para no interferir con futuros arrastres.
+    draggable.el.addEventListener('animationend', () => {
+        draggable.el.classList.remove('bouncing-back');
+    }, { once: true });
+
+    // Elimina la posición guardada para que no se restaure en la próxima recarga.
+    localStorage.removeItem(STORAGE_KEY_PREFIX + draggable.id);
+}
+
+function savePosition(draggable) {
+    const rect = draggable.el.getBoundingClientRect();
+    const pos = {
+        // Guardar como porcentaje para ser responsivo
+        top: `${(rect.top / window.innerHeight) * 100}%`,
+        left: `${(rect.left / window.innerWidth) * 100}%`,
+    };
+    localStorage.setItem(STORAGE_KEY_PREFIX + draggable.id, JSON.stringify(pos));
+}
+
+function loadPosition(draggable) {
+    const savedPosition = localStorage.getItem(STORAGE_KEY_PREFIX + draggable.id);
+    if (savedPosition) {
+        const { top, left } = JSON.parse(savedPosition);
+        draggable.el.style.position = 'fixed';
+        draggable.el.style.top = top;
+        draggable.el.style.left = left;
+        draggable.el.style.right = 'auto'; // Sobrescribir CSS que use 'right'
+    }
+}
+
+/**
+ * Inicializa la funcionalidad de los botones arrastrables.
+ */
+export function initDraggableButtons() {
     // Instancia de Bootstrap Collapse para el menú principal
     const mainOptionsCollapseEl = document.getElementById('mainOptions');
     const mainOptionsCollapse = new bootstrap.Collapse(mainOptionsCollapseEl, { toggle: false });
-
-    // Configuración para todos los elementos arrastrables
-    const elementConfigs = [
-        { id: 'bubble-main', selector: '.bubble-main', type: 'collapse-toggle' },
-        { id: 'theme-toggle-btn', selector: '#theme-toggle-btn', type: 'button' },
-        { id: 'history-toggle-btn', selector: '#history-toggle-btn', type: 'button' }
-    ];
-
-    const draggables = [];
-    const STORAGE_KEY_PREFIX = 'draggable_pos_';
-    const DRAG_THRESHOLD = 5; // Píxeles a mover antes de que comience un arrastre
 
     // Inicializa cada elemento arrastrable
     elementConfigs.forEach(config => {
@@ -76,114 +175,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }, true); // Usar fase de captura para detener la propagación antes
     });
 
-    // --- Manejadores Globales de Arrastre ---
-    function onMouseMove(e) {
-        const activeDraggable = draggables.find(d => d.isDragging);
-        if (!activeDraggable) return;
-
-        // Comprobar si se ha superado el umbral de arrastre
-        if (!activeDraggable.hasDragged) {
-            const dx = e.clientX - activeDraggable.startX;
-            const dy = e.clientY - activeDraggable.startY;
-            if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
-                activeDraggable.hasDragged = true;
-                activeDraggable.el.classList.add('dragging'); // Añadir feedback visual
-                document.body.style.userSelect = 'none'; // Prevenir selección de texto
-            }
-        }
-
-        // Si se está arrastrando, actualizar posición
-        if (activeDraggable.hasDragged) {
-            let newLeft = e.clientX - activeDraggable.offsetX;
-            let newTop = e.clientY - activeDraggable.offsetY;
-
-            // Limitar al viewport
-            const elemWidth = activeDraggable.el.offsetWidth;
-            const elemHeight = activeDraggable.el.offsetHeight;
-            const winWidth = window.innerWidth;
-            const winHeight = window.innerHeight;
-
-            if (newLeft < 0) newLeft = 0;
-            if (newTop < 0) newTop = 0;
-            if (newLeft + elemWidth > winWidth) newLeft = winWidth - elemWidth;
-            if (newTop + elemHeight > winHeight) newTop = winHeight - elemHeight;
-
-            activeDraggable.el.style.left = `${newLeft}px`;
-            activeDraggable.el.style.top = `${newTop}px`;
-            // Asegurar que la posición sea fija para que no se mueva con el scroll
-            activeDraggable.el.style.position = 'fixed';
-            activeDraggable.el.style.right = 'auto';
-        }
-    }
-
-    function onMouseUp() {
-        const activeDraggable = draggables.find(d => d.isDragging);
-        if (!activeDraggable) return;
-
-        activeDraggable.isDragging = false;
-        activeDraggable.el.classList.remove('dragging');
-        document.body.style.userSelect = '';
-
-        if (activeDraggable.hasDragged) {
-            savePosition(activeDraggable);
-        }
-
-        document.removeEventListener('mousemove', onMouseMove);
-    }
-
-    // --- Gestión de Posición ---
-    function resetPosition(draggable) {
-        // Añade la clase para activar la animación de rebote en el CSS.
-        draggable.el.classList.add('bouncing-back');
-
-        // Elimina los estilos en línea para que el botón vuelva a su posición original definida por CSS.
-        // El navegador aplicará la animación al cambiar de una posición fija a la original.
-        draggable.el.style.position = '';
-        draggable.el.style.top = '';
-        draggable.el.style.left = '';
-        draggable.el.style.right = '';
-
-        // Limpia la clase de animación una vez que termine para no interferir con futuros arrastres.
-        draggable.el.addEventListener('animationend', () => {
-            draggable.el.classList.remove('bouncing-back');
-        }, { once: true });
-
-        // Elimina la posición guardada para que no se restaure en la próxima recarga.
-        localStorage.removeItem(STORAGE_KEY_PREFIX + draggable.id);
-    }
-
-    function savePosition(draggable) {
-        const rect = draggable.el.getBoundingClientRect();
-        const pos = {
-            // Guardar como porcentaje para ser responsivo
-            top: `${(rect.top / window.innerHeight) * 100}%`,
-            left: `${(rect.left / window.innerWidth) * 100}%`,
-        };
-        localStorage.setItem(STORAGE_KEY_PREFIX + draggable.id, JSON.stringify(pos));
-    }
-
-    function loadPosition(draggable) {
-        const savedPosition = localStorage.getItem(STORAGE_KEY_PREFIX + draggable.id);
-        if (savedPosition) {
-            const { top, left } = JSON.parse(savedPosition);
-            draggable.el.style.position = 'fixed';
-            draggable.el.style.top = top;
-            draggable.el.style.left = left;
-            draggable.el.style.right = 'auto'; // Sobrescribir CSS que use 'right'
-        }
-    }
-
     // Recalcular posiciones si la ventana cambia de tamaño
     window.addEventListener('resize', () => {
         draggables.forEach(loadPosition);
     });
+}
 
-    // Expone una función global para que el panel de configuración pueda llamarla.
-    window.resetDraggableButtonPositions = () => {
-        if (confirm('¿Restaurar las posiciones de todos los botones flotantes a su estado original?')) {
-            draggables.forEach(resetPosition);
-            alert('Posiciones restauradas. Se aplicarán al recargar la página.');
-            window.location.reload();
-        }
-    };
-});
+/**
+ * Restaura las posiciones de los botones arrastrables a su estado original.
+ */
+export function resetDraggableButtonPositions() {
+    if (confirm('¿Restaurar las posiciones de todos los botones flotantes a su estado original?')) {
+        draggables.forEach(resetPosition);
+        alert('Posiciones restauradas. Se aplicarán al recargar la página.');
+        window.location.reload();
+    }
+}

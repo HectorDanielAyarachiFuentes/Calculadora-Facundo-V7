@@ -1,6 +1,9 @@
 // =======================================================
 // --- CLASES DE UTILIDAD (Refactorizadas) ---
 // =======================================================
+import { settingsManager } from './settings.js';
+import { GeometryApp } from './geometry.js';
+import { UnitConverterApp } from './modal/unit-converter.js';
 
 /**
  * Proporciona métodos estáticos para convertir números a su representación en letras.
@@ -553,7 +556,7 @@ class NumberReaderApp {
 // =======================================================
 // --- ORQUESTADOR PRINCIPAL DE BOOTSTRAP E INTEGRACIÓN ---
 // =======================================================
-        document.addEventListener('DOMContentLoaded', () => {
+        export function initInfoModal() {
             const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
@@ -585,13 +588,7 @@ class NumberReaderApp {
                 geometry: { 
                     title: "Conceptos de Geometría", 
                     body: `<div id="geometry-container"></div>`,
-                    onShow: () => {
-                        if (window.GeometryApp) {
-                            new window.GeometryApp('geometry-container');
-                        } else {
-                            console.error('La clase GeometryApp no está disponible en window.');
-                        }
-                    }
+                    onShow: () => new GeometryApp('geometry-container')
                 },
                 unitConverter: {
                     title: "Conversor de Unidades",
@@ -621,9 +618,7 @@ class NumberReaderApp {
                             </div>
                         </div>
                     `,
-                    onShow: () => {
-                        if (window.UnitConverterApp) new window.UnitConverterApp('unit-converter-container');
-                    }
+                    onShow: () => new UnitConverterApp('unit-converter-container')
                 },
                 config: { 
                     title: "Panel de Configuración", 
@@ -670,11 +665,7 @@ class NumberReaderApp {
                                 <button id="clearAllDataBtn" class="btn btn-danger">Borrar Todos los Datos</button>
                             </div>
                         </div>`,
-                    onShow: () => {
-                        if (window.settingsManager) {
-                            window.settingsManager.initUI();
-                        }
-                    }
+                    onShow: () => settingsManager.initUI()
                 },
                 help: { 
                     title: "Centro de Ayuda", 
@@ -769,7 +760,7 @@ class NumberReaderApp {
                 // está dentro de un contenedor con `aria-hidden="true"`.
                 if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
             });
-            
+
             // ===================================================================
             // === LÓGICA PARA CONECTAR HISTORIAL CON LECTOR DE NÚMEROS ===
             // ===================================================================
@@ -804,4 +795,4 @@ class NumberReaderApp {
                 // 6. (Opcional) Cerrar el panel de historial para una mejor experiencia de usuario
                 historyPanel.classList.remove('history-panel--open');
             });
-        });
+        }

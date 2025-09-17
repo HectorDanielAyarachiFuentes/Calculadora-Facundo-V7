@@ -37,5 +37,4 @@ class SoundManager {
         this.isMuted = muted;
     }
 }
-
-window.soundManager = new SoundManager();
+export const soundManager = new SoundManager();

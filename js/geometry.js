@@ -424,5 +424,4 @@ class GeometryApp {
         img.src = url;
     }
 }
-
-window.GeometryApp = GeometryApp;
+export { GeometryApp };

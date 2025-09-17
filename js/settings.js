@@ -1,5 +1,8 @@
 'use strict';
 
+import { soundManager } from './sound-manager.js';
+import { resetDraggableButtonPositions } from './draggable-buttons.js';
+
 class SettingsManager {
     constructor() {
         this.SETTINGS_KEY = 'calculator_settings';
@@ -29,8 +32,13 @@ class SettingsManager {
     }
 
     applySetting(key) {
-        if (key === 'animationSpeed') {
-            this.applyAnimationSpeed();
+        switch (key) {
+            case 'animationSpeed':
+                this.applyAnimationSpeed();
+                break;
+            case 'soundEffectsEnabled':
+                soundManager.setMuted(!this.settings.soundEffectsEnabled);
+                break;
         }
     }
 
@@ -60,8 +68,8 @@ class SettingsManager {
 
         if (resetPositionsBtn) {
             resetPositionsBtn.addEventListener('click', () => {
-                if (window.resetDraggableButtonPositions) {
-                    window.resetDraggableButtonPositions();
+                if (resetDraggableButtonPositions) {
+                    resetDraggableButtonPositions();
                 } else {
                     console.error('La función para restaurar posiciones no está disponible.');
                 }
@@ -114,4 +122,4 @@ class SettingsManager {
     }
 }
 
-window.settingsManager = new SettingsManager();
+export const settingsManager = new SettingsManager();
