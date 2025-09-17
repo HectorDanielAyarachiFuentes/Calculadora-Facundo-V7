@@ -564,22 +564,13 @@ class NumberReaderApp {
                 },
                 geometry: { 
                     title: "Conceptos de Geometría", 
-                    body: `<div id="geometry-container" class="geometry-container"></div>`,
-                    onShow: function() {
-                        console.log('Modal de geometría mostrado');
-                        // Aumentar el tiempo de espera para asegurar que el DOM esté listo
-                        setTimeout(() => {
-                            if (window.GeometryUI && typeof window.GeometryUI.init === 'function') {
-                                try {
-                                    window.GeometryUI.init();
-                                    console.log('GeometryUI inicializado correctamente');
-                                } catch (error) {
-                                    console.error('Error al inicializar GeometryUI:', error);
-                                }
-                            } else {
-                                console.error('GeometryUI no está disponible');
-                            }
-                        }, 300); // Aumentar el retraso para asegurar que el DOM esté completamente listo
+                    body: `<div id="geometry-container"></div>`,
+                    onShow: () => {
+                        if (window.GeometryApp) {
+                            new window.GeometryApp('geometry-container');
+                        } else {
+                            console.error('La clase GeometryApp no está disponible en window.');
+                        }
                     }
                 },
                 config: { title: "Panel de Configuración", body: `<p>Modulo en construccion 🧐.</p>` },

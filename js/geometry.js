@@ -1,165 +1,187 @@
+// =======================================================
+// --- geometry.js (REFACTORIZADO Y MEJORADO) ---
+// Gestiona la calculadora de geometría con una interfaz mejorada.
+// =======================================================
+
 const GeometryCalculator = {
-    // Cuadrado
     square: {
         area: (side) => side * side,
         perimeter: (side) => 4 * side
     },
-    // Rectángulo
     rectangle: {
         area: (length, width) => length * width,
         perimeter: (length, width) => 2 * (length + width)
     },
-    // Triángulo
     triangle: {
         area: (base, height) => (base * height) / 2,
         perimeter: (side1, side2, side3) => side1 + side2 + side3
     },
-    // Círculo
     circle: {
         area: (radius) => Math.PI * radius * radius,
         perimeter: (radius) => 2 * Math.PI * radius
     }
 };
 
-const GeometryUI = {
-    init() {
-        console.log('GeometryUI.init() llamado');
-        const modalBody = document.getElementById('infoModalBody');
-        if (!modalBody) {
-            console.error('No se encontró el elemento modalBody');
+class GeometryApp {
+    /**
+     * @param {string} containerId El ID del elemento que contendrá la aplicación de geometría.
+     */
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) {
+            console.error('GeometryApp: El contenedor no fue encontrado.');
             return;
         }
+        this.state = {
+            shape: 'square',
+            calculationType: 'area', // 'area' o 'perimeter'
+            unit: 'cm',
+            values: {}
+        };
+        this.init();
+    }
 
-        // Reemplazamos el contenido del modal con nuestra interfaz
-        modalBody.innerHTML = `
-            <div class="geometry-container">
-                <div class="geometry-selector">
-                    <select id="shapeSelect" class="form-select mb-3">
-                        <option value="square">Cuadrado</option>
-                        <option value="rectangle">Rectángulo</option>
-                        <option value="triangle">Triángulo</option>
-                        <option value="circle">Círculo</option>
-                    </select>
+    init() {
+        this.renderBaseLayout();
+        this.bindEvents();
+        this.updateUIForShape(this.state.shape);
+    }
+
+    renderBaseLayout() {
+        this.container.innerHTML = `
+            <div class="geometry-app">
+                <div class="geometry-controls">
+                    <div class="control-group">
+                        <label for="shapeSelect" class="form-label">Figura</label>
+                        <select id="shapeSelect" class="form-select">
+                            <option value="square" selected>Cuadrado</option>
+                            <option value="rectangle">Rectángulo</option>
+                            <option value="triangle">Triángulo</option>
+                            <option value="circle">Círculo</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="unitSelect" class="form-label">Unidad</label>
+                        <select id="unitSelect" class="form-select">
+                            <option value="cm" selected>Centímetros (cm)</option>
+                            <option value="m">Metros (m)</option>
+                            <option value="km">Kilómetros (km)</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="unit-selector mb-3">
-                    <label for="unitSelect" class="form-label">Unidad de Medida</label>
-                    <select id="unitSelect" class="form-select">
-                        <option value="cm">Centímetros (cm)</option>
-                        <option value="m">Metros (m)</option>
-                        <option value="km">Kilómetros (km)</option>
-                    </select>
+                <div class="geometry-main">
+                    <div class="geometry-inputs-section">
+                        <div id="calculation-tabs" class="calculation-tabs"></div>
+                        <div id="geometry-inputs" class="geometry-inputs"></div>
+                    </div>
+                    <div class="geometry-display-section">
+                        <div id="geometry-visualization" class="geometry-visualization"></div>
+                        <div id="geometry-results" class="geometry-results"></div>
+                    </div>
                 </div>
-                <div class="geometry-inputs" id="geometryInputs"></div>
-                <div class="geometry-results" id="geometryResults">
-                    <p>Área: <span id="areaResult">-</span></p>
-                    <p>Perímetro: <span id="perimeterResult">-</span></p>
-                </div>
-                <div class="geometry-visualization" id="geometryVisualization"></div>
             </div>
         `;
+        this.elements = {
+            shapeSelect: document.getElementById('shapeSelect'),
+            unitSelect: document.getElementById('unitSelect'),
+            tabsContainer: document.getElementById('calculation-tabs'),
+            inputsContainer: document.getElementById('geometry-inputs'),
+            visualizationContainer: document.getElementById('geometry-visualization'),
+            resultsContainer: document.getElementById('geometry-results'),
+        };
+    }
 
-        // Los elementos ya están en el DOM después de la asignación de innerHTML.
-        this.setupEventListeners();
-    },
-
-    setupEventListeners() {
-        console.log('Configurando event listeners');
-        const shapeSelect = document.getElementById('shapeSelect');
-        if (!shapeSelect) {
-            console.error('No se encontró el elemento shapeSelect');
-            return;
-        }
-
-        shapeSelect.addEventListener('change', () => {
-            console.log('Cambio de forma detectado:', shapeSelect.value);
-            this.updateInputs(shapeSelect.value);
+    bindEvents() {
+        this.elements.shapeSelect.addEventListener('change', (e) => {
+            this.state.shape = e.target.value;
+            this.updateUIForShape(this.state.shape);
         });
 
-        const unitSelect = document.getElementById('unitSelect');
-        if (unitSelect) {
-            unitSelect.addEventListener('change', () => {
-                this.calculate(document.getElementById('shapeSelect').value);
-            });
-        }
-        
-        // Inicializar con la forma seleccionada actualmente
-        this.updateInputs(shapeSelect.value);
-    },
+        this.elements.unitSelect.addEventListener('change', (e) => {
+            this.state.unit = e.target.value;
+            this.calculate();
+        });
 
-    updateInputs(shape) {
-        console.log('Actualizando inputs para:', shape);
-        const inputsDiv = document.getElementById('geometryInputs');
-        if (!inputsDiv) {
-            console.error('No se encontró el elemento geometryInputs');
-            return;
-        }
+        this.elements.tabsContainer.addEventListener('click', (e) => {
+            if (e.target.matches('.tab')) {
+                this.state.calculationType = e.target.dataset.type;
+                this.renderInputs(this.state.shape, this.state.calculationType);
+            }
+        });
+
+        this.elements.inputsContainer.addEventListener('input', (e) => {
+            if (e.target.matches('.geometry-input')) {
+                this.calculate();
+            }
+        });
+    }
+
+    updateUIForShape(shape) {
+        this.renderTabs(shape);
+        this.renderInputs(shape, this.state.calculationType);
+    }
+
+    renderTabs() {
+        const tabs = [
+            { type: 'area', label: 'Área' },
+            { type: 'perimeter', label: 'Perímetro' }
+        ];
+
+        this.elements.tabsContainer.innerHTML = tabs.map(tab => `
+            <button class="tab ${this.state.calculationType === tab.type ? 'active' : ''}" data-type="${tab.type}">
+                ${tab.label}
+            </button>
+        `).join('');
+    }
+
+    renderInputs(shape, calculationType) {
+        this.elements.tabsContainer.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.type === calculationType);
+        });
 
         const inputConfigs = {
-            square: [{ label: 'Lado', id: 'side' }],
-            rectangle: [
-                { label: 'Largo', id: 'length' },
-                { label: 'Ancho', id: 'width' }
-            ],
-            triangle: [
-                { label: 'Base', id: 'base' },
-                { label: 'Altura', id: 'height' },
-                { label: 'Lado 1', id: 'side1' },
-                { label: 'Lado 2', id: 'side2' },
-                { label: 'Lado 3', id: 'side3' }
-            ],
-            circle: [{ label: 'Radio', id: 'radius' }]
+            square: {
+                area: [{ label: 'Lado', id: 'side' }],
+                perimeter: [{ label: 'Lado', id: 'side' }]
+            },
+            rectangle: {
+                area: [{ label: 'Largo', id: 'length' }, { label: 'Ancho', id: 'width' }],
+                perimeter: [{ label: 'Largo', id: 'length' }, { label: 'Ancho', id: 'width' }]
+            },
+            triangle: {
+                area: [{ label: 'Base', id: 'base' }, { label: 'Altura', id: 'height' }],
+                perimeter: [{ label: 'Lado 1', id: 'side1' }, { label: 'Lado 2', id: 'side2' }, { label: 'Lado 3', id: 'side3' }]
+            },
+            circle: {
+                area: [{ label: 'Radio', id: 'radius' }],
+                perimeter: [{ label: 'Radio', id: 'radius' }]
+            }
         };
 
-        // Crear los campos de entrada para la forma seleccionada
-        let inputsHTML = '';
-        inputConfigs[shape].forEach(input => {
-            inputsHTML += `
-                <div class="mb-3">
-                    <label for="${input.id}" class="form-label">${input.label}</label>
+        const inputsToRender = inputConfigs[shape][calculationType];
+        this.elements.inputsContainer.innerHTML = inputsToRender.map(input => `
+            <div class="input-group">
+                <label for="${input.id}" class="form-label">${input.label}</label>
+                <div class="input-wrapper">
                     <input type="number" class="form-control geometry-input" id="${input.id}" step="0.1" min="0" value="0">
+                    <span class="input-unit">${this.state.unit}</span>
                 </div>
-            `;
-        });
-        inputsDiv.innerHTML = inputsHTML;
-
-        // Configurar los listeners para los nuevos campos
-        this.setupCalculationListeners(shape);
+            </div>
+        `).join('');
         
-        // Calcular inicialmente con valores por defecto
-        this.calculate(shape);
-        this.updateVisualization(shape);
-    },
+        this.calculate();
+    }
 
-    setupCalculationListeners(shape) {
-        console.log('Configurando listeners de cálculo para:', shape);
-        const inputs = document.querySelectorAll('.geometry-input');
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
-                console.log('Input detectado en:', input.id, 'valor:', input.value);
-                this.calculate(shape);
-            });
-        });
-    },
-
-    calculate(shape) {
-        console.log('Calculando para:', shape);
+    calculate() {
         const values = {};
-        document.querySelectorAll('.geometry-input').forEach(input => {
+        this.elements.inputsContainer.querySelectorAll('.geometry-input').forEach(input => {
             values[input.id] = parseFloat(input.value) || 0;
         });
-
-        const areaResult = document.getElementById('areaResult');
-        const perimeterResult = document.getElementById('perimeterResult');
-        const unitSelect = document.getElementById('unitSelect');
-        const unit = unitSelect ? unitSelect.value : 'cm';
-
-        if (!areaResult || !perimeterResult) {
-            console.error('No se encontraron elementos de resultado');
-            return;
-        }
+        this.state.values = values;
 
         let area = 0;
         let perimeter = 0;
+        const { shape, unit } = this.state;
 
         switch (shape) {
             case 'square':
@@ -171,13 +193,16 @@ const GeometryUI = {
                 perimeter = GeometryCalculator.rectangle.perimeter(values.length, values.width);
                 break;
             case 'triangle':
-                area = GeometryCalculator.triangle.area(values.base, values.height);
-                // Para el perímetro necesitamos los tres lados
-                perimeter = GeometryCalculator.triangle.perimeter(
-                    values.side1 || values.base, 
-                    values.side2 || 0, 
-                    values.side3 || 0
-                );
+                const allTriangleValues = {
+                    base: parseFloat(document.getElementById('base')?.value) || 0,
+                    height: parseFloat(document.getElementById('height')?.value) || 0,
+                    side1: parseFloat(document.getElementById('side1')?.value) || 0,
+                    side2: parseFloat(document.getElementById('side2')?.value) || 0,
+                    side3: parseFloat(document.getElementById('side3')?.value) || 0,
+                };
+                area = GeometryCalculator.triangle.area(allTriangleValues.base, allTriangleValues.height);
+                perimeter = GeometryCalculator.triangle.perimeter(allTriangleValues.side1, allTriangleValues.side2, allTriangleValues.side3);
+                this.state.values = allTriangleValues;
                 break;
             case 'circle':
                 area = GeometryCalculator.circle.area(values.radius);
@@ -185,71 +210,59 @@ const GeometryUI = {
                 break;
         }
 
-        console.log('Resultados calculados:', { area, perimeter });
-        areaResult.textContent = `${area.toFixed(2)} ${unit}²`;
-        perimeterResult.textContent = `${perimeter.toFixed(2)} ${unit}`;
-        this.updateVisualization(shape, values);
-    },
+        this.elements.resultsContainer.innerHTML = `
+            <p>Área: <span id="areaResult">${area.toFixed(2)} ${unit}²</span></p>
+            <p>Perímetro: <span id="perimeterResult">${perimeter.toFixed(2)} ${unit}</span></p>
+        `;
+        this.updateVisualization();
+    }
 
-    updateVisualization(shape, values = {}) {
-        console.log('Actualizando visualización para:', shape, values);
-        const visualizationDiv = document.getElementById('geometryVisualization');
-        if (!visualizationDiv) {
-            console.error('No se encontró el elemento geometryVisualization');
-            return;
-        }
-
-        const size = 200; // Tamaño base para la visualización
+    updateVisualization() {
+        const { shape, values } = this.state;
         let svg = '';
+        const maxDim = Math.max(...Object.values(values).filter(v => v > 0), 1);
+        const scale = 80 / maxDim;
 
         switch (shape) {
             case 'square':
-                const sideLength = values.side || 0;
-                svg = `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
-                    <rect x="10" y="10" width="80" height="80" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <text x="50" y="50" text-anchor="middle" dominant-baseline="middle">${sideLength ? sideLength : ''}</text>
+                const s = (values.side || 10) * scale;
+                svg = `<svg viewBox="0 0 120 120">
+                    <rect x="${(110-s)/2}" y="${(110-s)/2}" width="${s}" height="${s}" class="shape"/>
+                    <text x="55" y="${(110-s)/2 - 5}" class="label">${values.side || 'L'}</text>
                 </svg>`;
                 break;
             case 'rectangle':
-                const rectLength = values.length || 0;
-                const rectWidth = values.width || 0;
-                svg = `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
-                    <rect x="10" y="20" width="80" height="60" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <text x="50" y="50" text-anchor="middle" dominant-baseline="middle">${rectLength && rectWidth ? `${rectLength} x ${rectWidth}` : ''}</text>
+                const l = (values.length || 16) * scale;
+                const w = (values.width || 10) * scale;
+                svg = `<svg viewBox="0 0 120 120">
+                    <rect x="${(110-l)/2}" y="${(110-w)/2}" width="${l}" height="${w}" class="shape"/>
+                    <text x="55" y="${(110-w)/2 - 5}" class="label">${values.length || 'L'}</text>
+                    <text x="${(110-l)/2 - 15}" y="55" class="label">${values.width || 'A'}</text>
                 </svg>`;
                 break;
             case 'triangle':
-                const base = values.base || 0;
-                const height = values.height || 0;
-                svg = `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
-                    <path d="M50 10 L10 90 L90 90 Z" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <text x="50" y="60" text-anchor="middle" dominant-baseline="middle">${base && height ? `b:${base} h:${height}` : ''}</text>
+                const b = values.base || 15;
+                const h = values.height || 10;
+                const triangleScale = 80 / Math.max(b, h, 1);
+                svg = `<svg viewBox="0 0 120 120">
+                    <path d="M10 100 L${10+b*triangleScale} 100 L${10+(b*triangleScale/2)} ${100-h*triangleScale} Z" class="shape"/>
+                    <text x="${10 + (b*triangleScale/2)}" y="115" class="label">Base: ${values.base || 'b'}</text>
+                    <line x1="${10+(b*triangleScale/2)}" y1="100" x2="${10+(b*triangleScale/2)}" y2="${100-h*triangleScale}" class="helper-line"/>
+                    <text x="${15+(b*triangleScale/2)}" y="${100-(h*triangleScale/2)}" class="label">h: ${values.height || 'h'}</text>
                 </svg>`;
                 break;
             case 'circle':
-                const radius = values.radius || 0;
-                svg = `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <text x="50" y="50" text-anchor="middle" dominant-baseline="middle">${radius ? `r:${radius}` : ''}</text>
+                const r = values.radius || 10;
+                const circleScale = 40 / Math.max(r, 1);
+                svg = `<svg viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="${r*circleScale}" class="shape"/>
+                    <line x1="60" y1="60" x2="${60 + r*circleScale}" y2="60" class="helper-line"/>
+                    <text x="${60 + (r*circleScale/2)}" y="55" class="label">r: ${r || 'r'}</text>
                 </svg>`;
                 break;
         }
-
-        visualizationDiv.innerHTML = svg;
+        this.elements.visualizationContainer.innerHTML = svg;
     }
-};
+}
 
-// Exponer GeometryUI globalmente para que pueda ser accedido desde bostraplectornumeros.js
-window.GeometryUI = GeometryUI;
-
-// Eliminar este evento ya que ahora lo manejamos desde bostraplectornumeros.js
-// document.addEventListener('DOMContentLoaded', () => {
-//     const infoModalEl = document.getElementById('infoModal');
-//     if (infoModalEl) {
-//         infoModalEl.addEventListener('shown.bs.modal', (event) => {
-//             if (event.target.querySelector('#infoModalLabel').textContent === 'Conceptos de Geometría') {
-//                 GeometryUI.init();
-//             }
-//         });
-//     }
-// });
+window.GeometryApp = GeometryApp;
