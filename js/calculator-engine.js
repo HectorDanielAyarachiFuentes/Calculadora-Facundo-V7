@@ -9,6 +9,7 @@ import { display, salida } from './dom-elements.js';
 // --- Estado del Módulo ---
 let divext = false;
 let lastDivisionState = { operacionInput: '', numerosAR: null, tipo: '' };
+const errorHandler = new ErrorHandlerCentralized(salida); // Instancia única
 
 /**
  * Procesa la entrada de un token (número, operador, 'c', 'del').
@@ -51,12 +52,15 @@ export function writeToDisplay(t) {
  */
 export async function calculate(addToHistory = true) {
     const entrada = display.innerHTML;
-    const errorHandler = new ErrorHandlerCentralized(salida);
+    // Se elimina la redeclaración de errorHandler para usar la instancia única del módulo.
+    
+    errorHandler.limpiarErrores();
 
     if (!errorHandler.validarOperacion(entrada)) {
         UIManager.showResultScreen();
         UIManager.updateDivisionButtons(false, divext);
-        return errorHandler.mostrarError('invalidOperation');
+        // La validación ya muestra el error, solo hace falta salir.
+        return;
     }
 
     UIManager.triggerGlitchEffect(entrada);
@@ -64,19 +68,32 @@ export async function calculate(addToHistory = true) {
     const numerosAR = operations.parsearNumeros(entrada, operador);
     
     UIManager.showResultScreen();
-    salida.innerHTML = '';
+    // La limpieza de errores ya se hace al inicio. No es necesario limpiar la salida aquí.
 
+    let operationSuccess = false;
     try {
         switch (operador) {
-            case '+': await operations.suma(numerosAR); break;
-            case '-': await operations.resta(numerosAR); break;
+            case '+': 
+                await operations.suma(numerosAR); 
+                operationSuccess = true;
+                break;
+            case '-': 
+                await operations.resta(numerosAR); 
+                operationSuccess = true;
+                break;
             case 'x':
-                if (errorHandler.validarMultiplicacion(salida, numerosAR)) await operations.multiplica(numerosAR);
+                // CORRECCIÓN: Se elimina el argumento 'salida' que causaba el error.
+                if (errorHandler.validarMultiplicacion(numerosAR)) {
+                    await operations.multiplica(numerosAR);
+                    operationSuccess = true;
+                }
                 break;
             case '/':
-                if (errorHandler.validarDivision(salida, numerosAR)) {
+                // CORRECCIÓN: Se elimina el argumento 'salida' que causaba el error.
+                if (errorHandler.validarDivision(numerosAR)) {
                     lastDivisionState = { operacionInput: entrada, numerosAR, tipo: 'division' };
                     divext ? await operations.divideExt(numerosAR) : await operations.divide(numerosAR);
+                    operationSuccess = true;
                 }
                 break;
             default: errorHandler.mostrarError('invalidOperation');
@@ -86,10 +103,9 @@ export async function calculate(addToHistory = true) {
         errorHandler.mostrarError('invalidOperation', { error });
     }
     
-    const calculationError = salida.querySelector('.output-screen__error-message');
-    UIManager.updateDivisionButtons(operador === '/' && !calculationError, divext);
+    UIManager.updateDivisionButtons(operador === '/' && operationSuccess, divext);
 
-    if (addToHistory && !calculationError) {
+    if (addToHistory && operationSuccess) {
         HistoryManager.add({ input: entrada, visualHtml: salida.innerHTML });
     }
     UIManager.updateKeyboardState(display.innerHTML);
@@ -102,27 +118,37 @@ export async function calculate(addToHistory = true) {
  */
 export async function reExecuteOperationFromHistory(historyInput) {
     UIManager.showResultScreen();
-    salida.innerHTML = '';
+    errorHandler.limpiarErrores();
+    display.innerHTML = historyInput; // Actualizar display para que el usuario vea qué se está calculando
+
     let successful = false;
-    const errorHandler = new ErrorHandlerCentralized(salida);
     
     try {
         const primosMatch = historyInput.match(/^factores\((\d+)\)$/);
         const raizMatch = historyInput.match(/^√\((.+)\)$/);
 
         if (primosMatch) {
-            if (errorHandler.validarFactoresPrimos(salida, primosMatch[1])) await operations.desFacPri(primosMatch[1]);
+            const numero = primosMatch[1];
+            if (errorHandler.validarFactoresPrimos(numero)) {
+                await operations.desFacPri(numero);
+                successful = true;
+            }
         } else if (raizMatch) {
-            if (errorHandler.validarRaizCuadrada(salida, raizMatch[1])) await operations.raizCuadrada(raizMatch[1]);
+            const numero = raizMatch[1];
+            if (errorHandler.validarRaizCuadrada(numero)) {
+                await operations.raizCuadrada(numero);
+                successful = true;
+            }
         } else {
             await calculate(false);
+            // `calculate` no retorna éxito, así que lo comprobamos por la ausencia de error.
+            successful = !salida.querySelector('.output-screen__error-message');
         }
-        successful = !salida.querySelector('.output-screen__error-message');
     } catch (error) {
         console.error('Error durante la re-ejecución:', error);
         errorHandler.mostrarError('invalidOperation', { error });
+        successful = false;
     } finally {
-        display.innerHTML = historyInput;
         UIManager.updateKeyboardState(historyInput);
     }
     return successful;
@@ -156,7 +182,9 @@ export async function handleAction(action) {
             const numero = display.innerHTML;
             const inputParaHistorial = action === 'primos' ? `factores(${numero})` : `√(${numero})`;
             const success = await reExecuteOperationFromHistory(inputParaHistorial); 
-            if (success) HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
+            if (success) {
+                HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
+            }
             break;
         }
         default: console.warn(`Acción desconocida: ${action}`);

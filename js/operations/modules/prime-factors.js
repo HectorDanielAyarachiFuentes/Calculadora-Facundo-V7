@@ -8,25 +8,21 @@ import { crearCelda } from '../utils/dom-helpers.js';
 import { salida, display } from '../../config.js';
 import { ErrorHandlerCentralized } from '../../error-handler-centralized.js';
 
+const errorHandler = new ErrorHandlerCentralized(salida);
+
 /**
  * Realiza y visualiza la descomposición en factores primos de manera optimizada.
  */
 export function desFacPri(numero = null) {
-    salida.innerHTML = "";
+    errorHandler.limpiarErrores();
     const fragment = document.createDocumentFragment();
 
     const entrada = numero || display.innerHTML;
 
     // --- 1. VALIDACIÓN ---
-    const errorHandler = new ErrorHandlerCentralized(salida);
-    if (numero !== null) {
-        if (!errorHandler.validarFactoresPrimos(salida, numero)) {
-            return;
-        }
-    } else {
-        if (!errorHandler.validarFactoresPrimos(salida, entrada)) {
-            return;
-        }
+    // CORRECCIÓN: Se usa la instancia única de errorHandler y se pasa el argumento correcto.
+    if (!errorHandler.validarFactoresPrimos(entrada)) {
+        return;
     }
 
     const numOriginal = parseInt(entrada, 10);

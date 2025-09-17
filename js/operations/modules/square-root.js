@@ -10,8 +10,6 @@ import { calculateLayout } from '../utils/layout-calculator.js';
 import { salida, display } from '../../config.js';
 import { ErrorHandlerCentralized } from '../../error-handler-centralized.js';
 
-
-
 // =======================================================
 // CONSTANTES Y CONFIGURACIÓN
 // =======================================================
@@ -41,6 +39,8 @@ const CSS_CLASSES = {
     DECIMAL_POINT: "decimal-point"
 };
 
+const errorHandler = new ErrorHandlerCentralized(salida);
+
 // =======================================================
 // FUNCIÓN PRINCIPAL
 // =======================================================
@@ -48,8 +48,7 @@ const CSS_CLASSES = {
 export async function raizCuadrada(numero = null) {
     let inputNumber;
     if (numero !== null) {
-        const errorHandler = new ErrorHandlerCentralized(salida);
-        if (!errorHandler.validarRaizCuadrada(salida, numero)) {
+        if (!errorHandler.validarRaizCuadrada(numero)) {
             return;
         }
         inputNumber = parseFloat(numero.replace(',', '.'));
@@ -66,11 +65,10 @@ export async function raizCuadrada(numero = null) {
 // =======================================================
 
 function validateAndParseInput() {
-    salida.innerHTML = "";
+    errorHandler.limpiarErrores();
     const entrada = display.innerHTML.replace(',', '.');
 
-    const errorHandler = new ErrorHandlerCentralized(salida);
-    if (!errorHandler.validarRaizCuadrada(salida, entrada)) {
+    if (!errorHandler.validarRaizCuadrada(entrada)) {
         return null;
     }
 
