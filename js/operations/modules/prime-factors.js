@@ -13,10 +13,9 @@ const errorHandler = new ErrorHandlerCentralized(salida);
 /**
  * Realiza y visualiza la descomposición en factores primos de manera optimizada.
  */
-export function desFacPri(numero = null) {
+export async function desFacPri(numero = null) {
     errorHandler.limpiarErrores();
-    const fragment = document.createDocumentFragment();
-
+    
     const entrada = numero || display.innerHTML;
 
     // --- 1. VALIDACIÓN ---
@@ -27,10 +26,50 @@ export function desFacPri(numero = null) {
 
     const numOriginal = parseInt(entrada, 10);
 
-    // --- 2. FACTORIZACIÓN OPTIMIZADA ---
-    const factores = factorizarPrimos(numOriginal);
+    // --- 2. USAR WEB WORKER PARA LA FACTORIZACIÓN ---
+    // Mostramos un indicador de carga mientras el Worker calcula.
+    salida.innerHTML = '<p class="loading-indicator">Calculando factores primos...</p>';
 
-    // --- 3. PREPARAR DATOS PARA VISUALIZACIÓN ---
+    const factores = await new Promise((resolve, reject) => {
+        // Creamos una nueva instancia del Worker.
+        // MEJORA: Se utiliza `import.meta.url` para crear una ruta al worker que es
+        // relativa a este archivo JS, no al documento HTML. Esto es mucho más robusto
+        // y evita errores de carga (404) si la estructura de carpetas cambia.
+        const workerUrl = new URL('./prime-factors.worker.js', import.meta.url);
+        // SOLUCIÓN: Se añade { type: 'module' }. Esto le indica al navegador que cargue
+        // el worker como un módulo de JavaScript, lo cual es esencial en proyectos
+        // modernos y resuelve los errores de carga (404 o de tipo de script).
+        const worker = new Worker(workerUrl, { type: 'module' });
+
+        // 3. Escuchamos los mensajes que nos envía el Worker.
+        worker.onmessage = (event) => {
+            if (event.data.error) {
+                reject(new Error(event.data.error));
+            } else {
+                resolve(event.data.factores);
+            }
+            // Una vez que tenemos la respuesta, terminamos el worker para liberar recursos.
+            worker.terminate();
+        };
+
+        // Manejador de errores del worker.
+        worker.onerror = (error) => {
+            // El objeto 'error' que llega aquí puede ser un ErrorEvent o un Event genérico.
+            // Lo envolvemos en un nuevo Error para un manejo de errores consistente.
+            console.error("Error en el Web Worker de factores primos:", error);
+            // Si es un ErrorEvent, tendrá un 'message'. Si no (p.ej. error de carga), usamos un mensaje genérico.
+            const errorMessage = error.message ? error.message : "No se pudo cargar el script del worker o ocurrió un error inesperado.";
+            reject(new Error(`Error en el worker: ${errorMessage}`));
+            worker.terminate();
+        };
+
+        // 2. Enviamos el número al Worker para que comience el cálculo.
+        worker.postMessage(numOriginal);
+    });
+
+    // --- 4. PREPARAR DATOS PARA VISUALIZACIÓN (una vez que el worker ha respondido) ---
+    salida.innerHTML = ''; // Limpiamos el indicador de carga.
+    const fragment = document.createDocumentFragment();
     const numIzdaArray = [];
     const numDchaArray = [];
     let tempNum = numOriginal;
@@ -51,7 +90,7 @@ export function desFacPri(numero = null) {
     }
     numIzdaArray.push(1);
 
-    // --- 4. MOSTRAR RESULTADO FINAL ---
+    // --- 5. MOSTRAR RESULTADO FINAL ---
     const resultadoFinal = formatearFactoresPrimos(factores);
     const resultadoElement = crearCelda("output-grid__result", `Factores primos: ${resultadoFinal}`, {
         left: '10px',
@@ -62,7 +101,7 @@ export function desFacPri(numero = null) {
     });
     fragment.appendChild(resultadoElement);
 
-    // --- 5. CÁLCULO DEL LAYOUT ---
+    // --- 6. CÁLCULO DEL LAYOUT ---
     const maxDigitsIzda = Math.max(...numIzdaArray.map(n => n.toString().length));
     const maxDigitsDcha = Math.max(...numDchaArray.map(n => n.toString().length));
     const separatorWidth = 1;
@@ -71,7 +110,7 @@ export function desFacPri(numero = null) {
 
     const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = calculateLayout(salida, totalCols, numRows);
 
-    // --- 6. VISUALIZACIÓN MEJORADA ---
+    // --- 7. VISUALIZACIÓN MEJORADA ---
     const startY = paddingTop + 50; // Espacio para el resultado
 
     // Dibujar la columna izquierda (números que se van dividiendo)
@@ -112,36 +151,6 @@ export function desFacPri(numero = null) {
     });
 
     salida.appendChild(fragment);
-}
-
-/**
- * Factoriza un número en sus factores primos de manera optimizada.
- * @param {number} n - El número a factorizar.
- * @returns {number[]} - Array de factores primos.
- */
-function factorizarPrimos(n) {
-    const factores = [];
-
-    // Manejar el factor 2 por separado
-    while (n % 2 === 0) {
-        factores.push(2);
-        n /= 2;
-    }
-
-    // Factores impares
-    for (let i = 3; i * i <= n; i += 2) {
-        while (n % i === 0) {
-            factores.push(i);
-            n /= i;
-        }
-    }
-
-    // Si queda un factor primo mayor que 2
-    if (n > 2) {
-        factores.push(n);
-    }
-
-    return factores;
 }
 
 /**
