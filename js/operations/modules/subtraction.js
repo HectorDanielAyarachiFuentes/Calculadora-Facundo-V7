@@ -1,11 +1,11 @@
 // =======================================================
 // --- operations/modules/subtraction.js (REFACTORIZADO) ---
-// Utiliza helpers comunes para reducir duplicación y mejorar la legibilidad.
+// Utiliza la clase base VisualOperation para una estructura OOP.
 // =======================================================
 "use strict";
 
 import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
-import * as CommonOps from '../utils/common-operations.js';
+import { VisualOperation } from '../utils/VisualOperation.js';
 import { salida } from '../../config.js';
 
 let animationLoopId = null;
@@ -82,106 +82,90 @@ function formatWithComma(numStr, dec) {
     return `${padded.slice(0, -dec)},${padded.slice(-dec)}`;
 }
 
-export async function resta(numerosAR) {
-    salida.innerHTML = "";
-    if (animationLoopId) clearTimeout(animationLoopId);
+class RestaOperation extends VisualOperation {
+    constructor(numerosAR, salida) {
+        super(numerosAR, salida);
+        if (animationLoopId) clearTimeout(animationLoopId);
+    }
 
-    // --- 1. Preparar operandos y layout usando helpers ---
-    const {
-        partesOperandos,
-        maxIntLength,
-        maxDecLength,
-        displayWidth,
-        operandosParaCalcular
-    } = CommonOps.prepararOperandos(numerosAR);
+    _getGridDimensions() {
+        return {
+            width: this.displayWidth + 1,
+            height: 5 // Altura suficiente para los préstamos
+        };
+    }
 
-    const [n1, n2] = operandosParaCalcular;
+    _getOperatorSign() {
+        return "-";
+    }
 
-    const minuendoBigInt = BigInt(n1);
-    const sustraendoBigInt = BigInt(n2);
+    _getOperandsForDisplay() {
+        // Si el resultado es negativo, intercambiamos los operandos para la visualización.
+        return this.resultado.esNegativo ? [this.partesOperandos[1], this.partesOperandos[0]] : this.partesOperandos;
+    }
 
-    const isNegative = minuendoBigInt < sustraendoBigInt;
-    const n1Anim = isNegative ? n2 : n1; 
-    const n2Anim = isNegative ? n1 : n2; 
-    const resultadoAbsStr = (isNegative ? sustraendoBigInt - minuendoBigInt : minuendoBigInt - sustraendoBigInt).toString();
-    
-    // --- 2. Cálculo del Layout ---
-    const anchoGridInCeldas = displayWidth + 1; 
-    const altoGridInRows = 5; // Altura suficiente para los elementos estáticos y los préstamos.
-    const layoutParams = CommonOps.calcularLayout(salida, anchoGridInCeldas, altoGridInRows);
-    const { tamCel, tamFuente } = layoutParams;
-    
-    // --- 3. Dibujo de elementos estáticos ---
-    const yPosMinuendo = layoutParams.paddingTop + tamCel;
-    
-    // Si el resultado es negativo, intercambiamos los operandos para la visualización.
-    const operandosDisplay = isNegative ? [partesOperandos[1], partesOperandos[0]] : partesOperandos;
-    
-    // Dibujar operandos (minuendo y sustraendo)
-    const yPosDespuesDeOperandos = CommonOps.dibujarOperandos(salida, operandosDisplay, maxIntLength, maxDecLength, anchoGridInCeldas, layoutParams, yPosMinuendo);
+    _calculateResult() {
+        const [n1, n2] = this.operandosParaCalcular;
+        const minuendoBigInt = BigInt(n1);
+        const sustraendoBigInt = BigInt(n2);
 
-    // Dibujar signo de resta
-    const signCol = displayWidth + 1;
-    CommonOps.dibujarSignoOperacion(salida, "-", signCol, yPosDespuesDeOperandos, anchoGridInCeldas, layoutParams);
-    
-    await esperar(500);
+        this.resultado.esNegativo = minuendoBigInt < sustraendoBigInt;
+        this.resultado.raw = (this.resultado.esNegativo ? sustraendoBigInt - minuendoBigInt : minuendoBigInt - sustraendoBigInt).toString();
+        this.resultado.display = formatWithComma(this.resultado.raw, this.maxDecLength);
+    }
 
-    // --- 4. Animación de préstamos ---
-    const borrowChains = calculateBorrows(n1Anim, n2Anim);
-    const borrowNumberCells = {};
-
-    for (const chain of borrowChains) {
-        for (const step of chain) {
-            const digitsToRight = n1Anim.length - 1 - step.index;
-            const hasCommaToRight = maxDecLength > 0 && digitsToRight >= maxDecLength;
-            const visualCellsToRight = digitsToRight + (hasCommaToRight ? 1 : 0);
-            const visualCol = anchoGridInCeldas - 1 - visualCellsToRight;
-
-            const xPos = layoutParams.offsetHorizontal + visualCol * tamCel + layoutParams.paddingLeft;
-            const yNewNum = yPosMinuendo - tamCel * 0.7;
-
-            if (borrowNumberCells[step.index]) {
-                salida.removeChild(borrowNumberCells[step.index]);
-            }
-            
-            salida.appendChild(crearTachadoAnimado({ left: `${xPos}px`, top: `${yPosMinuendo + tamCel / 2}px`, width: `${tamCel}px` }));
-            await esperar(300);
-
-            const numStr = step.newValue.toString();
-            const widthMultiplier = numStr.length > 1 ? 1.4 : 1;
-            const leftOffset = numStr.length > 1 ? -tamCel * 0.2 : 0;
-            
-            const newNumber = crearCeldaAnimada("output-grid__cell output-grid__cell--resto", numStr, {
-                left: `${xPos + leftOffset}px`, top: `${yNewNum}px`, width: `${tamCel * widthMultiplier}px`, height: `${tamCel}px`, fontSize: `${tamFuente * 0.7}px`
-            }, 0);
-            newNumber.classList.add('loop-anim-element');
-            salida.appendChild(newNumber);
-            borrowNumberCells[step.index] = newNumber;
-            await esperar(300);
-        }
+    async _animateSteps() {
         await esperar(500);
-    }
-    
-    // --- 5. Dibujo de línea y resultado FINAL ---
-    const yPosLinea = yPosDespuesDeOperandos;
-    CommonOps.dibujarLinea(salida, signCol, yPosLinea, anchoGridInCeldas, layoutParams);
-    await esperar(10);
 
-    const yPosResultado = yPosLinea + tamCel * 0.2;
-    const resultadoDisplay = formatWithComma(resultadoAbsStr, maxDecLength);
-    const resultFontSize = `${tamFuente}px`; 
-    
-    if (isNegative) {
-        const resultSignCol = anchoGridInCeldas - resultadoDisplay.length - 1;
-        const resultSignLeft = layoutParams.offsetHorizontal + resultSignCol * tamCel + layoutParams.paddingLeft;
-        salida.appendChild(crearCelda("output-grid__cell output-grid__cell--cociente", "-", {
-            left: `${resultSignLeft}px`, top: `${yPosResultado}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: resultFontSize
-        }));
+        const [n1, n2] = this.operandosParaCalcular;
+        const n1Anim = this.resultado.esNegativo ? n2 : n1;
+        const n2Anim = this.resultado.esNegativo ? n1 : n2;
+
+        const borrowChains = calculateBorrows(n1Anim, n2Anim);
+        const borrowNumberCells = {};
+        const yPosMinuendo = this.layoutParams.paddingTop + this.layoutParams.tamCel;
+
+        for (const chain of borrowChains) {
+            for (const step of chain) {
+                const digitsToRight = n1Anim.length - 1 - step.index;
+                const hasCommaToRight = this.maxDecLength > 0 && digitsToRight >= this.maxDecLength;
+                const visualCellsToRight = digitsToRight + (hasCommaToRight ? 1 : 0);
+                const visualCol = this._getGridDimensions().width - 1 - visualCellsToRight;
+
+                const xPos = this.layoutParams.offsetHorizontal + visualCol * this.layoutParams.tamCel + this.layoutParams.paddingLeft;
+                const yNewNum = yPosMinuendo - this.layoutParams.tamCel * 0.7;
+
+                if (borrowNumberCells[step.index]) {
+                    this.salida.removeChild(borrowNumberCells[step.index]);
+                }
+                
+                this.salida.appendChild(crearTachadoAnimado({ left: `${xPos}px`, top: `${yPosMinuendo + this.layoutParams.tamCel / 2}px`, width: `${this.layoutParams.tamCel}px` }));
+                await esperar(300);
+
+                const numStr = step.newValue.toString();
+                const widthMultiplier = numStr.length > 1 ? 1.4 : 1;
+                const leftOffset = numStr.length > 1 ? -this.layoutParams.tamCel * 0.2 : 0;
+                
+                const newNumber = crearCeldaAnimada("output-grid__cell output-grid__cell--resto", numStr, {
+                    left: `${xPos + leftOffset}px`, top: `${yNewNum}px`, width: `${this.layoutParams.tamCel * widthMultiplier}px`, height: `${this.layoutParams.tamCel}px`, fontSize: `${this.layoutParams.tamFuente * 0.7}px`
+                }, 0);
+                newNumber.classList.add('loop-anim-element');
+                this.salida.appendChild(newNumber);
+                borrowNumberCells[step.index] = newNumber;
+                await esperar(300);
+            }
+            await esperar(500);
+        }
+        await esperar(10); // Pequeña pausa antes de dibujar el resultado
     }
-    
-    // Dibujar el resultado final usando el helper
-    CommonOps.dibujarResultado(salida, resultadoDisplay, yPosResultado, anchoGridInCeldas, layoutParams);
-    
-    const elementsToLoop = salida.querySelectorAll('.loop-anim-element');
-    startBorrowLoopAnimation(elementsToLoop);
+
+    _finalize() {
+        const elementsToLoop = this.salida.querySelectorAll('.loop-anim-element');
+        startBorrowLoopAnimation(elementsToLoop);
+    }
+}
+
+export async function resta(numerosAR) {
+    const op = new RestaOperation(numerosAR, salida);
+    await op.execute();
 }
