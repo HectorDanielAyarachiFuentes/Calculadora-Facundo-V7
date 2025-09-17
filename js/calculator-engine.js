@@ -72,32 +72,8 @@ export async function calculate(addToHistory = true) {
 
     let operationSuccess = false;
     try {
-        switch (operador) {
-            case '+': 
-                await operations.suma(numerosAR); 
-                operationSuccess = true;
-                break;
-            case '-': 
-                await operations.resta(numerosAR); 
-                operationSuccess = true;
-                break;
-            case 'x':
-                // CORRECCIÓN: Se elimina el argumento 'salida' que causaba el error.
-                if (errorHandler.validarMultiplicacion(numerosAR)) {
-                    await operations.multiplica(numerosAR);
-                    operationSuccess = true;
-                }
-                break;
-            case '/':
-                // CORRECCIÓN: Se elimina el argumento 'salida' que causaba el error.
-                if (errorHandler.validarDivision(numerosAR)) {
-                    lastDivisionState = { operacionInput: entrada, numerosAR, tipo: 'division' };
-                    divext ? await operations.divideExt(numerosAR) : await operations.divide(numerosAR);
-                    operationSuccess = true;
-                }
-                break;
-            default: errorHandler.mostrarError('invalidOperation');
-        }
+        operationSuccess = await operations.executeVisualOperation(operador, numerosAR, { isShortDivision: divext });
+        if (operador === '/' && operationSuccess) lastDivisionState = { operacionInput: entrada, numerosAR, tipo: 'division' };
     } catch (error) {
         console.error('Error durante el cálculo:', error);
         errorHandler.mostrarError('invalidOperation', { error });

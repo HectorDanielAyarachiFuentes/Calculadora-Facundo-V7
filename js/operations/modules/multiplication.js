@@ -8,7 +8,7 @@ import { VisualOperation } from '../utils/VisualOperation.js';
 import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
 import { salida } from '../../config.js';
 
-class MultiplicationOperation extends VisualOperation {
+export class MultiplicationOperation extends VisualOperation {
     constructor(numerosAR, salida) {
         super(numerosAR, salida);
         this.coloresParciales = ['color-parcial-1', 'color-parcial-2', 'color-parcial-3'];

@@ -8,7 +8,7 @@ import { crearCelda, crearFlechaLlevada, esperar } from '../utils/dom-helpers.js
 import { VisualOperation } from '../utils/VisualOperation.js';
 import { salida } from '../../config.js';
 
-class SumaOperation extends VisualOperation {
+export class SumaOperation extends VisualOperation {
     constructor(numerosAR, salida) {
         super(numerosAR, salida);
     }

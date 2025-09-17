@@ -469,7 +469,7 @@ function validarDivision(numerosAR) {
     return true;
 }
 
-class DivisionOperation extends VisualOperation {
+export class DivisionOperation extends VisualOperation {
     constructor(numerosAR, salida, isShortDivision) {
         super(numerosAR, salida);
         this.isShortDivision = isShortDivision;

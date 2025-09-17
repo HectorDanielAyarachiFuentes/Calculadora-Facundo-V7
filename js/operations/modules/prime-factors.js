@@ -1,161 +1,167 @@
 // =======================================================
-// --- operations/modules/prime-factors.js (VERSIÓN OPTIMIZADA Y MEJORADA) ---
+// --- operations/modules/prime-factors.js (REFACTORIZADO) ---
+// Utiliza la clase base VisualOperation para una estructura OOP.
 // =======================================================
 "use strict";
 
-import { calculateLayout } from '../utils/layout-calculator.js';
+import { VisualOperation } from '../utils/VisualOperation.js';
 import { crearCelda, esperar } from '../utils/dom-helpers.js';
 import { salida, display } from '../../config.js';
 import { ErrorHandlerCentralized } from '../../error-handler-centralized.js';
 
 const errorHandler = new ErrorHandlerCentralized(salida);
 
+class PrimeFactorsOperation extends VisualOperation {
+    constructor(numerosAR, salida) {
+        super(numerosAR, salida);
+    }
+
+    // Sobrescribimos el método de ejecución para adaptarlo al flujo asíncrono del Web Worker.
+    async execute() {
+        this._clearOutput();
+        this._prepareOperands();
+        if (!this._validateInput()) return;
+
+        await this._calculateResult(); // 1. Calcular factores (asíncrono)
+        this._calculateLayout();       // 2. Calcular layout con los resultados
+        await this._drawStaticElements(); // 3. Dibujar elementos estáticos
+        await this._animateSteps();    // 4. Animar los pasos
+    }
+
+    _prepareOperands() {
+        this.numeroStr = this.numerosAR[0][0];
+        this.numOriginal = parseInt(this.numeroStr, 10);
+    }
+
+    _validateInput() {
+        return errorHandler.validarFactoresPrimos(this.numeroStr);
+    }
+
+    async _calculateResult() {
+        this.salida.innerHTML = '<p class="loading-indicator">Calculando factores primos...</p>';
+
+        const factores = await new Promise((resolve, reject) => {
+            const workerUrl = new URL('./prime-factors.worker.js', import.meta.url);
+            const worker = new Worker(workerUrl, { type: 'module' });
+
+            worker.onmessage = (event) => {
+                event.data.error ? reject(new Error(event.data.error)) : resolve(event.data.factores);
+                worker.terminate();
+            };
+
+            worker.onerror = (error) => {
+                console.error("Error en el Web Worker de factores primos:", error);
+                const errorMessage = error.message || "Error inesperado en el worker.";
+                reject(new Error(`Error en el worker: ${errorMessage}`));
+                worker.terminate();
+            };
+
+            worker.postMessage(this.numOriginal);
+        });
+
+        this.salida.innerHTML = ''; // Limpiar indicador de carga
+
+        // Preparar datos para visualización
+        this.numIzdaArray = [];
+        this.numDchaArray = [];
+        let tempNum = this.numOriginal;
+
+        if (this.numOriginal === 1) {
+            this.numIzdaArray.push(1);
+            this.numDchaArray.push(1);
+        } else {
+            for (const factor of factores) {
+                this.numIzdaArray.push(tempNum);
+                this.numDchaArray.push(factor);
+                tempNum /= factor;
+            }
+            if (tempNum > 1) {
+                this.numIzdaArray.push(tempNum);
+                this.numDchaArray.push(tempNum);
+            }
+        }
+        this.numIzdaArray.push(1);
+
+        this.resultado.display = formatearFactoresPrimos(factores);
+    }
+
+    _getGridDimensions() {
+        this.maxDigitsIzda = Math.max(...this.numIzdaArray.map(n => n.toString().length));
+        this.maxDigitsDcha = Math.max(...this.numDchaArray.map(n => n.toString().length));
+        this.separatorWidth = 1;
+        const totalCols = this.maxDigitsIzda + this.separatorWidth + this.maxDigitsDcha;
+        const numRows = this.numIzdaArray.length;
+        return { width: totalCols, height: numRows };
+    }
+
+    async _drawStaticElements() {
+        const { tamCel, paddingTop, paddingLeft, offsetHorizontal } = this.layoutParams;
+        const fragment = document.createDocumentFragment();
+
+        // Dibujar resultado final en la parte superior
+        const resultadoElement = crearCelda("output-grid__result", `Factores primos: ${this.resultado.display}`, {
+            left: '10px', top: '10px', fontSize: '18px', fontWeight: 'bold', color: '#66FF66'
+        });
+        fragment.appendChild(resultadoElement);
+
+        // Dibujar la línea vertical de separación
+        this.startY = paddingTop + 50; // Espacio para el resultado
+        const xLineaVertical = offsetHorizontal + this.maxDigitsIzda * tamCel + (this.separatorWidth * tamCel / 2) + paddingLeft;
+        const lineaVertical = crearCelda("output-grid__line", "", {
+            left: `${xLineaVertical}px`,
+            top: `${this.startY}px`,
+            width: `2px`,
+            height: `${this.numIzdaArray.length * tamCel}px`
+        });
+        fragment.appendChild(lineaVertical);
+        this.salida.appendChild(fragment);
+    }
+
+    async _animateSteps() {
+        const { tamCel, tamFuente, offsetHorizontal, paddingLeft } = this.layoutParams;
+
+        for (let idx = 0; idx < this.numIzdaArray.length; idx++) {
+            const yPos = this.startY + idx * tamCel;
+
+            // Dibujar número de la izquierda
+            const nIzda = this.numIzdaArray[idx];
+            let sIzda = nIzda.toString();
+            const xPosIzda = offsetHorizontal + (this.maxDigitsIzda - sIzda.length) * tamCel + paddingLeft;
+            this.salida.appendChild(crearCelda("output-grid__cell output-grid__cell--dividendo", sIzda, {
+                left: `${xPosIzda}px`, top: `${yPos}px`, width: `${sIzda.length * tamCel}px`,
+                height: `${tamCel}px`, fontSize: `${tamFuente}px`
+            }));
+
+            // Dibujar número de la derecha (factor primo) si existe
+            if (idx < this.numDchaArray.length) {
+                const nDcha = this.numDchaArray[idx];
+                let sDcha = nDcha.toString();
+                const xPosDcha = offsetHorizontal + (this.maxDigitsIzda + this.separatorWidth) * tamCel + paddingLeft;
+                this.salida.appendChild(crearCelda("output-grid__cell output-grid__cell--divisor", sDcha, {
+                    left: `${xPosDcha}px`, top: `${yPos}px`, width: `${sDcha.length * tamCel}px`,
+                    height: `${tamCel}px`, fontSize: `${tamFuente}px`
+                }));
+            }
+
+            await esperar(400);
+        }
+    }
+
+    // Estos métodos no son necesarios para esta operación, así que los sobrescribimos para que no hagan nada.
+    _drawResult() { }
+    _getOperatorSign() { return ''; }
+}
+
 /**
  * Realiza y visualiza la descomposición en factores primos de manera optimizada.
  */
 export async function desFacPri(numero = null) {
     errorHandler.limpiarErrores();
-    
     const entrada = numero || display.innerHTML;
+    const numerosAR = [[entrada, 0]]; // Adaptar al formato esperado por VisualOperation
 
-    // --- 1. VALIDACIÓN ---
-    // CORRECCIÓN: Se usa la instancia única de errorHandler y se pasa el argumento correcto.
-    if (!errorHandler.validarFactoresPrimos(entrada)) {
-        return;
-    }
-
-    const numOriginal = parseInt(entrada, 10);
-
-    // --- 2. USAR WEB WORKER PARA LA FACTORIZACIÓN ---
-    // Mostramos un indicador de carga mientras el Worker calcula.
-    salida.innerHTML = '<p class="loading-indicator">Calculando factores primos...</p>';
-
-    const factores = await new Promise((resolve, reject) => {
-        // Creamos una nueva instancia del Worker.
-        // MEJORA: Se utiliza `import.meta.url` para crear una ruta al worker que es
-        // relativa a este archivo JS, no al documento HTML. Esto es mucho más robusto
-        // y evita errores de carga (404) si la estructura de carpetas cambia.
-        const workerUrl = new URL('./prime-factors.worker.js', import.meta.url);
-        // SOLUCIÓN: Se añade { type: 'module' }. Esto le indica al navegador que cargue
-        // el worker como un módulo de JavaScript, lo cual es esencial en proyectos
-        // modernos y resuelve los errores de carga (404 o de tipo de script).
-        const worker = new Worker(workerUrl, { type: 'module' });
-
-        // 3. Escuchamos los mensajes que nos envía el Worker.
-        worker.onmessage = (event) => {
-            if (event.data.error) {
-                reject(new Error(event.data.error));
-            } else {
-                resolve(event.data.factores);
-            }
-            // Una vez que tenemos la respuesta, terminamos el worker para liberar recursos.
-            worker.terminate();
-        };
-
-        // Manejador de errores del worker.
-        worker.onerror = (error) => {
-            // El objeto 'error' que llega aquí puede ser un ErrorEvent o un Event genérico.
-            // Lo envolvemos en un nuevo Error para un manejo de errores consistente.
-            console.error("Error en el Web Worker de factores primos:", error);
-            // Si es un ErrorEvent, tendrá un 'message'. Si no (p.ej. error de carga), usamos un mensaje genérico.
-            const errorMessage = error.message ? error.message : "No se pudo cargar el script del worker o ocurrió un error inesperado.";
-            reject(new Error(`Error en el worker: ${errorMessage}`));
-            worker.terminate();
-        };
-
-        // 2. Enviamos el número al Worker para que comience el cálculo.
-        worker.postMessage(numOriginal);
-    });
-
-    // --- 4. PREPARAR DATOS PARA VISUALIZACIÓN (una vez que el worker ha respondido) ---
-    salida.innerHTML = ''; // Limpiamos el indicador de carga.
-    const fragment = document.createDocumentFragment();
-    const numIzdaArray = [];
-    const numDchaArray = [];
-    let tempNum = numOriginal;
-
-    if (numOriginal === 1) {
-        numIzdaArray.push(1);
-        numDchaArray.push(1);
-    } else {
-        for (const factor of factores) {
-            numIzdaArray.push(tempNum);
-            numDchaArray.push(factor);
-            tempNum /= factor;
-        }
-        if (tempNum > 1) {
-            numIzdaArray.push(tempNum);
-            numDchaArray.push(tempNum);
-        }
-    }
-    numIzdaArray.push(1);
-
-    // --- 5. MOSTRAR RESULTADO FINAL ---
-    const resultadoFinal = formatearFactoresPrimos(factores);
-    const resultadoElement = crearCelda("output-grid__result", `Factores primos: ${resultadoFinal}`, {
-        left: '10px',
-        top: '10px',
-        fontSize: '18px',
-        fontWeight: 'bold',
-        color: '#66FF66'
-    });
-    fragment.appendChild(resultadoElement);
-
-    // --- 6. CÁLCULO DEL LAYOUT ---
-    const maxDigitsIzda = Math.max(...numIzdaArray.map(n => n.toString().length));
-    const maxDigitsDcha = Math.max(...numDchaArray.map(n => n.toString().length));
-    const separatorWidth = 1;
-    const totalCols = maxDigitsIzda + separatorWidth + maxDigitsDcha;
-    const numRows = numIzdaArray.length;
-
-    const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = calculateLayout(salida, totalCols, numRows);
-
-    // --- 7. VISUALIZACIÓN MEJORADA ---
-    const startY = paddingTop + 50; // Espacio para el resultado
- 
-    // Dibujar la línea vertical de separación
-    const xLineaVertical = offsetHorizontal + maxDigitsIzda * tamCel + (separatorWidth * tamCel / 2) + paddingLeft;
-    const lineaVertical = crearCelda("output-grid__line", "", {
-        left: `${xLineaVertical}px`,
-        top: `${startY}px`,
-        width: `2px`,
-        height: `${numRows * tamCel}px`
-    });
-    fragment.appendChild(lineaVertical);
-    salida.appendChild(fragment); // Dibujar resultado y línea primero
-
-    // Dibujar las filas de la tabla de forma secuencial
-    for (let idx = 0; idx < numIzdaArray.length; idx++) {
-        // Dibujar número de la izquierda
-        const nIzda = numIzdaArray[idx];
-        let sIzda = nIzda.toString();
-        const xPosIzda = offsetHorizontal + (maxDigitsIzda - sIzda.length) * tamCel + paddingLeft;
-        const yPos = startY + idx * tamCel;
-        salida.appendChild(crearCelda("output-grid__cell output-grid__cell--dividendo", sIzda, {
-            left: `${xPosIzda}px`,
-            top: `${yPos}px`,
-            width: `${sIzda.length * tamCel}px`,
-            height: `${tamCel}px`,
-            fontSize: `${tamFuente}px`
-        }));
-
-        // Dibujar número de la derecha (factor primo) si existe
-        if (idx < numDchaArray.length) {
-            const nDcha = numDchaArray[idx];
-            let sDcha = nDcha.toString();
-            const xPosDcha = offsetHorizontal + (maxDigitsIzda + separatorWidth) * tamCel + paddingLeft;
-            salida.appendChild(crearCelda("output-grid__cell output-grid__cell--divisor", sDcha, {
-                left: `${xPosDcha}px`,
-                top: `${yPos}px`,
-                width: `${sDcha.length * tamCel}px`,
-                height: `${tamCel}px`,
-                fontSize: `${tamFuente}px`
-            }));
-        }
-
-        // Esperar antes de dibujar la siguiente fila
-        await esperar(400);
-    }
+    const op = new PrimeFactorsOperation(numerosAR, salida);
+    await op.execute();
 }
 
 /**

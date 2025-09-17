@@ -82,7 +82,7 @@ function formatWithComma(numStr, dec) {
     return `${padded.slice(0, -dec)},${padded.slice(-dec)}`;
 }
 
-class RestaOperation extends VisualOperation {
+export class RestaOperation extends VisualOperation {
     constructor(numerosAR, salida) {
         super(numerosAR, salida);
         if (animationLoopId) clearTimeout(animationLoopId);

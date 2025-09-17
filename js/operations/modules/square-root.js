@@ -6,8 +6,8 @@
 "use strict";
 
 import { crearCelda, esperar } from '../utils/dom-helpers.js';
-import { calculateLayout } from '../utils/layout-calculator.js';
 import { salida, display } from '../../config.js';
+import { VisualOperation } from '../utils/VisualOperation.js';
 import { ErrorHandlerCentralized } from '../../error-handler-centralized.js';
 
 // =======================================================
@@ -45,116 +45,161 @@ const errorHandler = new ErrorHandlerCentralized(salida);
 // FUNCIÓN PRINCIPAL
 // =======================================================
 
-export async function raizCuadrada(numero = null) {
-    let inputNumber;
-    if (numero !== null) {
-        if (!errorHandler.validarRaizCuadrada(numero)) {
-            return;
+class SquareRootOperation extends VisualOperation {
+    constructor(numerosAR, salida) {
+        super(numerosAR, salida);
+    }
+
+    // Sobrescribimos el método de ejecución para adaptarlo al flujo de la raíz cuadrada,
+    // donde el layout depende del resultado del cálculo.
+    async execute() {
+        this._clearOutput();
+        if (!this._prepareOperands()) return; // La validación ocurre aquí
+        this._calculateResult();
+        this._calculateLayout();
+        await this._drawStaticElements();
+        await this._animateSteps();
+        await this._finalize();
+    }
+
+    _prepareOperands() {
+        const inputStr = this.numerosAR[0][0];
+        if (!errorHandler.validarRaizCuadrada(inputStr)) {
+            return false;
         }
-        inputNumber = parseFloat(numero.replace(',', '.'));
-    } else {
-        inputNumber = validateAndParseInput();
+        const inputNumber = parseFloat(inputStr.replace(',', '.'));
+        const { groups, decimalPos, decGroups } = groupDigits(inputNumber);
+        this.groups = groups;
+        this.decimalPos = decimalPos;
+        this.decGroups = decGroups;
+        return true;
     }
-    if (inputNumber === null) return;
 
-    await visualizeSquareRoot(inputNumber);
+    _calculateResult() {
+        this.steps = calculateSquareRootSteps(this.groups, this.decGroups);
+        const rootSoFar = this.steps.map(step => step.foundDigitX).join('');
+        this.resultado.raw = rootSoFar;
+
+        const intPart = rootSoFar.substring(0, this.decimalPos) || '0';
+        const decPart = rootSoFar.substring(this.decimalPos);
+
+        if (decPart) {
+            this.resultado.display = `${intPart},${decPart}`;
+        } else {
+            this.resultado.display = intPart;
+        }
+    }
+
+    _getGridDimensions() {
+        const maxDigitsInStep = Math.max(...this.steps.map(s => s.numberToSubtract?.length || 0));
+        const totalDigits = this.groups.join('').length + (this.groups.length > 1 ? 1 : 0);
+        
+        const layoutWidth = Math.max(totalDigits, maxDigitsInStep) + this.groups.length + 3;
+        const layoutHeight = this.steps.length * 2 + 4;
+        return { width: layoutWidth, height: layoutHeight };
+    }
+
+    _calculateLayout() {
+        super._calculateLayout(); // Llama a _getGridDimensions y establece layoutParams base
+        const { tamCel, paddingTop } = this.layoutParams;
+        
+        // Añadir propiedades de layout personalizadas para la raíz cuadrada
+        this.layoutParams.yBase = paddingTop + (tamCel * 2);
+        this.layoutParams.radicalSignWidth = tamCel * VISUAL_CONFIG.RADICAL_WIDTH_RATIO;
+        this.layoutParams.numberBlockLeft = this.layoutParams.offsetHorizontal + (tamCel * VISUAL_CONFIG.RADICAL_WIDTH_RATIO) + this.layoutParams.paddingLeft;
+        this.layoutParams.resultYPosition = paddingTop;
+    }
+
+    async _drawStaticElements() {
+        const { tamCel, tamFuente, yBase, radicalSignWidth, numberBlockLeft, offsetHorizontal, paddingLeft } = this.layoutParams;
+    
+        const fullNumber = this.groups.join('');
+        const decimalIndex = this.decimalPos * 2;
+        const leftBlockCharCount = fullNumber.length + (this.decimalPos < this.groups.length ? 1 : 0);
+        const barWidth = (leftBlockCharCount * tamCel) - radicalSignWidth;
+        
+        drawRadicalSign(this.salida, offsetHorizontal + paddingLeft, yBase, radicalSignWidth, tamCel * 1.5, barWidth);
+        
+        const charPositions = drawNumbersWithDecimal(this.salida, fullNumber, decimalIndex, {
+            startX: numberBlockLeft,
+            y: yBase,
+            tamCel,
+            tamFuente
+        });
+        
+        this.positions = {
+            charPositions,
+            rootXStart: numberBlockLeft + (leftBlockCharCount * tamCel) + (tamCel * 0.5),
+            leftBlockCharCount,
+            decimalIndex
+        };
+    }
+
+    async _animateSteps() {
+        const { tamCel, tamFuente, yBase, resultYPosition } = this.layoutParams;
+        const { charPositions, rootXStart, decimalIndex } = this.positions;
+        
+        let yPos = yBase + tamCel * 1.2;
+        let remainderStr = '';
+        let currentRoot = '';
+
+        for (const [index, step] of this.steps.entries()) {
+            await esperar(ANIMATION_DELAYS.STEP_TRANSITION);
+
+            const stepData = prepareStepData(step, this.groups, remainderStr, index, charPositions, decimalIndex, tamCel);
+            
+            if (index > 0 || remainderStr) {
+                drawWorkingNumber(this.salida, stepData.currentWorkingNumber, stepData.xEndPos, yPos, tamCel, tamFuente);
+            }
+
+            const opCell = showOperationPlaceholder(this.salida, step, rootXStart, yPos, tamFuente);
+            
+            await esperar(ANIMATION_DELAYS.OPERATION_REVEAL);
+            
+            yPos = drawSubtractionStep(this.salida, step, stepData.xEndPos, yPos, stepData.currentWorkingNumber, tamCel, tamFuente);
+            
+            await esperar(ANIMATION_DELAYS.RESULT_SHOW);
+            
+            updateOperationDisplay(opCell, step);
+            currentRoot += step.foundDigitX;
+            
+            drawRootDigit(this.salida, step, index, this.decimalPos, rootXStart, resultYPosition, currentRoot, tamCel, tamFuente);
+            
+            remainderStr = step.newRemainder;
+            drawRemainder(this.salida, remainderStr, stepData.xEndPos, yPos, tamCel, tamFuente);
+            
+            yPos += tamCel * 0.8;
+        }
+    }
+
+    async _finalize() {
+        await esperar(ANIMATION_DELAYS.RESULT_SHOW);
+        const finalResultElements = this.salida.querySelectorAll('.output-grid__cell--cociente');
+        
+        finalResultElements.forEach(el => {
+            el.style.transition = 'color 0.4s ease, font-weight 0.4s ease';
+            el.style.color = '#ffc107';
+            el.style.fontWeight = 'bold';
+        });
+    }
+
+    // Estos métodos no son necesarios para esta operación, así que los sobrescribimos.
+    _drawResult() { }
+    _getOperatorSign() { return ''; }
 }
 
-// =======================================================
-// VALIDACIÓN DE ENTRADA
-// =======================================================
-
-function validateAndParseInput() {
+export async function raizCuadrada(numero = null) {
     errorHandler.limpiarErrores();
-    const entrada = display.innerHTML.replace(',', '.');
+    const entrada = numero || display.innerHTML;
+    const numerosAR = [[entrada, 0]]; // Adaptar al formato esperado por VisualOperation
 
-    if (!errorHandler.validarRaizCuadrada(entrada)) {
-        return null;
-    }
-
-    return parseFloat(entrada);
-}
-
-// =======================================================
-// VISUALIZACIÓN PRINCIPAL
-// =======================================================
-
-async function visualizeSquareRoot(numero) {
-    const container = setupContainer();
-    const { groups, decimalPos, decGroups } = groupDigits(numero);
-    const steps = calculateSquareRootSteps(groups, decGroups);
-    
-    const layout = calculateVisualizationLayout(container, groups, steps);
-    const positions = drawStaticElements(container, groups, decimalPos, layout);
-    
-    await animateSquareRootSteps(container, steps, groups, decimalPos, layout, positions);
-}
-
-function setupContainer() {
-    salida.innerHTML = '';
-    const container = document.createElement('div');
-    container.className = 'square-root-container';
-    Object.assign(container.style, {
-        position: 'relative',
-        width: '100%',
-        minHeight: '300px',
-        overflow: 'visible'
-    });
-    salida.appendChild(container);
-    return container;
-}
-
-// =======================================================
-// CÁLCULO DE LAYOUT Y POSICIONES
-// =======================================================
-
-function calculateVisualizationLayout(container, groups, steps) {
-    const maxDigitsInStep = Math.max(...steps.map(s => s.numberToSubtract?.length || 0));
-    const totalDigits = groups.join('').length + (groups.length > 1 ? 1 : 0);
-    
-    const layoutWidth = Math.max(totalDigits, maxDigitsInStep) + groups.length + 3;
-    const layoutHeight = steps.length * 2 + 4;
-    
-    const baseLayout = calculateLayout(container, layoutWidth, layoutHeight);
-    const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = baseLayout;
-    
-    return {
-        ...baseLayout,
-        yBase: paddingTop + (tamCel * 2),
-        radicalSignWidth: tamCel * VISUAL_CONFIG.RADICAL_WIDTH_RATIO,
-        numberBlockLeft: offsetHorizontal + (tamCel * VISUAL_CONFIG.RADICAL_WIDTH_RATIO) + paddingLeft,
-        resultYPosition: paddingTop
-    };
+    const op = new SquareRootOperation(numerosAR, salida);
+    await op.execute();
 }
 
 // =======================================================
 // DIBUJO DE ELEMENTOS ESTÁTICOS
 // =======================================================
-
-function drawStaticElements(container, groups, decimalPos, layout) {
-    const { tamCel, tamFuente, yBase, radicalSignWidth, numberBlockLeft, offsetHorizontal, paddingLeft } = layout;
-    
-    const fullNumber = groups.join('');
-    const decimalIndex = decimalPos * 2;
-    const leftBlockCharCount = fullNumber.length + (decimalPos < groups.length ? 1 : 0);
-    const barWidth = (leftBlockCharCount * tamCel) - radicalSignWidth;
-    
-    drawRadicalSign(container, offsetHorizontal + paddingLeft, yBase, radicalSignWidth, tamCel * 1.5, barWidth);
-    
-    const charPositions = drawNumbersWithDecimal(container, fullNumber, decimalIndex, {
-        startX: numberBlockLeft,
-        y: yBase,
-        tamCel,
-        tamFuente
-    });
-    
-    return {
-        charPositions,
-        rootXStart: numberBlockLeft + (leftBlockCharCount * tamCel) + (tamCel * 0.5),
-        leftBlockCharCount,
-        decimalIndex
-    };
-}
 
 function drawNumbersWithDecimal(container, fullNumber, decimalIndex, config) {
     const { startX, y, tamCel, tamFuente } = config;
@@ -192,57 +237,6 @@ function drawNumbersWithDecimal(container, fullNumber, decimalIndex, config) {
 
 // =======================================================
 // ANIMACIÓN DE PASOS
-// =======================================================
-
-async function animateSquareRootSteps(container, steps, groups, decimalPos, layout, positions) {
-    const { tamCel, tamFuente, yBase, resultYPosition } = layout;
-    const { charPositions, rootXStart, decimalIndex } = positions;
-    
-    let yPos = yBase + tamCel * 1.2;
-    let remainderStr = '';
-    let currentRoot = '';
-
-    for (const [index, step] of steps.entries()) {
-        await esperar(ANIMATION_DELAYS.STEP_TRANSITION);
-
-        const stepData = prepareStepData(step, groups, remainderStr, index, charPositions, decimalIndex, tamCel);
-        
-        if (index > 0 || remainderStr) {
-            drawWorkingNumber(container, stepData.currentWorkingNumber, stepData.xEndPos, yPos, tamCel, tamFuente);
-        }
-
-        const opCell = showOperationPlaceholder(container, step, rootXStart, yPos, tamFuente);
-        
-        await esperar(ANIMATION_DELAYS.OPERATION_REVEAL);
-        
-        yPos = drawSubtractionStep(container, step, stepData.xEndPos, yPos, stepData.currentWorkingNumber, tamCel, tamFuente);
-        
-        await esperar(ANIMATION_DELAYS.RESULT_SHOW);
-        
-        updateOperationDisplay(opCell, step);
-        currentRoot += step.foundDigitX;
-        
-        drawRootDigit(container, step, index, decimalPos, rootXStart, resultYPosition, currentRoot, tamCel, tamFuente);
-        
-        remainderStr = step.newRemainder;
-        drawRemainder(container, remainderStr, stepData.xEndPos, yPos, tamCel, tamFuente);
-        
-        yPos += tamCel * 0.8;
-    }
-
-    await esperar(ANIMATION_DELAYS.RESULT_SHOW);
-
-    const finalResultElements = container.querySelectorAll('.output-grid__cell--cociente');
-    
-    finalResultElements.forEach(el => {
-        el.style.transition = 'color 0.4s ease, font-weight 0.4s ease';
-        el.style.color = '#ffc107';
-        el.style.fontWeight = 'bold';
-    });
-}
-
-// =======================================================
-// FUNCIONES AUXILIARES PARA ANIMACIÓN
 // =======================================================
 
 function prepareStepData(step, groups, remainderStr, index, charPositions, decimalIndex, tamCel) {
