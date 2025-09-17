@@ -10,7 +10,8 @@ import {
     calculatorContainer,
     keyboardContainer
 } from './dom-elements.js';
-
+import { esperar } from './operations/utils/dom-helpers.js';
+ 
 /**
  * Muestra la pantalla de resultados y oculta el teclado.
  */
@@ -166,7 +167,7 @@ export function handleRippleEffect(e) {
  * Activa un efecto "glitch" en el display.
  * @param {string} text - El texto a mostrar durante el glitch.
  */
-export function triggerGlitchEffect(text) {
+export async function triggerGlitchEffect(text) {
     // --- MEJORA: Respetar el ajuste del usuario ---
     if (!window.settingsManager || !window.settingsManager.settings.glitchEffectEnabled) {
         return;
@@ -174,7 +175,8 @@ export function triggerGlitchEffect(text) {
 
     display.setAttribute('data-text', text);
     display.classList.add('glitch');
-    setTimeout(() => display.classList.remove('glitch'), 300);
+    await esperar(300); // Usamos esperar() para que la duración respete el multiplicador
+    display.classList.remove('glitch');
 }
 
 /**

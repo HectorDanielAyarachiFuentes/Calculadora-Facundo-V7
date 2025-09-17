@@ -1,10 +1,11 @@
 // =======================================================
-// --- operations/modules/subtraction.js (VERSIÓN CON CORRECCIÓN FINAL DE DIBUJO) ---
+// --- operations/modules/subtraction.js (REFACTORIZADO) ---
+// Utiliza helpers comunes para reducir duplicación y mejorar la legibilidad.
 // =======================================================
 "use strict";
 
-import { calculateLayout } from '../utils/layout-calculator.js';
-import { crearCelda, crearCeldaAnimada, esperar, crearFlechaLlevada } from '../utils/dom-helpers.js';
+import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
+import * as CommonOps from '../utils/common-operations.js';
 import { salida } from '../../config.js';
 
 let animationLoopId = null;
@@ -83,22 +84,18 @@ function formatWithComma(numStr, dec) {
 
 export async function resta(numerosAR) {
     salida.innerHTML = "";
-    const fragment = document.createDocumentFragment();
     if (animationLoopId) clearTimeout(animationLoopId);
 
-    // --- 1. Normalización de operandos ---
-    const [minuendoStrRaw, minuendoDec] = numerosAR[0];
-    const [sustraendoStrRaw, sustraendoDec] = numerosAR[1];
-    
-    const maxDec = Math.max(minuendoDec, sustraendoDec);
+    // --- 1. Preparar operandos y layout usando helpers ---
+    const {
+        partesOperandos,
+        maxIntLength,
+        maxDecLength,
+        displayWidth,
+        operandosParaCalcular
+    } = CommonOps.prepararOperandos(numerosAR);
 
-    const minuendoPadded = minuendoStrRaw.padEnd(minuendoStrRaw.length + maxDec - minuendoDec, '0');
-    const sustraendoPadded = sustraendoStrRaw.padEnd(sustraendoStrRaw.length + maxDec - sustraendoDec, '0');
-
-    const maxLen = Math.max(minuendoPadded.length, sustraendoPadded.length);
-
-    const n1 = minuendoPadded.padStart(maxLen, '0');
-    const n2 = sustraendoPadded.padStart(maxLen, '0');
+    const [n1, n2] = operandosParaCalcular;
 
     const minuendoBigInt = BigInt(n1);
     const sustraendoBigInt = BigInt(n2);
@@ -109,38 +106,24 @@ export async function resta(numerosAR) {
     const resultadoAbsStr = (isNegative ? sustraendoBigInt - minuendoBigInt : minuendoBigInt - sustraendoBigInt).toString();
     
     // --- 2. Cálculo del Layout ---
-    const n1Display = formatWithComma(n1Anim, maxDec);
-    const n2Display = formatWithComma(n2Anim, maxDec);
-    const maxDisplayLength = Math.max(n1Display.length, n2Display.length);
-    
-    const anchoGridInCeldas = maxDisplayLength + 1; 
-    const altoGridInRows = 5;
-    const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = calculateLayout(salida, anchoGridInCeldas, altoGridInRows);
+    const anchoGridInCeldas = displayWidth + 1; 
+    const altoGridInRows = 5; // Altura suficiente para los elementos estáticos y los préstamos.
+    const layoutParams = CommonOps.calcularLayout(salida, anchoGridInCeldas, altoGridInRows);
+    const { tamCel, tamFuente } = layoutParams;
     
     // --- 3. Dibujo de elementos estáticos ---
-    const yPosMinuendo = paddingTop + tamCel;
-    const yPosSustraendo = yPosMinuendo + tamCel;
+    const yPosMinuendo = layoutParams.paddingTop + tamCel;
+    
+    // Si el resultado es negativo, intercambiamos los operandos para la visualización.
+    const operandosDisplay = isNegative ? [partesOperandos[1], partesOperandos[0]] : partesOperandos;
+    
+    // Dibujar operandos (minuendo y sustraendo)
+    const yPosDespuesDeOperandos = CommonOps.dibujarOperandos(salida, operandosDisplay, maxIntLength, maxDecLength, anchoGridInCeldas, layoutParams, yPosMinuendo);
 
-    for (let i = 0; i < n1Display.length; i++) {
-        const char = n1Display[n1Display.length - 1 - i];
-        const col = anchoGridInCeldas - 1 - i;
-        const leftPos = offsetHorizontal + col * tamCel + paddingLeft;
-        const cellClass = char === ',' ? 'output-grid__cell--producto' : 'output-grid__cell--dividendo';
-        fragment.appendChild(crearCelda(cellClass, char, { left: `${leftPos}px`, top: `${yPosMinuendo}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: tamFuente + 'px' }));
-    }
+    // Dibujar signo de resta
+    const signCol = displayWidth + 1;
+    CommonOps.dibujarSignoOperacion(salida, "-", signCol, yPosDespuesDeOperandos, anchoGridInCeldas, layoutParams);
     
-    const signCol = anchoGridInCeldas - maxDisplayLength - 1;
-    const signLeft = offsetHorizontal + signCol * tamCel + paddingLeft;
-    fragment.appendChild(crearCelda("output-grid__cell output-grid__cell--producto", "-", { left: `${signLeft}px`, top: `${yPosSustraendo}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: tamFuente + 'px' }));
-    
-    for (let i = 0; i < n2Display.length; i++) {
-        const char = n2Display[n2Display.length - 1 - i];
-        const col = anchoGridInCeldas - 1 - i;
-        const leftPos = offsetHorizontal + col * tamCel + paddingLeft;
-        const cellClass = char === ',' ? 'output-grid__cell--producto' : 'output-grid__cell--dividendo';
-        fragment.appendChild(crearCelda(cellClass, char, { left: `${leftPos}px`, top: `${yPosSustraendo}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: tamFuente + 'px' }));
-    }
-    salida.appendChild(fragment);
     await esperar(500);
 
     // --- 4. Animación de préstamos ---
@@ -150,11 +133,11 @@ export async function resta(numerosAR) {
     for (const chain of borrowChains) {
         for (const step of chain) {
             const digitsToRight = n1Anim.length - 1 - step.index;
-            const hasCommaToRight = maxDec > 0 && digitsToRight >= maxDec;
+            const hasCommaToRight = maxDecLength > 0 && digitsToRight >= maxDecLength;
             const visualCellsToRight = digitsToRight + (hasCommaToRight ? 1 : 0);
             const visualCol = anchoGridInCeldas - 1 - visualCellsToRight;
 
-            const xPos = offsetHorizontal + visualCol * tamCel + paddingLeft;
+            const xPos = layoutParams.offsetHorizontal + visualCol * tamCel + layoutParams.paddingLeft;
             const yNewNum = yPosMinuendo - tamCel * 0.7;
 
             if (borrowNumberCells[step.index]) {
@@ -180,37 +163,24 @@ export async function resta(numerosAR) {
     }
     
     // --- 5. Dibujo de línea y resultado FINAL ---
-    const yPosLinea = yPosSustraendo + tamCel;
-    const lineLeft = offsetHorizontal + signCol * tamCel + paddingLeft;
-    const totalBlockWidth = (anchoGridInCeldas - signCol) * tamCel;
-    const linea = crearCelda("output-grid__line", "", { left: `${lineLeft}px`, top: `${yPosLinea}px`, width: `${totalBlockWidth}px`, height: `2px`});
-    salida.appendChild(linea);
-    await esperar(10); // Pequeña espera para asegurar que la línea se renderiza
+    const yPosLinea = yPosDespuesDeOperandos;
+    CommonOps.dibujarLinea(salida, signCol, yPosLinea, anchoGridInCeldas, layoutParams);
+    await esperar(10);
 
     const yPosResultado = yPosLinea + tamCel * 0.2;
-    const resultadoDisplay = formatWithComma(resultadoAbsStr, maxDec);
-    // === CORRECCIÓN CLAVE: Usar la fuente estándar (tamFuente), sin escalar a 0.9 ===
+    const resultadoDisplay = formatWithComma(resultadoAbsStr, maxDecLength);
     const resultFontSize = `${tamFuente}px`; 
     
     if (isNegative) {
         const resultSignCol = anchoGridInCeldas - resultadoDisplay.length - 1;
-        const resultSignLeft = offsetHorizontal + resultSignCol * tamCel + paddingLeft;
-        // Usar crearCelda normal (sin animación) y la fuente estándar para consistencia
+        const resultSignLeft = layoutParams.offsetHorizontal + resultSignCol * tamCel + layoutParams.paddingLeft;
         salida.appendChild(crearCelda("output-grid__cell output-grid__cell--cociente", "-", {
             left: `${resultSignLeft}px`, top: `${yPosResultado}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: resultFontSize
         }));
     }
     
-    for (let i = 0; i < resultadoDisplay.length; i++) {
-        const char = resultadoDisplay[resultadoDisplay.length - 1 - i];
-        const col = anchoGridInCeldas - 1 - i;
-        const leftPos = offsetHorizontal + col * tamCel + paddingLeft;
-        const cellClass = char === ',' ? 'output-grid__cell--producto' : 'output-grid__cell--cociente';
-        // Usar crearCelda normal (sin animación) y la fuente estándar
-        salida.appendChild(crearCelda(cellClass, char, {
-            left: `${leftPos}px`, top: `${yPosResultado}px`, width: `${tamCel}px`, height: `${tamCel}px`, fontSize: resultFontSize
-        }));
-    }
+    // Dibujar el resultado final usando el helper
+    CommonOps.dibujarResultado(salida, resultadoDisplay, yPosResultado, anchoGridInCeldas, layoutParams);
     
     const elementsToLoop = salida.querySelectorAll('.loop-anim-element');
     startBorrowLoopAnimation(elementsToLoop);
