@@ -114,33 +114,89 @@ class Syllabifier {
      * @returns {string[]} Un array con las sílabas de la palabra.
      */
     static syllabify(word) {
-        word = word.toLowerCase().trim();
-        if (word.length <= 3) return [word];
-        word = word.replace(/y/g, "i");
-        const syllables = [];
-        let i = 0;
-        while (i < word.length) {
-            let start = i;
-            while (start < word.length && !/[aeiouáéíóú]/.test(word[start])) start++;
-            while (start < word.length && /[aeiouáéíóú]/.test(word[start])) start++;
-            let end = start;
-            if (start < word.length - 1) {
-                const consonantCluster = word.substring(start).match(/^[^aeiouáéíóú]+/);
-                if (consonantCluster) {
-                    const cluster = consonantCluster[0];
-                    if (cluster.length === 1 || (cluster.length === 2 && /^(ll|rr|ch|[bcdfghprt]l|[bcdfghprt]r)$/.test(cluster))) {
-                        end = start;
-                    } else if (cluster.length >= 2) {
-                        end = start + 1;
-                    }
-                }
-            } else {
-                end = word.length;
+        // Implementación mejorada que considera diptongos y hiatos.
+        // Referencia de reglas: https://www.rae.es/dpd/diptongo
+        const VOWELS = 'aeiouáéíóú';
+        const STRONG_VOWELS = 'aeoáéó';
+        const WEAK_VOWELS = 'iuíú';
+
+        word = word.toLowerCase().trim().replace(/y/g, 'i');
+        if (word.length <= 2) return [word];
+
+        let syllables = [];
+        let currentSyllable = '';
+
+        for (let i = 0; i < word.length; i++) {
+            currentSyllable += word[i];
+
+            // Buscamos la siguiente vocal para decidir si cortar la sílaba
+            const nextVowelIndex = word.slice(i + 1).search(`[${VOWELS}]`);
+            const hasNextVowel = nextVowelIndex !== -1;
+
+            // Si no hay más vocales, el resto de la palabra es parte de la sílaba actual
+            if (!hasNextVowel) {
+                currentSyllable += word.slice(i + 1);
+                break;
             }
-            syllables.push(word.substring(i, end));
-            i = end;
+
+            // Si el caracter actual es una vocal, analizamos el contexto
+            if (VOWELS.includes(word[i])) {
+                const nextChar = word[i + 1];
+                const nextNextChar = word[i + 2];
+                const isNextCharVowel = VOWELS.includes(nextChar);
+
+                // Regla de HIATO: dos vocales fuertes se separan (po-e-ta)
+                if (isNextCharVowel && STRONG_VOWELS.includes(word[i]) && STRONG_VOWELS.includes(nextChar)) {
+                    syllables.push(currentSyllable);
+                    currentSyllable = '';
+                    continue;
+                }
+
+                // Regla de HIATO: vocal fuerte + vocal débil acentuada (ca-í-da)
+                if (isNextCharVowel && ((STRONG_VOWELS.includes(word[i]) && 'íú'.includes(nextChar)) || ('íú'.includes(word[i]) && STRONG_VOWELS.includes(nextChar)))) {
+                    syllables.push(currentSyllable);
+                    currentSyllable = '';
+                    continue;
+                }
+            }
+
+            // Analizar el grupo de consonantes entre la vocal actual y la siguiente
+            const consonants = word.substring(i + 1, i + 1 + nextVowelIndex);
+            if (consonants.length > 1) {
+                // Grupos inseparables (bl, cr, ll, ch, rr)
+                if (/^(ll|rr|ch|[bcdfghprt]l|[bcdfghprt]r)$/.test(consonants)) {
+                    // La sílaba se corta ANTES del grupo inseparable
+                    syllables.push(currentSyllable);
+                    currentSyllable = '';
+                } else {
+                    // Grupos separables (ns, st, rd). La primera consonante se queda.
+                    currentSyllable += consonants[0];
+                    syllables.push(currentSyllable);
+                    currentSyllable = '';
+                    // Ajustar el índice para no procesar la consonante dos veces
+                    i++;
+                }
+            } else if (consonants.length === 1) {
+                // Si solo hay una consonante, la sílaba se corta antes de ella.
+                syllables.push(currentSyllable);
+                currentSyllable = '';
+            }
         }
-        return syllables.filter(Boolean);
+
+        if (currentSyllable) {
+            syllables.push(currentSyllable);
+        }
+
+        // Post-procesamiento para unir sílabas que quedaron de una sola consonante
+        // (Ej: "a-c-ti-vo" -> "ac-ti-vo")
+        for (let i = syllables.length - 2; i >= 0; i--) {
+            if (syllables[i+1].length === 1 && !VOWELS.includes(syllables[i+1])) {
+                syllables[i] += syllables[i+1];
+                syllables.splice(i+1, 1);
+            }
+        }
+
+        return syllables;
     }
 }
 
