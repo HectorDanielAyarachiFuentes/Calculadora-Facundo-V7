@@ -9,8 +9,7 @@
 .bubble-main,
 .history-toggle-btn,
 .theme-toggle-btn {
-    position: fixed;
-    z-index: 1001; // Capa base para los botones flotantes.
+    // La posición (fixed o relative) se define individualmente para cada botón.
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -45,8 +44,6 @@
 
 // 1. Botón de Herramientas (Menú principal)
 .bubble-main {
-    top: 20px;
-    left: 20px;
     background-color: var(--bubble-btn-primary-bg);
     color: var(--bubble-btn-text-color);
     
@@ -58,18 +55,14 @@
         transform: scale(1.1);
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
     }
-    
-    @include mobile {
-        top: 10px;
-        left: 10px;
-    }
 }
 
 // 2. Botón de Historial
 .history-toggle-btn {
+    position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1002;
+    z-index: 1002; // Z-index para estar sobre otros elementos flotantes si se superponen.
     background-color: var(--nav-bg);
     border: 1px solid #555;
 
@@ -93,6 +86,7 @@
 
 // 3. Botón de Tema
 .theme-toggle-btn {
+    position: fixed;
     top: 80px; // Lo posicionamos debajo del botón de historial.
     right: 20px;
     background-color: transparent;

@@ -21,8 +21,8 @@ html {
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    // Se elimina `justify-content: center` para que no afecte la posición de los modales.
+    align-items: center; // Se mantiene el centrado horizontal para el contenido principal.
     min-height: 100svh;
     padding: 20px;
     background-color: var(--bg-main);

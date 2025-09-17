@@ -11,6 +11,7 @@ $keyboard-gap: 2px;
 .calculator-container {
     position: relative;
     width: 100%;
+    margin: auto 0; // Centra verticalmente el contenedor en el espacio disponible del body (flex).
     /* MEJORA: Aumentado el tamaño para que ocupe más espacio en pantallas grandes usando unidades relativas (vmin) */
     max-width: 80vmin;
     opacity: 0;
@@ -23,6 +24,7 @@ $keyboard-gap: 2px;
 
     // Layout flexible para móviles
     @include mobile {
+        margin: 0; // En móvil, el contenedor ocupa todo el espacio, no necesita margen.
         max-width: none;
         margin-bottom: 0;
         flex-grow: 1;

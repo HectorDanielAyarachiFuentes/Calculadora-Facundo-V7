@@ -129,7 +129,6 @@ html, body, button, input, div, p, span, a, h1, h2, h3, h4, h5, h6 {
 body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   min-height: 100svh;
   padding: 20px;
@@ -413,6 +412,7 @@ header[role=banner] .subtitle a:hover {
 .calculator-container {
   position: relative;
   width: 100%;
+  margin: auto 0;
   /* MEJORA: Aumentado el tamaño para que ocupe más espacio en pantallas grandes usando unidades relativas (vmin) */
   max-width: 80vmin;
   opacity: 0;
@@ -423,6 +423,7 @@ header[role=banner] .subtitle a:hover {
 }
 @media (max-width: 600px) {
   .calculator-container {
+    margin: 0;
     max-width: none;
     margin-bottom: 0;
     flex-grow: 1;
@@ -771,8 +772,6 @@ header[role=banner] .subtitle a:hover {
 .bubble-main,
 .history-toggle-btn,
 .theme-toggle-btn {
-  position: fixed;
-  z-index: 1001;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -807,8 +806,6 @@ header[role=banner] .subtitle a:hover {
 }
 
 .bubble-main {
-  top: 20px;
-  left: 20px;
   background-color: var(--bubble-btn-primary-bg);
   color: var(--bubble-btn-text-color);
 }
@@ -819,14 +816,9 @@ header[role=banner] .subtitle a:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
-@media (max-width: 600px) {
-  .bubble-main {
-    top: 10px;
-    left: 10px;
-  }
-}
 
 .history-toggle-btn {
+  position: fixed;
   top: 20px;
   right: 20px;
   z-index: 1002;
@@ -854,6 +846,7 @@ header[role=banner] .subtitle a:hover {
 }
 
 .theme-toggle-btn {
+  position: fixed;
   top: 80px;
   right: 20px;
   background-color: transparent;
@@ -1003,6 +996,12 @@ header[role=banner] .subtitle a:hover {
 /* --- COMPONENTE: CALCULADORA (Mejorado y Refactorizado) --- */
 /* ======================================================= */
 /* --- COMPONENTE: BARRA LATERAL DE UTILIDADES (BURBUJAS) --- */
+.sidebar-wrapper {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1050;
+}
 .sidebar-wrapper .bubble-btn {
   width: 55px;
   height: 55px;
@@ -1041,6 +1040,8 @@ header[role=banner] .subtitle a:hover {
 @media (max-width: 600px) {
   .sidebar-wrapper {
     --floating-btn-margin-mobile: 10px;
+    top: var(--floating-btn-margin-mobile);
+    left: var(--floating-btn-margin-mobile);
   }
   .sidebar-wrapper .bubble-btn, .sidebar-wrapper .bubble-sub {
     width: 48px;
