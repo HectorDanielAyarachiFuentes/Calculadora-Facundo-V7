@@ -143,6 +143,34 @@
                         </div>
                     </div>
                 </div>
+                <!-- NUEVO: Categoría de Conversores -->
+                <div class="d-flex flex-column align-items-start">
+                    <button class="btn btn-warning bubble-btn" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#converterSubOptions" aria-expanded="false" aria-controls="converterSubOptions"
+                        title="Conversores">
+                        <i class="fa-solid fa-right-left"></i>
+                    </button>
+                    <div class="collapse mt-2 ps-4" id="converterSubOptions">
+                        <div class="d-flex flex-column gap-2">
+                            <button class="btn btn-warning bubble-btn bubble-sub" data-modal-target="unitConverter"
+                                title="Conversor de Unidades">
+                                <i class="fa-solid fa-ruler-combined"></i>
+                            </button>
+                            <button class="btn btn-warning bubble-btn bubble-sub" data-modal-target="baseConverter"
+                                title="Conversor de Bases Numéricas">
+                                <i class="fa-solid fa-hashtag"></i>
+                            </button>
+                            <button class="btn btn-warning bubble-btn bubble-sub" data-modal-target="temperatureConverter"
+                                title="Conversor de Temperatura">
+                                <i class="fa-solid fa-temperature-half"></i>
+                            </button>
+                            <button class="btn btn-warning bubble-btn bubble-sub" data-modal-target="currencyConverter"
+                                title="Conversor de Moneda">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <button class="btn btn-secondary bubble-btn" data-modal-target="config" title="Configuración">
                     <i class="fa-solid fa-gears"></i>
                 </button>
@@ -183,6 +211,9 @@
     <script src="js/settings.js"></script>
     <script src="js/geometry.js"></script>
     <script type="module" src="js/bostraplectornumeros.js"></script>
+    <script src="scss/unit-converter.js"></script>
+    <script src="scss/base-converter.js"></script>
+    <script src="scss/temperature-converter.js"></script>
     <script src="js/draggable-buttons.js"></script>
 </body>
 

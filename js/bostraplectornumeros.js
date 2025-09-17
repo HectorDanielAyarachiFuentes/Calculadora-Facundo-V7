@@ -593,6 +593,65 @@ class NumberReaderApp {
                         }
                     }
                 },
+                unitConverter: {
+                    title: "Conversor de Unidades",
+                    body: `
+                        <div id="unit-converter-container" class="converter-app">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-12">
+                                    <label for="unit-category" class="form-label">Tipo de Medida</label>
+                                    <select id="unit-category" class="form-select">
+                                        <option value="length">Longitud</option>
+                                        <option value="mass">Masa</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="unit-from" class="form-label">De:</label>
+                                    <select id="unit-from" class="form-select"></select>
+                                    <input type="number" id="unit-from-value" class="form-control mt-2" value="1">
+                                </div>
+                                <div class="col-md-2 text-center d-flex align-items-center justify-content-center pt-4">
+                                    <i class="fa-solid fa-right-left fs-2 text-secondary converter-app__arrow"></i>
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="unit-to" class="form-label">A:</label>
+                                    <select id="unit-to" class="form-select"></select>
+                                    <input type="number" id="unit-to-value" class="form-control mt-2">
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    onShow: () => {
+                        if (window.UnitConverterApp) new window.UnitConverterApp('unit-converter-container');
+                    }
+                },
+                baseConverter: {
+                    title: "Conversor de Bases Numéricas",
+                    body: `
+                        <div id="base-converter-container" class="converter-app">
+                            <div class="input-group"><span class="input-group-text">Decimal</span><input type="text" id="base-dec" class="form-control" placeholder="Ej: 10"></div>
+                            <div class="input-group"><span class="input-group-text">Binario</span><input type="text" id="base-bin" class="form-control" placeholder="Ej: 1010"></div>
+                            <div class="input-group"><span class="input-group-text">Octal</span><input type="text" id="base-oct" class="form-control" placeholder="Ej: 12"></div>
+                            <div class="input-group"><span class="input-group-text">Hexadecimal</span><input type="text" id="base-hex" class="form-control" placeholder="Ej: A"></div>
+                        </div>
+                    `,
+                    onShow: () => {
+                        if (window.BaseConverterApp) new window.BaseConverterApp('base-converter-container');
+                    }
+                },
+                temperatureConverter: {
+                    title: "Conversor de Temperatura",
+                    body: `
+                        <div id="temperature-converter-container" class="converter-app">
+                            <div class="input-group"><span class="input-group-text">Celsius (°C)</span><input type="number" id="temp-celsius" class="form-control"></div>
+                            <div class="input-group"><span class="input-group-text">Fahrenheit (°F)</span><input type="number" id="temp-fahrenheit" class="form-control"></div>
+                            <div class="input-group"><span class="input-group-text">Kelvin (K)</span><input type="number" id="temp-kelvin" class="form-control"></div>
+                        </div>
+                    `,
+                    onShow: () => {
+                        if (window.TemperatureConverterApp) new window.TemperatureConverterApp('temperature-converter-container');
+                    }
+                },
                 config: { 
                     title: "Panel de Configuración", 
                     body: `

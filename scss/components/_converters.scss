@@ -1,0 +1,57 @@
+// scss/components/_converters.scss
+
+.converter-app {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; // Espacio entre grupos de inputs
+    padding: 1.5rem;
+    background-color: var(--history-hover-bg);
+    border-radius: 8px;
+
+    .form-label {
+        font-weight: 500;
+        color: var(--history-input-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .form-control, .form-select {
+        background-color: var(--bg-display);
+        color: var(--color-display-text);
+        border-color: var(--history-border-color);
+        font-weight: bold;
+        padding: 0.75rem 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &:focus {
+            background-color: var(--bg-display);
+            color: var(--color-display-text);
+            border-color: var(--focus-color);
+            // Usamos un valor rgba directo porque --focus-color-rgb no está definido globalmente
+            box-shadow: 0 0 0 0.25rem rgba(102, 255, 102, 0.25);
+        }
+    }
+
+    .input-group-text {
+        background-color: var(--history-header-bg);
+        border-color: var(--history-border-color);
+        color: var(--history-input-color);
+        min-width: 120px;
+        justify-content: center;
+        font-weight: 500;
+    }
+
+    // Estilos específicos para el conversor de unidades
+    &__arrow {
+        transition: transform 0.3s ease;
+    }
+
+    &:hover &__arrow {
+        transform: scale(1.1) rotate(5deg);
+        color: var(--focus-color);
+    }
+
+    // Ajustes para el layout de los conversores de base y temperatura
+    .input-group {
+        margin-bottom: 0 !important; // Anular el mb-3 de Bootstrap para usar el gap del contenedor
+    }
+}
