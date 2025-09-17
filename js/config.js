@@ -29,5 +29,6 @@ export const errorMessages = {
     integerSqrtRequired: "<p class='error'>La raíz cuadrada solo funciona con números enteros.</p>",
     negativeSqrt: "<p class='error'>No se puede calcular la raíz de un número negativo.</p>",
     nonExactSqrt: "<p class='error'>Este número no tiene una raíz cuadrada entera exacta.</p>",
-    noDivisionCalculated: "<p class='error'>Primero realiza una división para usar esta función.</p>"
+    noDivisionCalculated: "<p class='error'>Primero realiza una división para usar esta función.</p>",
+    moduloPorCero: "<p class='error'>No se puede calcular el módulo por cero.</p>"
 };

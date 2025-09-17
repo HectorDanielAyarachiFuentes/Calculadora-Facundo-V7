@@ -51,8 +51,8 @@ export function updateDivisionButtons(isDivisionValid, isDivext) {
  */
 export function updateKeyboardState(displayContent) {
     const esSoloCero = displayContent === '0';
-    const hasBinaryOperatorInExpression = /[+\-x/]/.test(displayContent.slice(displayContent.startsWith('-') ? 1 : 0).replace(/^[0-9,]+/, ''));
-    const partes = displayContent.split(/[+\-x/]/);
+    const hasBinaryOperatorInExpression = /[+\-x/%]/.test(displayContent.slice(displayContent.startsWith('-') ? 1 : 0).replace(/^[0-9,]+/, ''));
+    const partes = displayContent.split(/[+\-x/%]/);
     const ultimoNumero = partes[partes.length - 1];
     const demasiadosCaracteres = displayContent.length >= 21;
     const ultimoNumeroDemasiadoLargo = ultimoNumero.length >= 15;
@@ -62,7 +62,7 @@ export function updateKeyboardState(displayContent) {
         btn.disabled = deshabilitarNumeros;
     });
 
-    document.querySelectorAll('[data-value="+"], [data-value="-"], [data-value="x"], [data-value="/"]').forEach(btn => {
+    document.querySelectorAll('[data-value="+"], [data-value="-"], [data-value="x"], [data-value="/"], [data-value="%"]').forEach(btn => {
         btn.disabled = demasiadosCaracteres || hasBinaryOperatorInExpression || esSoloCero || displayContent.endsWith(',');
     });
 
@@ -75,7 +75,7 @@ export function updateKeyboardState(displayContent) {
         btn.disabled = !esNumeroEnteroSimple;
     });
 
-    const esCalculable = /^-?[0-9,]+\s*[+\-x/]\s*-?[0-9,]+$/.test(displayContent);
+    const esCalculable = /^-?[0-¡,]+\s*[+\-x/%]\s*-?[0-9,]+$/.test(displayContent);
     const btnIgual = document.querySelector('[data-action="calculate"]');
     if (btnIgual) btnIgual.disabled = !esCalculable;
 }

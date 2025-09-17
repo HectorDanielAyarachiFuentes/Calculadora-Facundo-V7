@@ -53,7 +53,7 @@ export class ErrorHandlerCentralized {
      * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.
      */
     validarOperacion(input) {
-        const isValid = /^-?[0-9,]+\s*[+\-x/]\s*-?[0-9,]+$/.test(input) && !/[+\-x/]$/.test(input.trim()) && !input.endsWith(',');
+        const isValid = /^-?[0-9,]+\s*[+\-x/%]\s*-?[0-9,]+$/.test(input) && !/[+\-x/%]$/.test(input.trim()) && !input.endsWith(',');
         if (!isValid) {
             return this.mostrarError('invalidOperation', { input });
         }
@@ -92,6 +92,19 @@ export class ErrorHandlerCentralized {
         if (divisor === '0') return this.mostrarError('division2');
         if (dividendo === '0') return this.mostrarError('division1');
         
+        return true;
+    }
+
+    /**
+     * Valida una operación de módulo.
+     * @param {Array<[string, number]>} numerosAR - Array con los operandos.
+     * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.
+     */
+    validarModulo(numerosAR) {
+        const [divisorValue, ] = numerosAR[1];
+        if (divisorValue === '0') {
+            return this.mostrarError('moduloPorCero');
+        }
         return true;
     }
 

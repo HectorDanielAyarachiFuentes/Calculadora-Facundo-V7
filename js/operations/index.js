@@ -22,11 +22,14 @@ export * from './modules/square-root.js';
 // los datos ANTES de llamar a las funciones de operación.
 export * from './utils/parsers.js';
 
+export * from './modules/modulo.js'; // Exportar la nueva operación
+
 // --- FÁBRICA DE OPERACIONES (NUEVO) ---
 import { SumaOperation } from './modules/addition.js';
 import { RestaOperation } from './modules/subtraction.js';
 import { MultiplicationOperation } from './modules/multiplication.js';
 import { DivisionOperation } from './modules/division.js';
+import { ModuloOperation } from './modules/modulo.js';
 import { salida } from '../config.js';
 import { ErrorHandlerCentralized } from '../error-handler-centralized.js';
 
@@ -36,7 +39,8 @@ const operationClassMap = {
     '+': SumaOperation,
     '-': RestaOperation,
     'x': MultiplicationOperation,
-    '/': DivisionOperation
+    '/': DivisionOperation,
+    '%': ModuloOperation
 };
 
 /**
@@ -55,6 +59,7 @@ export async function executeVisualOperation(operator, numerosAR, options = {}) 
 
     if (operator === 'x' && !errorHandler.validarMultiplicacion(numerosAR)) return false;
     if (operator === '/' && !errorHandler.validarDivision(numerosAR)) return false;
+    if (operator === '%' && !errorHandler.validarModulo(numerosAR)) return false;
 
     const op = (operator === '/') ? new OperationClass(numerosAR, salida, options.isShortDivision || false) : new OperationClass(numerosAR, salida);
     await op.execute();
