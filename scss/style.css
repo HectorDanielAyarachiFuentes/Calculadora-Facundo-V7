@@ -1516,4 +1516,33 @@ header[role=banner] .subtitle a:hover {
 /* Animación para el cambio de tema */
 .theme-transition {
   transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0.5rem;
+}
+
+.settings-group {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--history-border-color);
+}
+.settings-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.settings-group h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--history-text-color);
+}
+.settings-group p {
+  font-size: 0.9rem;
+  color: var(--history-input-color);
+  margin-bottom: 1rem;
 }/*# sourceMappingURL=style.css.map */

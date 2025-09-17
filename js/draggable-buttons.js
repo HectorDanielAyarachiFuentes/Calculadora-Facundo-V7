@@ -177,4 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => {
         draggables.forEach(loadPosition);
     });
+
+    // Expone una función global para que el panel de configuración pueda llamarla.
+    window.resetDraggableButtonPositions = () => {
+        if (confirm('¿Restaurar las posiciones de todos los botones flotantes a su estado original?')) {
+            draggables.forEach(resetPosition);
+            alert('Posiciones restauradas. Se aplicarán al recargar la página.');
+            window.location.reload();
+        }
+    };
 });

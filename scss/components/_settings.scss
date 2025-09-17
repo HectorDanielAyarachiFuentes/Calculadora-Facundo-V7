@@ -1,0 +1,31 @@
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0.5rem;
+}
+
+.settings-group {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--history-border-color);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--history-text-color);
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: var(--history-input-color);
+    margin-bottom: 1rem;
+  }
+}

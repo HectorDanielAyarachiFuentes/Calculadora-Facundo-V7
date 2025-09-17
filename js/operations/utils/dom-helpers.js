@@ -1,7 +1,10 @@
 // operations/utils/dom-helpers.js (VERSIÓN DEFINITIVA Y CORREGIDA PARA ALINEAMIENTO)
 "use strict";
 
-export const esperar = ms => new Promise(res => setTimeout(res, ms));
+export const esperar = ms => {
+    const speedMultiplier = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--animation-speed-multiplier')) || 1;
+    return new Promise(res => setTimeout(res, ms * speedMultiplier));
+};
 
 export function crearCelda(classNames, content, styles) {
     const celda = document.createElement('div');

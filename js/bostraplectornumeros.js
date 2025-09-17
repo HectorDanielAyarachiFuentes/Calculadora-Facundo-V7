@@ -573,7 +573,37 @@ class NumberReaderApp {
                         }
                     }
                 },
-                config: { title: "Panel de Configuración", body: `<p>Modulo en construccion 🧐.</p>` },
+                config: { 
+                    title: "Panel de Configuración", 
+                    body: `
+                        <div class="settings-panel">
+                            <div class="settings-group">
+                                <h4><i class="fa-solid fa-gauge-high"></i> Velocidad de Animación</h4>
+                                <p>Controla la velocidad de las animaciones en las operaciones visuales.</p>
+                                <select id="animationSpeedSelector" class="form-select">
+                                    <option value="2">Lenta (para aprender)</option>
+                                    <option value="1" selected>Normal</option>
+                                    <option value="0.5">Rápida</option>
+                                    <option value="0">Instantánea (sin animación)</option>
+                                </select>
+                            </div>
+                            <div class="settings-group">
+                                <h4><i class="fa-solid fa-arrows-up-down-left-right"></i> Posiciones de Botones</h4>
+                                <p>Restaura la posición original de los botones flotantes (herramientas, tema, historial).</p>
+                                <button id="resetPositionsBtn" class="btn btn-warning">Restaurar Posiciones</button>
+                            </div>
+                            <div class="settings-group">
+                                <h4><i class="fa-solid fa-trash-can"></i> Gestión de Datos</h4>
+                                <p>Borra todos los datos guardados en tu navegador por esta aplicación.</p>
+                                <button id="clearAllDataBtn" class="btn btn-danger">Borrar Todos los Datos</button>
+                            </div>
+                        </div>`,
+                    onShow: () => {
+                        if (window.settingsManager) {
+                            window.settingsManager.initUI();
+                        }
+                    }
+                },
                 help: { title: "Centro de Ayuda", body: `<p>Encuentra respuestas a preguntas frecuentes (FAQ).</p>` }
             };
             
