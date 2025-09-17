@@ -38,7 +38,7 @@ export class VisualOperation {
         this._prepareOperands();
         this._calculateLayout();
         this._calculateResult();
-        this._drawStaticElements();
+        await this._drawStaticElements();
         await this._animateSteps();
         this._drawResult();
         this._finalize();
@@ -60,7 +60,7 @@ export class VisualOperation {
         this.layoutParams = CommonOps.calcularLayout(this.salida, width, height);
     }
 
-    _drawStaticElements() {
+    async _drawStaticElements() {
         const { width } = this._getGridDimensions();
         const operandosParaDibujar = this._getOperandsForDisplay();
         

@@ -1,12 +1,10 @@
 // =======================================================
 // --- operations/modules/division.js (VERSIÓN OPTIMIZADA Y MEJORADA) ---
-// Contiene la lógica y la visualización para la operación de división.
-// `divide`: Muestra el proceso completo de la división larga (extendida) con decimales configurables.
-// `divideExt`: Muestra el layout clásico de la división finalizada (usual).
-// Mejoras: Mejor organización del código, JSDoc completo, configuración de decimales, visualización mejorada.
+// Refactorizado para usar la clase base VisualOperation.
 // =======================================================
 "use strict";
 
+import { VisualOperation } from '../utils/VisualOperation.js';
 import { calculateLayout } from '../utils/layout-calculator.js';
 import { crearCelda, crearCeldaAnimada, esperar } from '../utils/dom-helpers.js';
 import { salida, errorMessages } from '../../config.js';
@@ -456,59 +454,134 @@ async function renderShortDivisionSteps(container, displaySteps, { tamCel, tamFu
     }
 }
 
+function validarDivision(numerosAR) {
+    const [dividendoStr, ] = numerosAR[0];
+    const [divisorStr, ] = numerosAR[1];
+
+    if (BigInt(divisorStr) === 0n) { 
+        salida.innerHTML = errorMessages.division2; 
+        return false; 
+    }
+    if (BigInt(dividendoStr) === 0n) { 
+        salida.innerHTML = errorMessages.division1; 
+        return false; 
+    }
+    return true;
+}
+
+class DivisionOperation extends VisualOperation {
+    constructor(numerosAR, salida, isShortDivision) {
+        super(numerosAR, salida);
+        this.isShortDivision = isShortDivision;
+    }
+
+    async execute() {
+        this._clearOutput();
+        this._prepareOperands();
+        this._calculateResult(); // Se ejecuta antes para obtener dimensiones
+        this._calculateLayout();
+        await this._drawStaticElements();
+        await this._animateSteps();
+        this._drawResult();
+        this._finalize();
+    }
+
+    _prepareOperands() {
+        this.dividendoStr = this.numerosAR[0][0];
+        this.divisorStr = this.numerosAR[1][0];
+    }
+
+    _calculateResult() {
+        if (this.isShortDivision) {
+            const { cociente, displaySteps, totalRows } = calculateShortDivisionSteps(this.dividendoStr, this.divisorStr);
+            this.resultado.display = cociente;
+            this.displaySteps = displaySteps;
+            this.totalRows = totalRows;
+        } else {
+            const { cociente, displaySteps, totalRows } = calculateDisplaySteps(this.dividendoStr, this.divisorStr, DECIMAL_PLACES);
+            this.resultado.display = cociente;
+            this.displaySteps = displaySteps;
+            this.totalRows = totalRows;
+        }
+    }
+
+    _getGridDimensions() {
+        const cociente = this.resultado.display;
+        if (this.isShortDivision) {
+            const anchoIzquierdo = this.dividendoStr.length;
+            const anchoDerecho = Math.max(this.divisorStr.length, cociente.length) + 1;
+            const separatorWidth = 2;
+            const totalCols = anchoIzquierdo + separatorWidth + anchoDerecho;
+            const actualTotalRowsForLayout = this.totalRows + 1;
+            return { width: totalCols, height: actualTotalRowsForLayout };
+        } else {
+            const signColumnOffset = 1;
+            const anchoIzquierdo = this.dividendoStr.length + signColumnOffset + DECIMAL_PLACES + (DECIMAL_PLACES > 0 ? 1 : 0);
+            const anchoDerecho = Math.max(this.divisorStr.length, cociente.length) + 1;
+            const separatorWidth = 2;
+            const totalCols = anchoIzquierdo + separatorWidth + anchoDerecho;
+            return { width: totalCols, height: this.totalRows };
+        }
+    }
+
+    async _drawStaticElements() {
+        const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = this.layoutParams;
+        const cociente = this.resultado.display;
+
+        let anchoIzquierdo, anchoDerecho, separatorWidth, xBloqueDerecho;
+        if (this.isShortDivision) {
+            anchoIzquierdo = this.dividendoStr.length;
+            anchoDerecho = Math.max(this.divisorStr.length, cociente.length) + 1;
+            separatorWidth = 2;
+            xBloqueDerecho = offsetHorizontal + (anchoIzquierdo + separatorWidth) * tamCel + paddingLeft;
+        } else {
+            const signColumnOffset = 1;
+            anchoIzquierdo = this.dividendoStr.length + signColumnOffset + DECIMAL_PLACES + (DECIMAL_PLACES > 0 ? 1 : 0);
+            anchoDerecho = Math.max(this.divisorStr.length, cociente.length) + 1;
+            separatorWidth = 2;
+            xBloqueDerecho = offsetHorizontal + (anchoIzquierdo + separatorWidth) * tamCel + paddingLeft;
+        }
+        
+        let headerTop = paddingTop;
+        if (!this.isShortDivision) {
+            const resultadoFinal = `${this.dividendoStr} ÷ ${this.divisorStr} = ${cociente}`;
+            this.salida.appendChild(crearCelda("output-grid__result--division-final", resultadoFinal, {}));
+            headerTop += 50;
+        }
+
+        const headerFragment = document.createDocumentFragment();
+        drawHeader(headerFragment, { 
+            divisorStr: this.divisorStr, cociente, tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop: headerTop, 
+            xBloqueDerecho, anchoIzquierdo, anchoDerecho, separatorWidth 
+        });
+        this.salida.appendChild(headerFragment);
+        this.headerTop = headerTop;
+    }
+
+    async _animateSteps() {
+        const { tamCel, tamFuente, offsetHorizontal, paddingLeft } = this.layoutParams;
+        const cociente = this.resultado.display;
+
+        if (this.isShortDivision) {
+            const signColumnOffset = 0;
+            await renderShortDivisionSteps(this.salida, this.displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop: this.headerTop, signColumnOffset });
+        } else {
+            const signColumnOffset = 1;
+            await renderFullDivisionSteps(this.salida, this.displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop: this.headerTop, signColumnOffset }, this.dividendoStr, cociente);
+        }
+    }
+
+    _drawResult() { /* El resultado se dibuja en el header */ }
+}
+
 /**
  * `divide` (DIVISIÓN EXTENDIDA "EXPAND"): Muestra el proceso de la división larga paso a paso, incluyendo decimales configurables.
  * @param {Array<[string, number]>} numerosAR - Array con [dividendo, posición] y [divisor, posición]
  */
 export async function divide(numerosAR) {
-    salida.innerHTML = "";
-    const fragment = document.createDocumentFragment();
-
-    const [dividendoStr, ] = numerosAR[0];
-    const [divisorStr, ] = numerosAR[1];
-
-    // TODO: Usar el ErrorHandler centralizado como se menciona en CHANGELOG.md
-    // Validaciones
-    if (BigInt(divisorStr) === 0n) { 
-        salida.innerHTML = errorMessages.division2; 
-        return; 
-    }
-    if (BigInt(dividendoStr) === 0n) { 
-        salida.innerHTML = errorMessages.division1; 
-        return; 
-    }
-
-    // Calcular los pasos de la división con decimales configurables
-    const { cociente, displaySteps, totalRows } = calculateDisplaySteps(dividendoStr, divisorStr, DECIMAL_PLACES);
-    
-    // Calcular dimensiones para la división extendida
-    const signColumnOffset = 1; // Espacio para el signo menos
-    const anchoIzquierdo = dividendoStr.length + signColumnOffset + DECIMAL_PLACES + (DECIMAL_PLACES > 0 ? 1 : 0);
-    const anchoDerecho = Math.max(divisorStr.length, cociente.length) + 1;
-    const separatorWidth = 2;
-    const totalCols = anchoIzquierdo + separatorWidth + anchoDerecho;
-    
-    const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = calculateLayout(salida, totalCols, totalRows);
-
-    // X-posición de inicio para el bloque derecho (divisor/cociente)
-    const xBloqueDerecho = offsetHorizontal + (anchoIzquierdo + separatorWidth) * tamCel + paddingLeft;
-
-    // Mostrar el resultado final con estilo mejorado
-    const resultadoFinal = `${dividendoStr} ÷ ${divisorStr} = ${cociente}`;
-    salida.appendChild(crearCelda("output-grid__result--division-final", resultadoFinal, {}));
-
-    // Dibujar el Header (Divisor, Cociente y Galera) con mejor alineación y colores
-    const headerTop = paddingTop + 50; // Espacio para el resultado
-    const headerFragment = document.createDocumentFragment();
-    drawHeader(headerFragment, {
-        divisorStr, cociente, tamCel, tamFuente,
-        offsetHorizontal, paddingLeft, paddingTop: headerTop, xBloqueDerecho,
-        anchoIzquierdo, anchoDerecho, separatorWidth
-    });
-    salida.appendChild(headerFragment);
-
-    // Dibujar los pasos completos de la división con mejor visualización
-    await renderFullDivisionSteps(salida, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop: headerTop, signColumnOffset }, dividendoStr, cociente);
+    if (!validarDivision(numerosAR)) return;
+    const op = new DivisionOperation(numerosAR, salida, false);
+    await op.execute();
 }
 
 /**
@@ -516,55 +589,7 @@ export async function divide(numerosAR) {
  * @param {Array<[string, number]>} numerosAR - Array con [dividendo, posición] y [divisor, posición]
  */
 export async function divideExt(numerosAR) {
-    salida.innerHTML = "";
-    const fragment = document.createDocumentFragment();
-
-    const [dividendoStr, ] = numerosAR[0];
-    const [divisorStr, ] = numerosAR[1];
-
-    // TODO: Usar el ErrorHandler centralizado
-    // Validaciones
-    if (BigInt(divisorStr) === 0n) { 
-        salida.innerHTML = errorMessages.division2; 
-        return; 
-    }
-    if (BigInt(dividendoStr) === 0n) { 
-        salida.innerHTML = errorMessages.division1; 
-        return; 
-    }
-
-    // Usar la función de cálculo específica para la división corta
-    const { cociente, displaySteps, totalRows } = calculateShortDivisionSteps(dividendoStr, divisorStr);
-
-    // Calcular dimensiones para la división corta
-    const signColumnOffset = 0; // No hay signo menos explícito en este modo, por lo que no se necesita offset
-    // El ancho izquierdo es solo la longitud del dividendo (no hay espacio para el signo)
-    const anchoIzquierdo = dividendoStr.length; 
-    const anchoDerecho = Math.max(divisorStr.length, cociente.length) + 1; 
-    const separatorWidth = 2; 
-    
-    // totalRows: La altura visual para el layout debe incluir la fila del dividendo, la fila del cociente/divisor
-    // y luego todas las filas de restos calculadas por `calculateShortDivisionSteps`.
-    // Si `totalRows` de `calculateShortDivisionSteps` es 1 (solo dividendo, para resto 0),
-    // entonces `actualTotalRowsForLayout` debe ser 2 (dividendo y cociente/divisor).
-    // Si `totalRows` de `calculateShortDivisionSteps` es > 1, entonces cada resto ocupa una fila adicional.
-    const actualTotalRowsForLayout = totalRows + 1; // +1 para la fila del cociente/divisor
-    
-    const totalCols = anchoIzquierdo + separatorWidth + anchoDerecho;
-    
-    const { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop } = calculateLayout(salida, totalCols, actualTotalRowsForLayout);
-
-    // X-posición de inicio para el bloque derecho (divisor/cociente)
-    const xBloqueDerecho = offsetHorizontal + (anchoIzquierdo + separatorWidth) * tamCel + paddingLeft;
-
-    // Dibujar Header (Divisor, Cociente y Galera)
-    const headerFragment = document.createDocumentFragment();
-    drawHeader(headerFragment, { 
-        divisorStr, cociente, tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, 
-        xBloqueDerecho, anchoIzquierdo, anchoDerecho, separatorWidth 
-    });
-    salida.appendChild(headerFragment);
-
-    // Dibujar los pasos de la división corta
-    await renderShortDivisionSteps(salida, displaySteps, { tamCel, tamFuente, offsetHorizontal, paddingLeft, paddingTop, signColumnOffset });
+    if (!validarDivision(numerosAR)) return;
+    const op = new DivisionOperation(numerosAR, salida, true);
+    await op.execute();
 }
