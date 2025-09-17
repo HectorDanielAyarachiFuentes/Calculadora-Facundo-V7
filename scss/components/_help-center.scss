@@ -1,0 +1,63 @@
+.help-center {
+  .help-intro {
+    font-size: 1.1rem;
+    color: var(--history-input-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  .accordion-item {
+    background-color: transparent;
+    border: 1px solid var(--history-border-color);
+    margin-bottom: 0.5rem;
+    border-radius: 8px !important; // Override Bootstrap's default
+
+    &:first-of-type, &:last-of-type {
+      border-radius: 8px !important;
+    }
+  }
+
+  .accordion-header {
+    button.accordion-button {
+      background-color: var(--history-hover-bg);
+      color: var(--history-text-color);
+      font-weight: bold;
+      font-size: 1.1rem;
+      border-radius: 8px;
+
+      &:not(.collapsed) {
+        background-color: var(--btn-equal-bg);
+        color: var(--btn-text-color);
+        box-shadow: none;
+      }
+
+      &::after { // Customizing the accordion arrow
+        filter: var(--data-theme, 'dark') == 'dark' ? invert(1) grayscale(1) brightness(2) : none;
+      }
+    }
+  }
+
+  .accordion-body {
+    background-color: var(--history-panel-bg);
+    color: var(--history-text-color);
+    font-size: 1rem;
+    line-height: 1.6;
+
+    strong {
+      color: var(--focus-color);
+    }
+
+    code {
+      background-color: var(--bg-display);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      font-family: "Roboto Mono", monospace;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+      margin-top: 0.5rem;
+    }
+  }
+}

@@ -624,7 +624,77 @@ class NumberReaderApp {
                         }
                     }
                 },
-                help: { title: "Centro de Ayuda", body: `<p>Encuentra respuestas a preguntas frecuentes (FAQ).</p>` }
+                help: { 
+                    title: "Centro de Ayuda", 
+                    body: `
+                        <div class="help-center">
+                            <p class="help-intro">¡Bienvenido a la Calculadora de Facundo! Aquí encontrarás respuestas a las preguntas más comunes para sacar el máximo provecho de todas las herramientas.</p>
+                            <div class="accordion" id="helpAccordion">
+                                <!-- Item 1: Uso Básico -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                            <i class="fa-solid fa-keyboard me-2"></i> Uso Básico de la Calculadora
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#helpAccordion">
+                                        <div class="accordion-body">
+                                            <strong>Realizar cálculos:</strong> Usa el teclado numérico para introducir operaciones como <code>123 + 45</code>. El resultado se mostrará en el display.<br>
+                                            <strong>Operaciones visuales:</strong> Pulsa el botón <strong>'='</strong> para ver la operación resuelta paso a paso en una cuadrícula detallada. Esto es ideal para aprender cómo funcionan las sumas, restas, multiplicaciones, divisiones y raíces.<br>
+                                            <strong>Borrar:</strong> El botón <strong>'C'</strong> limpia toda la entrada. El botón <strong>'⌫'</strong> borra el último carácter.
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Item 2: Herramientas -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingTwo">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                            <i class="fa-solid fa-screwdriver-wrench me-2"></i> Herramientas Adicionales
+                                        </button>
+                                    </h2>
+                                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#helpAccordion">
+                                        <div class="accordion-body">
+                                            Accede a herramientas avanzadas desde el menú de la esquina superior izquierda (<i class="fa-solid fa-screwdriver-wrench"></i>):
+                                            <ul>
+                                                <li><strong>Lector de Números:</strong> Convierte cualquier número a su forma escrita, con desglose fonético y una increíble representación gráfica.</li>
+                                                <li><strong>Calculadora de Geometría:</strong> Calcula el área y perímetro de varias figuras geométricas con una visualización interactiva.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Item 3: Personalización -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingThree">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                            <i class="fa-solid fa-palette me-2"></i> Personalización y Ajustes
+                                        </button>
+                                    </h2>
+                                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#helpAccordion">
+                                        <div class="accordion-body">
+                                            <strong>Botones Flotantes:</strong> ¡Puedes arrastrar los botones de herramientas, tema e historial a cualquier lugar de la pantalla! Tu configuración se guardará.<br>
+                                            <strong>Panel de Configuración (<i class="fa-solid fa-gears"></i>):</strong> Aquí puedes ajustar la velocidad de las animaciones, activar/desactivar sonidos, restaurar las posiciones de los botones y más.<br>
+                                            <strong>Cambio de Tema (<i class="fa-solid fa-moon"></i>):</strong> Alterna entre el modo claro y oscuro para tu comodidad visual.
+                                        </div>
+                                    </div>
+                                </div>
+                                 <!-- Item 4: Solución de Problemas -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingFour">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                            <i class="fa-solid fa-circle-exclamation me-2"></i> Solución de Problemas
+                                        </button>
+                                    </h2>
+                                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#helpAccordion">
+                                        <div class="accordion-body">
+                                            <strong>Aparece 'NaN' o 'Error':</strong> Esto suele ocurrir si la operación introducida no es válida (ej. <code>5++3</code>). Usa el botón 'C' para limpiar y empezar de nuevo.<br>
+                                            <strong>La aplicación va lenta:</strong> Si has realizado muchos cálculos complejos, prueba a limpiar el historial desde su panel. También puedes borrar todos los datos desde el panel de configuración para un reinicio completo.<br>
+                                            <strong>Un botón no está donde lo dejé:</strong> Si cambias el tamaño de la ventana, las posiciones se recalculan. Puedes restaurarlas a su estado original desde el panel de configuración.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>` 
+                }
             };
             
             document.querySelectorAll('[data-modal-target]').forEach(trigger => {
