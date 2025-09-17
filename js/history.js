@@ -50,6 +50,7 @@ class HistoryManagerClass {
         this.saveHistory();
         HistoryPanel.renderHistory();
         HistoryPanel.highlightLastItem();
+        HistoryPanel.announceNewItem(item);
 
         // --- MEJORA: Reproducir sonido de éxito ---
         if (window.soundManager) {
@@ -115,6 +116,12 @@ class HistoryPanelClass {
             const li = document.createElement('li');
             li.className = 'history-panel__item';
             li.dataset.index = index;
+            li.setAttribute('role', 'button');
+            li.setAttribute('tabindex', '0');
+
+            const readableInput = item.input.replace('x', 'por').replace('/', 'dividido entre').replace('%', 'módulo');
+            li.setAttribute('aria-label', `Operación ${index + 1}: ${readableInput}, igual a ${item.result}. Presiona Enter para re-ejecutar.`);
+
             li.innerHTML = `
                 <span class="history-panel__input">${item.input}</span>
                 <span class="history-panel__result">= ${item.result}</span>
@@ -123,8 +130,21 @@ class HistoryPanelClass {
                 await reExecuteOperationFromHistory(item.input);
                 this.close();
             });
+            // Permitir activación con teclado
+            li.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    await reExecuteOperationFromHistory(item.input);
+                    this.close();
+                }
+            });
             this.list.appendChild(li);
         });
+    }
+
+    announceNewItem(item) {
+        const announcer = document.getElementById('sr-announcer');
+        if (announcer) announcer.textContent = `Nueva operación guardada: ${item.input} es igual a ${item.result}`;
     }
 
     // *** ¡FUNCIÓN CLAVE MEJORADA PARA RAÍZ CUADRADA, DIVISIÓN Y FACTORES! ***
@@ -224,13 +244,28 @@ class HistoryPanelClass {
     open() {
         if (this.isOpen()) return;
         this.panel.classList.add('history-panel--open');
+        this.panel.setAttribute('aria-hidden', 'false');
+        this.toggleButton.setAttribute('aria-expanded', 'true');
         setTimeout(() => document.addEventListener('click', this.handleOutsideClick), 0);
+
+        // Mover foco al panel para navegación por teclado
+        const firstItem = this.list.querySelector('.history-panel__item');
+        if (firstItem) {
+            firstItem.focus();
+        } else {
+            this.panel.focus();
+        }
     }
 
     close() {
         if (!this.isOpen()) return;
         this.panel.classList.remove('history-panel--open');
+        this.panel.setAttribute('aria-hidden', 'true');
+        this.toggleButton.setAttribute('aria-expanded', 'false');
         document.removeEventListener('click', this.handleOutsideClick);
+
+        // Devolver el foco al botón que abrió el panel
+        this.toggleButton.focus();
     }
 
     toggle() {

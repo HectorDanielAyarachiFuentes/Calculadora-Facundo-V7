@@ -35,6 +35,9 @@
 </head>
 
 <body>
+    <!-- Contenedor para anuncios de lector de pantalla -->
+    <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
     <!-- ============== CONTENIDO ORIGINAL DE LA CALCULADORA ============== -->
     <main id="contenedor" class="calculator-container" role="main">
         <header role="banner">
@@ -98,14 +101,13 @@
 
     <!-- ============== BARRA LATERAL HISTORIA ============== -->
 
-    <button id="history-toggle-btn" class="history-toggle-btn" aria-label="Mostrar u ocultar historial"
-        aria-controls="history-panel">
+    <button id="history-toggle-btn" class="history-toggle-btn" aria-label="Mostrar u ocultar historial" aria-controls="history-panel" aria-expanded="false">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path
                 d="M13,3A9,9,0,0,0,4,12H1L4.89,15.89L4.96,16.03L9,12H6A7,7,0,0,1,13,5V8L18,4L13,0V3M12,12.5A1.5,1.5,0,0,0,10.5,14A1.5,1.5,0,0,0,12,15.5A1.5,1.5,0,0,0,13.5,14A1.5,1.5,0,0,0,12,12.5Z" />
         </svg>
     </button>
-    <aside id="history-panel" class="history-panel" role="complementary" aria-hidden="true">
+    <aside id="history-panel" class="history-panel" role="complementary" aria-hidden="true" tabindex="-1">
         <header class="history-panel__header">
             <h2 id="history-title" class="history-panel__title">Historial</h2>
             <button id="clear-history-btn" class="history-panel__clear-btn">Limpiar</button>
