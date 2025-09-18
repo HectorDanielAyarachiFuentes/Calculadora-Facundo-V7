@@ -161,6 +161,23 @@ export class ErrorHandlerCentralized {
     }
 
     /**
+     * Valida la entrada para la operación de coseno.
+     * @param {string} numero - El número (ángulo en grados) a validar.
+     * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.
+     */
+    validarCoseno(numero) {
+        // Reutiliza la misma lógica que para el seno.
+        if (!/^-?[0-9,]+$/.test(numero)) {
+            return this.mostrarError('invalidOperation', { customMessage: 'La entrada para el coseno debe ser un número válido.' });
+        }
+        if (isNaN(parseFloat(numero.replace(',', '.')))) {
+            return this.mostrarError('invalidOperation', { customMessage: 'Entrada numérica no válida para el coseno.' });
+        }
+
+        return true;
+    }
+
+    /**
      * Valida la entrada para la descomposición en factores primos.
      * @param {string} numero - El número a validar.
      * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.

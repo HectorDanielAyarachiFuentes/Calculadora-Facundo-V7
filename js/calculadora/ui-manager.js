@@ -85,7 +85,7 @@ export function updateKeyboardState(displayContent) {
 
     // Validar funciones unarias que aceptan cualquier número (positivo, negativo, decimal)
     const esNumeroValido = /^-?[0-9,]+$/.test(displayContent) && !hasBinaryOperatorInExpression && !displayContent.endsWith(',');
-    document.querySelectorAll('[data-action="sin"]').forEach(btn => {
+    document.querySelectorAll('[data-action="sin"], [data-action="cos"]').forEach(btn => {
         btn.disabled = !esNumeroValido || esSoloCero;
     });
 

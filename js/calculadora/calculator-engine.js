@@ -102,6 +102,7 @@ export async function reExecuteOperationFromHistory(historyInput) {
     // que causa comportamientos extraños si el usuario intenta seguir calculando.
     const primosMatch = historyInput.match(/^factores\((\d+)\)$/);
     const logMatch = historyInput.match(/^log\((.+)\)$/);
+    const cosMatch = historyInput.match(/^cos\((.+)\)$/);
     const sinMatch = historyInput.match(/^sin\((.+)\)$/);
     const lnMatch = historyInput.match(/^ln\((.+)\)$/);
     const raizMatch = historyInput.match(/^√\((.+)\)$/);
@@ -112,6 +113,8 @@ export async function reExecuteOperationFromHistory(historyInput) {
         display.innerHTML = raizMatch[1];
     } else if (logMatch) {
         display.innerHTML = logMatch[1];
+    } else if (cosMatch) {
+        display.innerHTML = cosMatch[1];
     } else if (sinMatch) {
         display.innerHTML = sinMatch[1];
     } else if (lnMatch) {
@@ -151,6 +154,12 @@ export async function reExecuteOperationFromHistory(historyInput) {
             const numero = sinMatch[1];
             if (errorHandler.validarSeno(numero)) {
                 await operations.seno(numero);
+                successful = true;
+            }
+        } else if (cosMatch) {
+            const numero = cosMatch[1];
+            if (errorHandler.validarCoseno(numero)) {
+                await operations.coseno(numero);
                 successful = true;
             }
         } else {
@@ -224,6 +233,15 @@ export async function handleAction(action) {
         case 'sin': {
             const numero = display.innerHTML;
             const inputParaHistorial = `sin(${numero})`;
+            const success = await reExecuteOperationFromHistory(inputParaHistorial);
+            if (success) {
+                HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
+            }
+            break;
+        }
+        case 'cos': {
+            const numero = display.innerHTML;
+            const inputParaHistorial = `cos(${numero})`;
             const success = await reExecuteOperationFromHistory(inputParaHistorial);
             if (success) {
                 HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });

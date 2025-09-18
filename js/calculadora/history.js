@@ -58,6 +58,15 @@ function generateReadableText(item) {
         };
     }
 
+    const cosMatch = input.match(/^cos\((.+)\)$/);
+    if (cosMatch) {
+        const angle = cosMatch[1];
+        return {
+            operation: `cos(${angle}°)`,
+            fullText: `El coseno de ${angle} grados ${getEqualsPhrase()} ${readResult(result)}`
+        };
+    }
+
     const sinMatch = input.match(/^sin\((.+)\)$/);
     if (sinMatch) {
         const angle = sinMatch[1];
