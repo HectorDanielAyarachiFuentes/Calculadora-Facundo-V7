@@ -23,11 +23,12 @@
   --history-hover-bg: #333333;
   --color-lineas-output: #ddd;
   --color-error: #e84d4d;
-  --focus-color: #66FF66;
+  --focus-color-rgb: 76, 175, 80; /* MEJORA: Componentes RGB para el verde fuerte (#4CAF50) */
+  --focus-color: rgb(var(--focus-color-rgb));
   --btn-num-bg: #FFFF66;
   --btn-op-bg: #FF3333;
   --btn-special-bg: #6666FF;
-  --btn-equal-bg: #66FF66;
+  --btn-equal-bg: var(--focus-color); /* MEJORA: Unificado con el color de foco para consistencia */
   --btn-text-color: #000;
   --btn-disabled-bg: #333;
   --btn-disabled-text: #666;
@@ -698,21 +699,29 @@ header[role=banner] .subtitle a:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
+.output-screen .power-title {
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 700;
+  color: var(--color-operando);
+}
 .output-screen .power-subtitle {
   font-style: italic;
   color: var(--history-input-color);
   opacity: 0.8;
 }
 .output-screen .power-step-card {
-  background-color: var(--bg-display);
-  border: 1px solid var(--color-lineas-output);
+  background-color: rgba(102, 102, 255, 0.1);
+  border: 1px solid rgba(102, 102, 255, 0.3);
+  color: var(--history-text-color);
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 .output-screen .power-step-card:hover {
   transform: translateY(-3px) scale(1.02);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  background-color: rgba(102, 102, 255, 0.2);
+  border-color: rgba(102, 102, 255, 0.6);
   z-index: 10;
 }
 .output-screen .power-result-card {
@@ -724,7 +733,7 @@ header[role=banner] .subtitle a:hover {
 }
 .output-screen .power-result-card:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(var(--focus-color), 0.4);
+  box-shadow: 0 6px 20px rgba(var(--focus-color-rgb), 0.4);
 }
 .output-screen--visible {
   opacity: 1;

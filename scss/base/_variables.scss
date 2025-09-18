@@ -22,12 +22,13 @@
     --history-hover-bg: #333333;
     --color-lineas-output: #ddd;
     --color-error: #e84d4d;
-    --focus-color: #66FF66;
+    --focus-color-rgb: 76, 175, 80; /* MEJORA: Componentes RGB para el verde fuerte (#4CAF50) */
+    --focus-color: rgb(var(--focus-color-rgb));
     
     --btn-num-bg: #FFFF66;
     --btn-op-bg: #FF3333;
     --btn-special-bg: #6666FF;
-    --btn-equal-bg: #66FF66;
+    --btn-equal-bg: var(--focus-color); /* MEJORA: Unificado con el color de foco para consistencia */
     --btn-text-color: #000;
     --btn-disabled-bg: #333;
     --btn-disabled-text: #666;

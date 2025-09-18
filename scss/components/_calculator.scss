@@ -282,6 +282,12 @@ $keyboard-gap: 2px;
     }
 
     // --- NUEVO: Estilos interactivos y explicativos para la operación de Potencia ---
+    .power-title {
+        font-family: 'Titillium Web', sans-serif;
+        font-weight: 700;
+        color: var(--color-operando); // Naranja, para un look vibrante y tecnológico.
+    }
+
     .power-subtitle {
         font-style: italic;
         color: var(--history-input-color);
@@ -289,16 +295,19 @@ $keyboard-gap: 2px;
     }
 
     .power-step-card {
-        background-color: var(--bg-display);
-        border: 1px solid var(--color-lineas-output);
+        background-color: rgba(102, 102, 255, 0.1); // Fondo azulado semitransparente (color de --btn-special-bg)
+        border: 1px solid rgba(102, 102, 255, 0.3);
+        color: var(--history-text-color);
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 
         // Interacción al pasar el cursor
         &:hover {
             transform: translateY(-3px) scale(1.02);
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background-color: rgba(102, 102, 255, 0.2);
+            border-color: rgba(102, 102, 255, 0.6);
             z-index: 10; // Asegura que se vea por encima de otras tarjetas
         }
     }
@@ -313,7 +322,7 @@ $keyboard-gap: 2px;
         // Interacción al pasar el cursor
         &:hover {
             transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(var(--focus-color), 0.4);
+            box-shadow: 0 6px 20px rgba(var(--focus-color-rgb), 0.4);
         }
     }
 

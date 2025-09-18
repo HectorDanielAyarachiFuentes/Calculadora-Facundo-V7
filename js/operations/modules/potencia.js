@@ -181,7 +181,7 @@ export class PotenciaOperation extends VisualOperation {
         if (this.salida.classList.contains('output-screen--expanded') && !this.isLargeOperation) {
             titleText = `Procedimiento Detallado: Potencia de ${this.operando1}`;
         }
-        this.contentContainer.appendChild(crearCelda('output-grid__result--division-final', titleText, {
+        this.contentContainer.appendChild(crearCelda('power-title', titleText, {
             left: `${paddingLeft}px`, 
             top: `${yPos}px`, 
             width: '100%', 
@@ -246,7 +246,7 @@ export class PotenciaOperation extends VisualOperation {
         const exponente = parseInt(this.operando2, 10);
         if (exponente >= 0) { // Mostrar para 0 también (resultado 1)
             const finalResultText = `= ${this.resultado.display}`;
-            const finalResultCard = crearCelda('output-grid__cell output-grid__cell--cociente animate-fade-in-scale power-result-card', finalResultText, {
+            const finalResultCard = crearCelda('output-grid__cell animate-fade-in-scale power-result-card', finalResultText, {
                 top: `${yPos}px`, 
                 fontSize: `${tamFuente * 2.0}px`, // Mucho más grande
                 fontWeight: 'bold', 
