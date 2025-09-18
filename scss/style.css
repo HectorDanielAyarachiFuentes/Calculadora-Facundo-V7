@@ -556,6 +556,9 @@ header[role=banner] .subtitle a:hover {
 .keyboard__button--equals {
   background-color: var(--btn-equal-bg);
 }
+.keyboard__button[data-action=raiz] {
+  background-color: var(--btn-op-bg);
+}
 .keyboard__button--double-width {
   grid-column: span 2;
 }

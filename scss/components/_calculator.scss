@@ -131,6 +131,11 @@ $keyboard-gap: 2px;
         &--operator { background-color: var(--btn-op-bg); }
         &--special { background-color: var(--btn-special-bg); font-size: 0.8em; }
         &--equals { background-color: var(--btn-equal-bg); }
+        // MEJORA: El botón de raíz cuadrada es una operación y debe ser rojo.
+        // Se anula el estilo verde que pueda tener por otra clase.
+        &[data-action="raiz"] {
+            background-color: var(--btn-op-bg);
+        }
         &--double-width { grid-column: span 2; }
         &--triple-width { grid-column: span 3; }
 
