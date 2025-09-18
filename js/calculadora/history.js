@@ -280,6 +280,18 @@ class HistoryPanelClass {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = htmlString;
 
+        // --- MEJORA: Caso específico para Potencia (power-result-card) ---
+        const powerResultEl = tempDiv.querySelector('.power-result-card');
+        if (powerResultEl) {
+            // El texto puede ser "Resultado: 12345" o "= 12345".
+            // Queremos solo el número.
+            const text = powerResultEl.textContent.trim();
+            const lastPart = text.split(/[:=]/).pop(); // Coge la parte después de ':' o '='
+            if (lastPart) {
+                return lastPart.trim();
+            }
+        }
+
         // --- Caso para resultados simples (como potencia) ---
         const simpleResultEl = tempDiv.querySelector('.output-grid__result--simple');
         if (simpleResultEl) {

@@ -245,7 +245,7 @@ export class PotenciaOperation extends VisualOperation {
         // 4. Mostrar resultado final (común a ambas vistas)
         const exponente = parseInt(this.operando2, 10);
         if (exponente >= 0) { // Mostrar para 0 también (resultado 1)
-            const finalResultText = `Resultado: ${this.resultado.display}`;
+            const finalResultText = `= ${this.resultado.display}`;
             const finalResultCard = crearCelda('output-grid__cell output-grid__cell--cociente animate-fade-in-scale power-result-card', finalResultText, {
                 top: `${yPos}px`, 
                 fontSize: `${tamFuente * 2.0}px`, // Mucho más grande
