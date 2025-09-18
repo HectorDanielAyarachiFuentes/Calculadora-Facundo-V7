@@ -49,6 +49,16 @@ function generateReadableText(item) {
         };
     }
 
+    if (input.includes('^')) {
+        const parts = input.split('^');
+        const base = parts[0].trim();
+        const exponente = parts[1].trim();
+        return {
+            operation: `${base} ^ ${exponente}`,
+            fullText: `${base} elevado a ${exponente} ${getEqualsPhrase()} ${readResult(result)}`
+        };
+    }
+
     if (input.includes('%')) {
         const parts = input.split('%');
         const dividendo = parts[0].trim();
@@ -232,6 +242,15 @@ class HistoryPanelClass {
     extractResultText(htmlString) {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = htmlString;
+
+        // --- Caso para resultados simples (como potencia) ---
+        const simpleResultEl = tempDiv.querySelector('.output-grid__result--simple');
+        if (simpleResultEl) {
+            // El texto es "base ^ exp = resultado"
+            const text = simpleResultEl.textContent;
+            const resultPart = text.split('=').pop();
+            if (resultPart) return resultPart.trim();
+        }
 
         // --- Caso nuevo y prioritario: Factores Primos (usa un elemento de resultado dedicado) ---
         const primeResultEl = tempDiv.querySelector('.output-grid__result');
