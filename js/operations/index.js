@@ -16,6 +16,7 @@ export * from './modules/multiplication.js';
 export * from './modules/division.js';
 export * from './modules/prime-factors.js';
 export * from './modules/square-root.js';
+export * from './modules/potencia.js';
 
 // --- Re-exportar utilidades que sean útiles fuera del módulo ---
 // `parsearNumeros` es un buen candidato porque se usa para preparar
@@ -30,6 +31,7 @@ import { RestaOperation } from './modules/subtraction.js';
 import { MultiplicationOperation } from './modules/multiplication.js';
 import { DivisionOperation } from './modules/division.js';
 import { ModuloOperation } from './modules/modulo.js';
+import { PotenciaOperation } from './modules/potencia.js';
 import { salida } from '../calculadora/config.js';
 import { ErrorHandlerCentralized } from '../calculadora/error-handler-centralized.js';
 
@@ -40,7 +42,8 @@ const operationClassMap = {
     '-': RestaOperation,
     'x': MultiplicationOperation,
     '/': DivisionOperation,
-    '%': ModuloOperation
+    '%': ModuloOperation,
+    '^': PotenciaOperation
 };
 
 /**
@@ -60,6 +63,7 @@ export async function executeVisualOperation(operator, numerosAR, options = {}) 
     if (operator === 'x' && !errorHandler.validarMultiplicacion(numerosAR)) return false;
     if (operator === '/' && !errorHandler.validarDivision(numerosAR)) return false;
     if (operator === '%' && !errorHandler.validarModulo(numerosAR)) return false;
+    if (operator === '^' && !errorHandler.validarPotencia(numerosAR)) return false;
 
     const op = (operator === '/') ? new OperationClass(numerosAR, salida, options.isShortDivision || false) : new OperationClass(numerosAR, salida);
     await op.execute();

@@ -30,7 +30,7 @@ function handleKeyboardInput(event) {
 
     const key = event.key;
     const keyMap = {
-        '+': '+', '-': '-', '*': 'x', 'x': 'x', 'X': 'x', '/': '/', '%': '%',
+        '+': '+', '-': '-', '*': 'x', 'x': 'x', 'X': 'x', '/': '/', '%': '%', '^': '^',
         '.': ',', ',': ',',
         'Enter': 'calculate', '=': 'calculate',
         'Backspace': 'delete',

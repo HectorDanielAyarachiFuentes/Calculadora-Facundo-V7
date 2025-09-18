@@ -53,7 +53,7 @@ export class ErrorHandlerCentralized {
      * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.
      */
     validarOperacion(input) {
-        const isValid = /^-?[0-9,]+\s*[+\-x/%]\s*-?[0-9,]+$/.test(input) && !/[+\-x/%]$/.test(input.trim()) && !input.endsWith(',');
+        const isValid = /^-?[0-9,]+\s*[+\-x/%^]\s*-?[0-9,]+$/.test(input) && !/[+\-x/%^]$/.test(input.trim()) && !input.endsWith(',');
         if (!isValid) {
             return this.mostrarError('invalidOperation', { input });
         }
@@ -105,6 +105,23 @@ export class ErrorHandlerCentralized {
         if (divisorValue === '0') {
             return this.mostrarError('moduloPorCero');
         }
+        return true;
+    }
+
+    /**
+     * Valida la entrada para la operación de potencia.
+     * @param {Array<[string, number]>} numerosAR - Array con los operandos.
+     * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.
+     */
+    validarPotencia(numerosAR) {
+        const [, baseDec] = numerosAR[0];
+        const [, expDec] = numerosAR[1];
+
+        if (baseDec > 0 || expDec > 0) {
+            return this.mostrarError('invalidOperation', { customMessage: 'La potencia solo soporta números enteros por ahora.' });
+        }
+        // La implementación de PotenciaOperation ya maneja otros casos como exponentes negativos
+        // o resultados demasiado grandes, por lo que no es necesario duplicar esa lógica aquí.
         return true;
     }
 

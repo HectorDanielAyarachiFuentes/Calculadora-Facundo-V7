@@ -17,8 +17,8 @@ const errorHandler = new ErrorHandlerCentralized(salida); // Instancia única
  */
 export function writeToDisplay(t) {
     const currentDisplay = display.innerHTML;
-    const isOperator = ['+', '-', 'x', '/', '%'].includes(t);
-    const hasBinaryOperator = /[+\-x/%]/.test(currentDisplay.slice(currentDisplay.startsWith('-') ? 1 : 0).replace(/^[0-9,]+/, ''));
+    const isOperator = ['+', '-', 'x', '/', '%', '^'].includes(t);
+    const hasBinaryOperator = /[+\-x/%^]/.test(currentDisplay.slice(currentDisplay.startsWith('-') ? 1 : 0).replace(/^[0-9,]+/, ''));
 
     if (t === "c") {
         display.innerHTML = "0";
@@ -26,8 +26,8 @@ export function writeToDisplay(t) {
         display.innerHTML = currentDisplay.slice(0, -1) || "0";
     } else if (isOperator) {
         const lastChar = currentDisplay.slice(-1);
-        if (hasBinaryOperator && !['+', '-', 'x', '/', '%'].includes(lastChar)) return;
-        if (['+', '-', 'x', '/', '%'].includes(lastChar)) {
+        if (hasBinaryOperator && !['+', '-', 'x', '/', '%', '^'].includes(lastChar)) return;
+        if (['+', '-', 'x', '/', '%', '^'].includes(lastChar)) {
             if (lastChar !== t) display.innerHTML = currentDisplay.slice(0, -1) + t;
         } else if (currentDisplay === "0" && t === '-') {
             display.innerHTML = t;
@@ -35,7 +35,7 @@ export function writeToDisplay(t) {
             display.innerHTML += t;
         }
     } else {
-        if (t === ',' && currentDisplay.split(/[+\-x/]/).pop().includes(',')) return;
+        if (t === ',' && currentDisplay.split(/[+\-x/%^]/).pop().includes(',')) return;
         display.innerHTML = (currentDisplay === "0" && t !== ',') ? t : currentDisplay + t;
     }
     
@@ -64,7 +64,7 @@ export async function calculate(addToHistory = true) {
     }
 
     UIManager.triggerGlitchEffect(entrada);
-    const operador = entrada.match(/(?!^-)[+\-x/%]/)[0];
+    const operador = entrada.match(/(?!^-)[+\-x/%^]/)[0];
     const numerosAR = operations.parsearNumeros(entrada, operador);
     
     UIManager.showResultScreen();
