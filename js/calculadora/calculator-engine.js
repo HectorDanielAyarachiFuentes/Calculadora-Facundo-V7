@@ -102,6 +102,7 @@ export async function reExecuteOperationFromHistory(historyInput) {
     // que causa comportamientos extraños si el usuario intenta seguir calculando.
     const primosMatch = historyInput.match(/^factores\((\d+)\)$/);
     const logMatch = historyInput.match(/^log\((.+)\)$/);
+    const sinMatch = historyInput.match(/^sin\((.+)\)$/);
     const lnMatch = historyInput.match(/^ln\((.+)\)$/);
     const raizMatch = historyInput.match(/^√\((.+)\)$/);
 
@@ -111,6 +112,8 @@ export async function reExecuteOperationFromHistory(historyInput) {
         display.innerHTML = raizMatch[1];
     } else if (logMatch) {
         display.innerHTML = logMatch[1];
+    } else if (sinMatch) {
+        display.innerHTML = sinMatch[1];
     } else if (lnMatch) {
         display.innerHTML = lnMatch[1];
     } else {
@@ -142,6 +145,12 @@ export async function reExecuteOperationFromHistory(historyInput) {
             const numero = logMatch[1];
             if (errorHandler.validarLogaritmo(numero)) { // Reutilizamos la misma validación que para ln
                 await operations.logaritmoLog(numero);
+                successful = true;
+            }
+        } else if (sinMatch) {
+            const numero = sinMatch[1];
+            if (errorHandler.validarSeno(numero)) {
+                await operations.seno(numero);
                 successful = true;
             }
         } else {
@@ -206,6 +215,15 @@ export async function handleAction(action) {
         case 'log': {
             const numero = display.innerHTML;
             const inputParaHistorial = `log(${numero})`;
+            const success = await reExecuteOperationFromHistory(inputParaHistorial);
+            if (success) {
+                HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
+            }
+            break;
+        }
+        case 'sin': {
+            const numero = display.innerHTML;
+            const inputParaHistorial = `sin(${numero})`;
             const success = await reExecuteOperationFromHistory(inputParaHistorial);
             if (success) {
                 HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });

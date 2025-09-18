@@ -19,6 +19,7 @@ export * from './modules/square-root.js';
 export * from './modules/potencia.js';
 export * from './modules/logaritmo.js';
 export * from './modules/logaritmolog.js';
+export * from './modules/seno.js';
 
 // --- Re-exportar utilidades que sean útiles fuera del módulo ---
 // `parsearNumeros` es un buen candidato porque se usa para preparar
@@ -36,6 +37,7 @@ import { ModuloOperation } from './modules/modulo.js';
 import { PotenciaOperation } from './modules/potencia.js';
 import { LogaritmoOperation } from './modules/logaritmo.js';
 import { LogaritmoLogOperation } from './modules/logaritmolog.js';
+import { SenoOperation } from './modules/seno.js';
 import { salida } from '../calculadora/config.js';
 import { ErrorHandlerCentralized } from '../calculadora/error-handler-centralized.js';
 

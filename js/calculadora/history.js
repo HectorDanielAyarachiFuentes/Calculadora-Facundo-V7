@@ -58,6 +58,16 @@ function generateReadableText(item) {
         };
     }
 
+    const sinMatch = input.match(/^sin\((.+)\)$/);
+    if (sinMatch) {
+        const angle = sinMatch[1];
+        return {
+            operation: `sin(${angle}°)`,
+            // La operación visual ya muestra el símbolo de grado, así que lo añadimos aquí para consistencia.
+            fullText: `El seno de ${angle} grados ${getEqualsPhrase()} ${readResult(result)}`
+        };
+    }
+
     const lnMatch = input.match(/^ln\((.+)\)$/);
     if (lnMatch) {
         const number = lnMatch[1];

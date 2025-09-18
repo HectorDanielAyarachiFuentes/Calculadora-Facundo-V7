@@ -83,6 +83,12 @@ export function updateKeyboardState(displayContent) {
         btn.disabled = !esNumeroPositivo;
     });
 
+    // Validar funciones unarias que aceptan cualquier número (positivo, negativo, decimal)
+    const esNumeroValido = /^-?[0-9,]+$/.test(displayContent) && !hasBinaryOperatorInExpression && !displayContent.endsWith(',');
+    document.querySelectorAll('[data-action="sin"]').forEach(btn => {
+        btn.disabled = !esNumeroValido || esSoloCero;
+    });
+
     const esCalculable = /^-?[0-9,]+\s*[+\-x/%^]\s*-?[0-9,]+$/.test(displayContent);
     const btnIgual = document.querySelector('[data-action="calculate"]');
     if (btnIgual) btnIgual.disabled = !esCalculable;
