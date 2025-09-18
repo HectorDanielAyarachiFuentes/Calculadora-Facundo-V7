@@ -49,6 +49,15 @@ function generateReadableText(item) {
         };
     }
 
+    const logMatch = input.match(/^log\((.+)\)$/);
+    if (logMatch) {
+        const number = logMatch[1];
+        return {
+            operation: `log(${number})`,
+            fullText: `El logaritmo en base 10 de ${number} ${getEqualsPhrase()} ${readResult(result)}`
+        };
+    }
+
     const lnMatch = input.match(/^ln\((.+)\)$/);
     if (lnMatch) {
         const number = lnMatch[1];

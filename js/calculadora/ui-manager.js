@@ -79,7 +79,7 @@ export function updateKeyboardState(displayContent) {
 
     // Validar funciones unarias que aceptan decimales
     const esNumeroPositivo = /^[0-9,]+$/.test(displayContent) && !esSoloCero && !hasBinaryOperatorInExpression && parseFloat(displayContent.replace(',', '.')) > 0;
-    document.querySelectorAll('[data-action="ln"]').forEach(btn => {
+    document.querySelectorAll('[data-action="ln"], [data-action="log"]').forEach(btn => {
         btn.disabled = !esNumeroPositivo;
     });
 

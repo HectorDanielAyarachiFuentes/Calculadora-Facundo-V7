@@ -101,6 +101,7 @@ export async function reExecuteOperationFromHistory(historyInput) {
     // no la cadena interna. Esto evita dejar la calculadora en un estado inválido
     // que causa comportamientos extraños si el usuario intenta seguir calculando.
     const primosMatch = historyInput.match(/^factores\((\d+)\)$/);
+    const logMatch = historyInput.match(/^log\((.+)\)$/);
     const lnMatch = historyInput.match(/^ln\((.+)\)$/);
     const raizMatch = historyInput.match(/^√\((.+)\)$/);
 
@@ -108,6 +109,8 @@ export async function reExecuteOperationFromHistory(historyInput) {
         display.innerHTML = primosMatch[1];
     } else if (raizMatch) {
         display.innerHTML = raizMatch[1];
+    } else if (logMatch) {
+        display.innerHTML = logMatch[1];
     } else if (lnMatch) {
         display.innerHTML = lnMatch[1];
     } else {
@@ -133,6 +136,12 @@ export async function reExecuteOperationFromHistory(historyInput) {
             const numero = lnMatch[1];
             if (errorHandler.validarLogaritmo(numero)) {
                 await operations.logaritmo(numero);
+                successful = true;
+            }
+        } else if (logMatch) {
+            const numero = logMatch[1];
+            if (errorHandler.validarLogaritmo(numero)) { // Reutilizamos la misma validación que para ln
+                await operations.logaritmoLog(numero);
                 successful = true;
             }
         } else {
@@ -188,6 +197,15 @@ export async function handleAction(action) {
         case 'ln': {
             const numero = display.innerHTML;
             const inputParaHistorial = `ln(${numero})`;
+            const success = await reExecuteOperationFromHistory(inputParaHistorial);
+            if (success) {
+                HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
+            }
+            break;
+        }
+        case 'log': {
+            const numero = display.innerHTML;
+            const inputParaHistorial = `log(${numero})`;
             const success = await reExecuteOperationFromHistory(inputParaHistorial);
             if (success) {
                 HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
