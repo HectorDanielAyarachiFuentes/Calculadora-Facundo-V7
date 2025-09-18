@@ -647,10 +647,15 @@ class NumberReaderApp {
                         // Función para actualizar el botón en el teclado
                         const updateSpecialButton = (selectedOption) => {
                             if (!selectedOption) return;
-                            const { text, action, value } = selectedOption.dataset;
+                            const { text, action, value } = selectedOption.dataset; // El 'value' del option es la clave (ej: 'primos')
                             const ariaLabel = selectedOption.getAttribute('aria-label');
 
-                            tmodButton.textContent = text;
+                            // --- MEJORA: Usar un icono para funciones especiales como "Factores Primos" ---
+                            if (selectedOption.value === 'primos') {
+                                tmodButton.innerHTML = '<i class="fa-solid fa-sitemap"></i>';
+                            } else {
+                                tmodButton.textContent = text;
+                            }
                             tmodButton.dataset.action = action;
                             tmodButton.dataset.value = value;
                             tmodButton.setAttribute('aria-label', ariaLabel || text);

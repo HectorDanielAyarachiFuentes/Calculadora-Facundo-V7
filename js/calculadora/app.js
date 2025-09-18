@@ -29,7 +29,12 @@ function initSpecialFunctionButton() {
         const { text, action, value } = option.dataset;
         const ariaLabel = option.getAttribute('aria-label');
 
-        tmodButton.textContent = text;
+        // --- MEJORA: Usar un icono para funciones especiales como "Factores Primos" ---
+        if (savedFunctionValue === 'primos') {
+            tmodButton.innerHTML = '<i class="fa-solid fa-sitemap"></i>';
+        } else {
+            tmodButton.textContent = text;
+        }
         tmodButton.dataset.action = action;
         tmodButton.dataset.value = value;
         tmodButton.setAttribute('aria-label', ariaLabel || text);
