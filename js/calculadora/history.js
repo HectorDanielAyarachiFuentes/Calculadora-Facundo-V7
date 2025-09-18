@@ -13,21 +13,27 @@ import { SpeechService } from '../modal/bostraplectornumeros.js';
  * @returns {{operation: string, fullText: string}} - Objeto con el texto de la operación y el texto completo para hablar.
  */
 function generateReadableText(item) {
-    const input = item.input;
-    const result = item.result;
+    // --- MEJORA DE ROBUSTEZ: Asegurarse de que input y result sean cadenas ---
+    // Si item o sus propiedades son undefined, se usarán cadenas vacías para evitar errores.
+    const input = item?.input || '';
+    const result = item?.result || '';
 
     // --- Helpers para frases y lectura de números ---
     const getEqualsPhrase = () => {
         const phrases = ["es igual a", "nos da como resultado", "resulta en", "es"];
         return phrases[Math.floor(Math.random() * phrases.length)];
     };
-    const readResult = (res) => res.replace(/,/g, ' coma ');
+    // Se añade `(res || '')` para evitar errores si el resultado es undefined.
+    const readResult = (res) => (res || '').replace(/,/g, ' coma ');
 
     // --- Casos especiales ---
     const primeMatch = input.match(/^factores\((\d+)\)$/);
     if (primeMatch) {
         const number = primeMatch[1];
-        const readableResult = result.replace(/\^/g, ' elevado a ').replace(/×/g, ' por ');
+        // --- CORRECCIÓN: Asegurarse de que 'result' no esté vacío antes de procesarlo ---
+        // Si 'result' es una cadena vacía, 'readableResult' será una cadena vacía también,
+        // evitando que se convierta en 'undefined' y se concatene erróneamente.
+        const readableResult = result ? result.replace(/\^/g, ' elevado a ').replace(/×/g, ' por ') : '';
         return {
             operation: `Factores de ${number}`,
             fullText: `La descomposición en factores primos de ${number} es ${readableResult}`
@@ -227,6 +233,15 @@ class HistoryPanelClass {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = htmlString;
 
+        // --- Caso nuevo y prioritario: Factores Primos (usa un elemento de resultado dedicado) ---
+        const primeResultEl = tempDiv.querySelector('.output-grid__result');
+        if (primeResultEl && primeResultEl.textContent.includes('Factores primos:')) {
+            // El texto es "Factores primos: 2^2 × 5"
+            const text = primeResultEl.textContent;
+            const resultPart = text.split(': ')[1];
+            if (resultPart) return resultPart.trim();
+        }
+
         // --- Caso prioritario: Raíz Cuadrada ---
         // Distintivo: tiene el elemento con clase 'output-grid__radical'.
         const isSquareRoot = tempDiv.querySelector('.output-grid__radical');
@@ -260,18 +275,6 @@ class HistoryPanelClass {
             return rawResult.replace('.', ',');
         }
         
-        // --- Caso 2: Factores Primos ---
-        // Distintivo: tiene celdas de divisor pero NO de cociente.
-        if (hasDivisorCells && !hasCocienteCells) {
-            const factorCells = Array.from(tempDiv.querySelectorAll('.output-grid__cell--divisor'));
-            factorCells.sort((a, b) => (parseFloat(a.style.top) || 0) - (parseFloat(b.style.top) || 0));
-            const factors = factorCells.map(cell => cell.textContent);
-            if (factors.length === 1 && factors[0] === '1') {
-                return '1'; // Caso especial para factores(1)
-            }
-            return factors.join(' × ');
-        }
-
         // --- Caso 3: Resto de operaciones (Suma, Resta, Multiplicación) ---
         // El resultado está en la línea más baja de celdas 'cociente' o 'producto'.
         const candidateCells = tempDiv.querySelectorAll('.output-grid__cell--cociente, .output-grid__cell--producto');
@@ -302,7 +305,11 @@ class HistoryPanelClass {
             return leftA - leftB;
         });
 
-        return resultLineCells.map(cell => cell.textContent).join('');
+        // --- CORRECCIÓN DE ROBUSTEZ DEFINITIVA ---
+        // Al mapear las celdas, filtramos cualquier texto que sea literalmente "undefined".
+        // Esto puede ser generado por módulos de operación con errores y es la causa
+        // de resultados extraños como "123undefined45". Con este filtro, el resultado será limpio.
+        return resultLineCells.map(cell => cell.textContent).filter(text => text !== 'undefined').join('');
     }
 
     // --- Lógica del panel (sin cambios) ---

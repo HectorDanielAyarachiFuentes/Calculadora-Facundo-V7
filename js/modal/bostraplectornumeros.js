@@ -621,51 +621,57 @@ class NumberReaderApp {
                     onShow: () => new UnitConverterApp('unit-converter-container')
                 },
                 config: { 
-                    title: "Panel de Configuración", 
-                    body: `
-                        <div class="settings-panel">
-                            <div class="settings-group">
-                                <h4><i class="fa-solid fa-gauge-high"></i> Velocidad de Animación</h4>
-                                <p>Controla la velocidad de las animaciones en las operaciones visuales.</p>
-                                <select id="animationSpeedSelector" class="form-select">
-                                    <option value="2">Lenta (para aprender)</option>
-                                    <option value="1" selected>Normal</option>
-                                    <option value="0.5">Rápida</option>
-                                    <option value="0">Instantánea (sin animación)</option>
-                                </select>
-                            </div>
-                            <div class="settings-group">
-                                <h4><i class="fa-solid fa-volume-high"></i> Experiencia Sensorial</h4>
-                                <p>Activa o desactiva los efectos de sonido y la vibración en los botones.</p>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="soundEffectsToggle">
-                                    <label class="form-check-label" for="soundEffectsToggle">Efectos de Sonido</label>
-                                </div>
-                                <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="hapticFeedbackToggle">
-                                    <label class="form-check-label" for="hapticFeedbackToggle">Respuesta Táctil (Vibración)</label>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Efectos Visuales</h4>
-                                <p>Activa o desactiva efectos visuales como el "glitch" en el display.</p>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="glitchEffectToggle">
-                                    <label class="form-check-label" for="glitchEffectToggle">Efecto Glitch del Display</label>
-                                </div>
-                            </div>
-                            <div class="settings-group">
-                                <h4><i class="fa-solid fa-arrows-up-down-left-right"></i> Posiciones de Botones</h4>
-                                <p>Restaura la posición original de los botones flotantes (herramientas, tema, historial).</p>
-                                <button id="resetPositionsBtn" class="btn btn-warning">Restaurar Posiciones</button>
-                            </div>
-                            <div class="settings-group">
-                                <h4><i class="fa-solid fa-trash-can"></i> Gestión de Datos</h4>
-                                <p>Borra todos los datos guardados en tu navegador por esta aplicación.</p>
-                                <button id="clearAllDataBtn" class="btn btn-danger">Borrar Todos los Datos</button>
-                            </div>
-                        </div>`,
-                    onShow: () => settingsManager.initUI()
+                    title: "Panel de Configuración",
+                    // El cuerpo ahora se llenará dinámicamente desde el template.
+                    body: `<div id="config-panel-container"></div>`,
+                    onShow: () => {
+                        // 1. Inyectar el contenido del template en el modal
+                        const container = document.getElementById('config-panel-container');
+                        const template = document.getElementById('config-modal-template');
+                        if (container && template) {
+                            const clone = template.content.cloneNode(true);
+                            container.appendChild(clone);
+                        }
+
+                        // 2. Inicializar la lógica de los ajustes existentes (velocidad, sonido, etc.)
+                        // Esto ahora funciona sobre el contenido que acabamos de inyectar.
+                        settingsManager.initUI();
+
+                        // 3. Implementar la nueva lógica para el botón de función especial
+                        const specialFunctionSelect = document.getElementById('special-function-select');
+                        const tmodButton = document.getElementById('tmod');
+                        const STORAGE_KEY = 'calculator_special_function';
+
+                        if (!specialFunctionSelect || !tmodButton) return;
+
+                        // Función para actualizar el botón en el teclado
+                        const updateSpecialButton = (selectedOption) => {
+                            if (!selectedOption) return;
+                            const { text, action, value } = selectedOption.dataset;
+                            const ariaLabel = selectedOption.getAttribute('aria-label');
+
+                            tmodButton.textContent = text;
+                            tmodButton.dataset.action = action;
+                            tmodButton.dataset.value = value;
+                            tmodButton.setAttribute('aria-label', ariaLabel || text);
+                        };
+
+                        // Evento para cuando el usuario cambia la selección
+                        specialFunctionSelect.addEventListener('change', (e) => {
+                            const selectedOption = e.target.selectedOptions[0];
+                            updateSpecialButton(selectedOption);
+                            localStorage.setItem(STORAGE_KEY, selectedOption.value);
+                        });
+
+                        // Cargar y aplicar la configuración guardada al abrir el modal
+                        const savedFunction = localStorage.getItem(STORAGE_KEY);
+                        if (savedFunction) {
+                            specialFunctionSelect.value = savedFunction;
+                        }
+
+                        // Aplicar el estado inicial (ya sea guardado o por defecto)
+                        updateSpecialButton(specialFunctionSelect.selectedOptions[0]);
+                    }
                 },
                 help: { 
                     title: "Centro de Ayuda", 

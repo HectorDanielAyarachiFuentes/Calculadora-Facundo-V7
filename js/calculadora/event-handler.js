@@ -11,10 +11,15 @@ function handleButtonClick(event) {
     const value = button.dataset.value;
     const action = button.dataset.action;
 
-    if (value) {
-        Engine.writeToDisplay(value);
-    } else if (action) {
+    // --- CORRECCIÓN: Priorizar 'action' sobre 'value' ---
+    // El botón de función especial (tmod) puede tener tanto 'data-action' como 'data-value'.
+    // La acción (ej: 'primos') debe tener prioridad. Si se procesara 'value' primero,
+    // se escribiría texto basura en el display (como "factores" o "undefined") y la
+    // acción real nunca se ejecutaría.
+    if (action) {
         Engine.handleAction(action);
+    } else if (value) {
+        Engine.writeToDisplay(value);
     }
 }
 

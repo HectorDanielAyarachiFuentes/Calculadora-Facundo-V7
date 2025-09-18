@@ -95,14 +95,25 @@ export async function calculate(addToHistory = true) {
 export async function reExecuteOperationFromHistory(historyInput) {
     UIManager.showResultScreen();
     errorHandler.limpiarErrores();
-    display.innerHTML = historyInput; // Actualizar display para que el usuario vea qué se está calculando
+
+    // --- MEJORA DE UX: Mostrar el número relevante en el display, no la entrada interna ---
+    // Para operaciones especiales como 'factores(120)', el display debe mostrar '120',
+    // no la cadena interna. Esto evita dejar la calculadora en un estado inválido
+    // que causa comportamientos extraños si el usuario intenta seguir calculando.
+    const primosMatch = historyInput.match(/^factores\((\d+)\)$/);
+    const raizMatch = historyInput.match(/^√\((.+)\)$/);
+
+    if (primosMatch) {
+        display.innerHTML = primosMatch[1];
+    } else if (raizMatch) {
+        display.innerHTML = raizMatch[1];
+    } else {
+        display.innerHTML = historyInput; // Comportamiento normal para operaciones aritméticas
+    }
 
     let successful = false;
     
     try {
-        const primosMatch = historyInput.match(/^factores\((\d+)\)$/);
-        const raizMatch = historyInput.match(/^√\((.+)\)$/);
-
         if (primosMatch) {
             const numero = primosMatch[1];
             if (errorHandler.validarFactoresPrimos(numero)) {
@@ -125,7 +136,9 @@ export async function reExecuteOperationFromHistory(historyInput) {
         errorHandler.mostrarError('invalidOperation', { error });
         successful = false;
     } finally {
-        UIManager.updateKeyboardState(historyInput);
+        // Usar el contenido actualizado del display para gestionar el estado del teclado.
+        // Antes usaba `historyInput`, que podía ser 'factores(120)', deshabilitando botones incorrectamente.
+        UIManager.updateKeyboardState(display.innerHTML);
     }
     return successful;
 }

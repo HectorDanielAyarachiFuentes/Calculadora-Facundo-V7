@@ -11,18 +11,41 @@ import { ErrorHandlerCentralized } from '../../calculadora/error-handler-central
 
 const errorHandler = new ErrorHandlerCentralized(salida);
 
+/**
+ * Factoriza un número en sus factores primos de manera optimizada.
+ * Esta función se ejecuta en el hilo principal.
+ * @param {number} n - El número a factorizar.
+ * @returns {number[]} - Array de factores primos.
+ */
+function factorizarPrimos(n) {
+    const factores = [];
+    while (n % 2 === 0) {
+        factores.push(2);
+        n /= 2;
+    }
+    for (let i = 3; i * i <= n; i += 2) {
+        while (n % i === 0) {
+            factores.push(i);
+            n /= i;
+        }
+    }
+    if (n > 2) {
+        factores.push(n);
+    }
+    return factores;
+}
+
 class PrimeFactorsOperation extends VisualOperation {
     constructor(numerosAR, salida) {
         super(numerosAR, salida);
     }
 
-    // Sobrescribimos el método de ejecución para adaptarlo al flujo asíncrono del Web Worker.
     async execute() {
         this._clearOutput();
         this._prepareOperands();
         if (!this._validateInput()) return;
 
-        await this._calculateResult(); // 1. Calcular factores (asíncrono)
+        this._calculateResult();       // 1. Calcular factores (síncrono)
         this._calculateLayout();       // 2. Calcular layout con los resultados
         await this._drawStaticElements(); // 3. Dibujar elementos estáticos
         await this._animateSteps();    // 4. Animar los pasos
@@ -37,29 +60,8 @@ class PrimeFactorsOperation extends VisualOperation {
         return errorHandler.validarFactoresPrimos(this.numeroStr);
     }
 
-    async _calculateResult() {
-        this.salida.innerHTML = '<p class="loading-indicator">Calculando factores primos...</p>';
-
-        const factores = await new Promise((resolve, reject) => {
-            const workerUrl = new URL('./prime-factors.worker.js', import.meta.url);
-            const worker = new Worker(workerUrl, { type: 'module' });
-
-            worker.onmessage = (event) => {
-                event.data.error ? reject(new Error(event.data.error)) : resolve(event.data.factores);
-                worker.terminate();
-            };
-
-            worker.onerror = (error) => {
-                console.error("Error en el Web Worker de factores primos:", error);
-                const errorMessage = error.message || "Error inesperado en el worker.";
-                reject(new Error(`Error en el worker: ${errorMessage}`));
-                worker.terminate();
-            };
-
-            worker.postMessage(this.numOriginal);
-        });
-
-        this.salida.innerHTML = ''; // Limpiar indicador de carga
+    _calculateResult() {
+        const factores = factorizarPrimos(this.numOriginal);
 
         // Preparar datos para visualización
         this.numIzdaArray = [];
@@ -73,9 +75,14 @@ class PrimeFactorsOperation extends VisualOperation {
             for (const factor of factores) {
                 this.numIzdaArray.push(tempNum);
                 this.numDchaArray.push(factor);
-                tempNum /= factor;
+                // CORRECCIÓN: Usar Math.round para evitar errores de punto flotante.
+                // Esto asegura que tempNum siempre sea un entero para la siguiente iteración,
+                // previniendo que valores como 0.9999... o 1.0000... causen errores visuales.
+                tempNum = Math.round(tempNum / factor);
             }
-            if (tempNum > 1) {
+            // El bucle debería terminar con tempNum siendo 1.
+            // Este `if` es una salvaguarda por si `factorizarPrimos` no es exhaustivo.
+            if (tempNum > 1 && !isNaN(tempNum)) {
                 this.numIzdaArray.push(tempNum);
                 this.numDchaArray.push(tempNum);
             }

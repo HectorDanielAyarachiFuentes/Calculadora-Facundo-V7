@@ -183,6 +183,70 @@
         </div>
     </div>
     <!-- === FIN === -->
+ 
+    <!-- NUEVO: Template para el modal de configuración -->
+    <template id="config-modal-template">
+        <div class="settings-panel">
+            <!-- Personalización de Teclas -->
+            <div class="settings-group">
+                <h4><i class="fa-solid fa-keyboard"></i> Personalización de Teclas</h4>
+                <p>Selecciona una función alternativa para la tecla de módulo (%). El cambio se aplicará inmediatamente.</p>
+                <div class="mb-2">
+                    <label for="special-function-select" class="form-label">Función para la tecla <strong>%</strong>:</label>
+                    <select class="form-select" id="special-function-select" aria-label="Seleccionar función para la tecla de módulo">
+                        <option value="%" data-text="%" data-action="operator" data-value="%" aria-label="Módulo">Módulo (%)</option>
+                        <option value="pow" data-text="xʸ" data-action="operator" data-value="^" aria-label="Potencia">Potencia (xʸ)</option>
+                        <option value="log" data-text="log" data-action="operator" data-value="log(" aria-label="Logaritmo base 10">Logaritmo (log)</option>
+                        <option value="ln" data-text="ln" data-action="operator" data-value="ln(" aria-label="Logaritmo natural">Logaritmo Natural (ln)</option>
+                        <option value="sin" data-text="sin" data-action="operator" data-value="sin(" aria-label="Seno">Seno (sin)</option>
+                        <option value="cos" data-text="cos" data-action="operator" data-value="cos(" aria-label="Coseno">Coseno (cos)</option>
+                        <option value="primos" data-text="Factores" data-action="primos" aria-label="Factores Primos">Factores Primos</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Velocidad de Animación -->
+            <div class="settings-group">
+                <h4><i class="fa-solid fa-gauge-high"></i> Velocidad de Animación</h4>
+                <p>Controla la velocidad de las animaciones en las operaciones visuales.</p>
+                <select id="animationSpeedSelector" class="form-select">
+                    <option value="2">Lenta (para aprender)</option>
+                    <option value="1">Normal</option>
+                    <option value="0.5">Rápida</option>
+                    <option value="0">Instantánea (sin animación)</option>
+                </select>
+            </div>
+            <!-- Experiencia Sensorial -->
+            <div class="settings-group">
+                <h4><i class="fa-solid fa-volume-high"></i> Experiencia Sensorial</h4>
+                <p>Activa o desactiva los efectos de sonido y la vibración en los botones.</p>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="soundEffectsToggle">
+                    <label class="form-check-label" for="soundEffectsToggle">Efectos de Sonido</label>
+                </div>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="hapticFeedbackToggle">
+                    <label class="form-check-label" for="hapticFeedbackToggle">Respuesta Táctil (Vibración)</label>
+                </div>
+            </div>
+            <!-- Efectos Visuales -->
+            <div class="settings-group">
+                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Efectos Visuales</h4>
+                <p>Activa o desactiva efectos visuales como el "glitch" en el display.</p>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="glitchEffectToggle">
+                    <label class="form-check-label" for="glitchEffectToggle">Efecto Glitch del Display</label>
+                </div>
+            </div>
+            <!-- Gestión de Interfaz y Datos -->
+            <div class="settings-group">
+                <h4><i class="fa-solid fa-database"></i> Interfaz y Datos</h4>
+                <p class="mb-2">Restaura la posición de los botones flotantes o borra todos los datos de la aplicación.</p>
+                <button id="resetPositionsBtn" class="btn btn-warning me-2">Restaurar Posiciones</button>
+                <button id="clearAllDataBtn" class="btn btn-danger">Borrar Todos los Datos</button>
+            </div>
+        </div>
+    </template>
+
    <!-- NUEVO: Footer -->
     <footer class="main-footer">
         <p>© 2023 Facundo Killer. Todos los derechos reservados.</p>
