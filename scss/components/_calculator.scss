@@ -207,6 +207,15 @@ $keyboard-gap: 2px;
         border-radius: 0;
         padding: 20px;
         background-color: var(--bg-output-screen-expanded, var(--bg-output-screen));
+
+        // MEJORA: En la vista expandida móvil, el botón de comprimir se posiciona más abajo.
+        .output-screen__expand-btn {
+            @include mobile {
+                // Como no hay barra de navegación inferior en esta vista,
+                // el botón puede estar más cerca del borde inferior.
+                bottom: 20px;
+            }
+        }
     }
 
     &__expand-btn {
@@ -230,6 +239,20 @@ $keyboard-gap: 2px;
         &:hover {
             background-color: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
+        }
+
+        // MEJORA: En la vista móvil, el botón se mueve a la parte inferior para un mejor acceso.
+        @include mobile {
+            // Se usa 'fixed' para que el botón permanezca visible aunque el contenido de la operación se desplace.
+            position: fixed;
+            top: auto;
+            right: auto;
+            // Se posiciona 15px por encima de la barra de navegación inferior.
+            bottom: calc(#{$nav-height} + 15px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
         }
     }
 

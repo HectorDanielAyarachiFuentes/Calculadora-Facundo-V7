@@ -637,6 +637,11 @@ header[role=banner] .subtitle a:hover {
   padding: 20px;
   background-color: var(--bg-output-screen-expanded, var(--bg-output-screen));
 }
+@media (max-width: 600px) {
+  .output-screen--expanded .output-screen__expand-btn {
+    bottom: 20px;
+  }
+}
 .output-screen__expand-btn {
   position: absolute;
   top: 15px;
@@ -658,6 +663,18 @@ header[role=banner] .subtitle a:hover {
 .output-screen__expand-btn:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
+}
+@media (max-width: 600px) {
+  .output-screen__expand-btn {
+    position: fixed;
+    top: auto;
+    right: auto;
+    bottom: calc(60px + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+  }
 }
 .output-screen__back-btn {
   position: absolute;
@@ -741,7 +758,7 @@ header[role=banner] .subtitle a:hover {
   font-weight: bold;
 }
 .output-screen .output-grid__cell--cociente {
-  color: rgb(7, 92, 7);
+  color: lightgreen;
   font-weight: bold;
 }
 .output-screen .output-grid__cell--producto {
