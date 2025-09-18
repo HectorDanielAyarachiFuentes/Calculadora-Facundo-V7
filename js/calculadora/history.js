@@ -49,6 +49,15 @@ function generateReadableText(item) {
         };
     }
 
+    const lnMatch = input.match(/^ln\((.+)\)$/);
+    if (lnMatch) {
+        const number = lnMatch[1];
+        return {
+            operation: `ln(${number})`,
+            fullText: `El logaritmo natural de ${number} ${getEqualsPhrase()} ${readResult(result)}`
+        };
+    }
+
     if (input.includes('^')) {
         const parts = input.split('^');
         const base = parts[0].trim();

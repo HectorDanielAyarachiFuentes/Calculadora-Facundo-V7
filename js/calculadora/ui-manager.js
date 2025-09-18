@@ -77,6 +77,12 @@ export function updateKeyboardState(displayContent) {
         btn.disabled = !esNumeroEnteroSimple;
     });
 
+    // Validar funciones unarias que aceptan decimales
+    const esNumeroPositivo = /^[0-9,]+$/.test(displayContent) && !esSoloCero && !hasBinaryOperatorInExpression && parseFloat(displayContent.replace(',', '.')) > 0;
+    document.querySelectorAll('[data-action="ln"]').forEach(btn => {
+        btn.disabled = !esNumeroPositivo;
+    });
+
     const esCalculable = /^-?[0-9,]+\s*[+\-x/%^]\s*-?[0-9,]+$/.test(displayContent);
     const btnIgual = document.querySelector('[data-action="calculate"]');
     if (btnIgual) btnIgual.disabled = !esCalculable;

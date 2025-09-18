@@ -126,6 +126,24 @@ export class ErrorHandlerCentralized {
     }
 
     /**
+     * Valida la entrada para la operación de logaritmo.
+     * @param {string} numero - El número a validar.
+     * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.
+     */
+    validarLogaritmo(numero) {
+        if (!/^-?[0-9,]+$/.test(numero)) {
+            return this.mostrarError('invalidOperation', { customMessage: 'La entrada para el logaritmo debe ser un número válido.' });
+        }
+        
+        const num = parseFloat(numero.replace(',', '.'));
+        if (isNaN(num) || num <= 0) {
+            return this.mostrarError('invalidOperation', { customMessage: 'El logaritmo solo está definido para números positivos.' });
+        }
+
+        return true;
+    }
+
+    /**
      * Valida la entrada para la descomposición en factores primos.
      * @param {string} numero - El número a validar.
      * @returns {boolean} `true` si es válida, de lo contrario muestra un error y retorna `false`.

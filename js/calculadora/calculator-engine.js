@@ -101,12 +101,15 @@ export async function reExecuteOperationFromHistory(historyInput) {
     // no la cadena interna. Esto evita dejar la calculadora en un estado inválido
     // que causa comportamientos extraños si el usuario intenta seguir calculando.
     const primosMatch = historyInput.match(/^factores\((\d+)\)$/);
+    const lnMatch = historyInput.match(/^ln\((.+)\)$/);
     const raizMatch = historyInput.match(/^√\((.+)\)$/);
 
     if (primosMatch) {
         display.innerHTML = primosMatch[1];
     } else if (raizMatch) {
         display.innerHTML = raizMatch[1];
+    } else if (lnMatch) {
+        display.innerHTML = lnMatch[1];
     } else {
         display.innerHTML = historyInput; // Comportamiento normal para operaciones aritméticas
     }
@@ -124,6 +127,12 @@ export async function reExecuteOperationFromHistory(historyInput) {
             const numero = raizMatch[1];
             if (errorHandler.validarRaizCuadrada(numero)) {
                 await operations.raizCuadrada(numero);
+                successful = true;
+            }
+        } else if (lnMatch) {
+            const numero = lnMatch[1];
+            if (errorHandler.validarLogaritmo(numero)) {
+                await operations.logaritmo(numero);
                 successful = true;
             }
         } else {
@@ -171,6 +180,15 @@ export async function handleAction(action) {
             const numero = display.innerHTML;
             const inputParaHistorial = action === 'primos' ? `factores(${numero})` : `√(${numero})`;
             const success = await reExecuteOperationFromHistory(inputParaHistorial); 
+            if (success) {
+                HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
+            }
+            break;
+        }
+        case 'ln': {
+            const numero = display.innerHTML;
+            const inputParaHistorial = `ln(${numero})`;
+            const success = await reExecuteOperationFromHistory(inputParaHistorial);
             if (success) {
                 HistoryManager.add({ input: inputParaHistorial, visualHtml: salida.innerHTML });
             }
