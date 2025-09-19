@@ -557,6 +557,108 @@ class NumberReaderApp {
 // --- ORQUESTADOR PRINCIPAL DE BOOTSTRAP E INTEGRACIÓN ---
 // =======================================================
         export function initInfoModal() {
+            // =======================================================
+            // --- LÓGICA PARA GESTIONAR TEMAS DE COLOR ---
+            // =======================================================
+            const themeManager = {
+                STORAGE_KEY_NAME: 'calculator_theme_name',
+                STORAGE_KEY_CUSTOM: 'calculator_custom_theme',
+                
+                predefinedThemes: {
+                    ocean: {
+                        '--btn-num-bg': '#87CEEB', // SkyBlue
+                        '--btn-op-bg': '#20B2AA',  // LightSeaGreen
+                        '--btn-special-bg': '#4682B4', // SteelBlue
+                        '--btn-equal-bg': '#00CED1', // DarkTurquoise
+                        '--btn-text-color': '#000',
+                    },
+                    sunset: {
+                        '--btn-num-bg': '#FFD700', // Gold
+                        '--btn-op-bg': '#E32636',  // Alizarin Crimson
+                        '--btn-special-bg': '#8A2BE2', // BlueViolet
+                        '--btn-equal-bg': '#FF4500', // OrangeRed
+                        '--btn-text-color': '#fff',
+                    },
+                    forest: {
+                        '--btn-num-bg': '#90EE90', // LightGreen
+                        '--btn-op-bg': '#8B4513',  // SaddleBrown
+                        '--btn-special-bg': '#006400', // DarkGreen
+                        '--btn-equal-bg': '#556B2F', // DarkOliveGreen
+                        '--btn-text-color': '#fff',
+                    },
+                    grayscale: {
+                        '--btn-num-bg': '#DCDCDC',
+                        '--btn-op-bg': '#A9A9A9',
+                        '--btn-special-bg': '#808080',
+                        '--btn-equal-bg': '#696969',
+                        '--btn-text-color': '#000',
+                    },
+                    hacker: {
+                        '--btn-num-bg': '#1C1C1C',
+                        '--btn-op-bg': '#101010',
+                        '--btn-special-bg': '#0A0A0A',
+                        '--btn-equal-bg': '#003300',
+                        '--btn-text-color': '#00FF00',
+                    },
+                    martian: {
+                        '--btn-num-bg': '#D27D2D',
+                        '--btn-op-bg': '#8B0000',
+                        '--btn-special-bg': '#C1440E',
+                        '--btn-equal-bg': '#FF4500',
+                        '--btn-text-color': '#F5DEB3',
+                    },
+                    trump: {
+                        '--btn-num-bg': '#FFD700', // Gold
+                        '--btn-op-bg': '#E0162B',  // Red
+                        '--btn-special-bg': '#002868', // Blue
+                        '--btn-equal-bg': '#FFFFFF', // White
+                        '--btn-text-color': '#000000', // Black
+                    }
+                },
+        
+                applyTheme(theme) {
+                    const root = document.documentElement;
+                    Object.entries(theme).forEach(([key, value]) => {
+                        root.style.setProperty(key, value);
+                    });
+                },
+        
+                resetTheme() {
+                    const root = document.documentElement;
+                    const themeKeys = ['--btn-num-bg', '--btn-op-bg', '--btn-special-bg', '--btn-equal-bg', '--btn-text-color'];
+                    themeKeys.forEach(key => root.style.removeProperty(key));
+                },
+        
+                generateRandomTheme() {
+                    const randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+                    const theme = {
+                        '--btn-num-bg': randomColor(),
+                        '--btn-op-bg': randomColor(),
+                        '--btn-special-bg': randomColor(),
+                        '--btn-equal-bg': randomColor(),
+                        '--btn-text-color': '#000', // Se puede mejorar con un cálculo de luminancia
+                    };
+                    this.applyTheme(theme);
+                    localStorage.setItem(this.STORAGE_KEY_NAME, 'custom');
+                    localStorage.setItem(this.STORAGE_KEY_CUSTOM, JSON.stringify(theme));
+                    return theme;
+                },
+        
+                init() {
+                    const themeName = localStorage.getItem(this.STORAGE_KEY_NAME);
+                    if (!themeName || themeName === 'default') { this.resetTheme(); return; }
+                    if (themeName === 'custom') {
+                        const customTheme = localStorage.getItem(this.STORAGE_KEY_CUSTOM);
+                        if (customTheme) { this.applyTheme(JSON.parse(customTheme)); }
+                    } else if (this.predefinedThemes[themeName]) {
+                        this.applyTheme(this.predefinedThemes[themeName]);
+                    }
+                }
+            };
+        
+            // Cargar y aplicar el tema guardado al iniciar la aplicación.
+            themeManager.init();
+
             const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
@@ -676,6 +778,49 @@ class NumberReaderApp {
 
                         // Aplicar el estado inicial (ya sea guardado o por defecto)
                         updateSpecialButton(specialFunctionSelect.selectedOptions[0]);
+
+                        // 4. Implementar la nueva lógica para el cambio de tema
+                        const themeSelect = document.getElementById('theme-select');
+                        const randomThemeBtn = document.getElementById('random-theme-btn');
+                        const resetThemeBtn = document.getElementById('reset-theme-btn');
+
+                        if (themeSelect && randomThemeBtn && resetThemeBtn) {
+                            const customOption = themeSelect.querySelector('option[value="custom"]');
+
+                            // Cargar el estado guardado en el select
+                            const savedThemeName = localStorage.getItem(themeManager.STORAGE_KEY_NAME) || 'default';
+                            themeSelect.value = savedThemeName;
+                            customOption.disabled = savedThemeName !== 'custom';
+
+                            // Evento para el selector de temas predefinidos
+                            themeSelect.addEventListener('change', (e) => {
+                                const selectedTheme = e.target.value;
+                                customOption.disabled = true;
+                                if (selectedTheme === 'default') {
+                                    themeManager.resetTheme();
+                                    localStorage.setItem(themeManager.STORAGE_KEY_NAME, 'default');
+                                    localStorage.removeItem(themeManager.STORAGE_KEY_CUSTOM);
+                                } else if (themeManager.predefinedThemes[selectedTheme]) {
+                                    themeManager.applyTheme(themeManager.predefinedThemes[selectedTheme]);
+                                    localStorage.setItem(themeManager.STORAGE_KEY_NAME, selectedTheme);
+                                    localStorage.removeItem(themeManager.STORAGE_KEY_CUSTOM);
+                                }
+                            });
+
+                            // Evento para el botón de tema aleatorio
+                            randomThemeBtn.addEventListener('click', () => {
+                                themeManager.generateRandomTheme();
+                                customOption.disabled = false;
+                                themeSelect.value = 'custom';
+                            });
+
+                            // Evento para el botón de restaurar tema por defecto
+                            resetThemeBtn.addEventListener('click', () => {
+                                // Simular el cambio en el select para reutilizar la lógica
+                                themeSelect.value = 'default';
+                                themeSelect.dispatchEvent(new Event('change'));
+                            });
+                        }
                     }
                 },
                 help: { 

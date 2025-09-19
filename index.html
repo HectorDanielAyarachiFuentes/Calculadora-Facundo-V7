@@ -203,6 +203,27 @@
                     </select>
                 </div>
             </div>
+            <!-- Temas de Color -->
+            <div class="settings-group">
+                <h4><i class="fa-solid fa-palette"></i> Temas de Color</h4>
+                <p>Cambia la paleta de colores de los botones de la calculadora. El tema se guardará para futuras visitas.</p>
+                <div class="mb-3">
+                    <label for="theme-select" class="form-label">Temas Predefinidos:</label>
+                    <select class="form-select" id="theme-select">
+                        <option value="default">Clásico (Por defecto)</option>
+                        <option value="ocean">Océano</option>
+                        <option value="sunset">Atardecer</option>
+                        <option value="forest">Bosque</option>
+                        <option value="grayscale">Escala de Grises</option>
+                        <option value="hacker">Hacker</option>
+                        <option value="martian">Marciano</option>
+                        <option value="trump">The Don</option>
+                        <option value="custom" disabled>Personalizado (Aleatorio)</option>
+                    </select>
+                </div>
+                <button id="random-theme-btn" class="btn btn-success me-2">Tema Aleatorio</button>
+                <button id="reset-theme-btn" class="btn btn-secondary">Restaurar Por Defecto</button>
+            </div>
             <!-- Velocidad de Animación -->
             <div class="settings-group">
                 <h4><i class="fa-solid fa-gauge-high"></i> Velocidad de Animación</h4>
