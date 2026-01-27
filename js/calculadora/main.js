@@ -9,6 +9,8 @@ import { HistoryManager, HistoryPanel } from './history.js';
 import { ThemeSwitcher } from './theme-switcher.js';
 import * as UIManager from './ui-manager.js';
 import { setupEventListeners } from './event-handler.js';
+import { initApp } from './app.js';
+
 
 // --- INICIALIZACIÓN Y EVENTOS ---
 
@@ -26,6 +28,9 @@ function alCargar() {
     new ThemeSwitcher();
     // 4. Configura todos los manejadores de eventos (clics, teclado, etc.)
     setupEventListeners();
+    // 6. Inicializa lógica adicional de UI y configuración (app.js)
+    initApp();
+
 
     // 5. Configura manejadores globales de errores para una depuración más robusta.
     window.addEventListener('error', (event) => {

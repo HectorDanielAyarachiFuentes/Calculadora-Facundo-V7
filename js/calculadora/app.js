@@ -40,7 +40,11 @@ function initSpecialFunctionButton() {
         tmodButton.setAttribute('aria-label', ariaLabel || text);
     }
 }
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * Inicializa la aplicación (botones arrastrables, modales, configuración).
+ * Esta función es llamada desde main.js cuando el DOM está listo.
+ */
+export function initApp() {
     // Inicializa la lógica para los botones arrastrables (herramientas, tema, historial)
     initDraggableButtons();
 
@@ -50,4 +54,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Aplica la configuración del botón especial guardada por el usuario.
     initSpecialFunctionButton();
-});
+}
