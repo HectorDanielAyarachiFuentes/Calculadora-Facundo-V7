@@ -48,7 +48,21 @@ function alCargar() {
             motivo: event.reason,
         });
     });
+    // 6. Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(registration => {
+                    console.log('SW registrado correctamente:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Fallo en registro SW:', error);
+                });
+        });
+    }
 }
+
+
 
 // --- INICIO DE LA APLICACIÓN ---
 document.addEventListener('DOMContentLoaded', alCargar);
