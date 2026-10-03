@@ -118,6 +118,18 @@ html, body, button, input, div, p, span, a, h1, h2, h3, h4, h5, h6 {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
+html {
+  height: 100%;
+  max-height: 100vh;
+  overflow: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
+}
+html::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
 @media (max-width: 600px) {
   html {
     box-sizing: border-box;
@@ -131,14 +143,25 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100svh;
-  padding: clamp(8px, 1.5vh, 20px);
+  justify-content: space-between;
+  height: 100vh;
+  max-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: clamp(6px, 1.2vh, 14px) 15px;
   background-color: var(--bg-main);
   font-family: "Quicksand", sans-serif;
   color: #eee;
-  overflow-y: auto; /* Permite scroll si la pantalla es muy pequeña o se aplica zoom */
-  overflow-x: hidden;
+  overflow: hidden; /* Cero scroll en escritorio para experiencia app nativa */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   position: relative;
+  box-sizing: border-box;
+}
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 @media (max-width: 600px) {
   body {
@@ -327,7 +350,7 @@ button:focus-visible {
 
 /* --- ESTILOS DE LA CABECERA (TÍTULO) --- */
 header[role=banner] {
-  margin-bottom: clamp(10px, 2vh, 20px);
+  margin-bottom: clamp(4px, 1vh, 10px);
   text-align: center;
   margin-top: 0;
 }
@@ -340,7 +363,7 @@ header[role=banner] {
 }
 header[role=banner] h1 {
   font-family: "Titillium Web", sans-serif;
-  font-size: clamp(1.2rem, 3.5vw, 2rem);
+  font-size: clamp(1.1rem, 2.4vh, 1.6rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: 1px;
@@ -360,7 +383,7 @@ header[role=banner] h1 span {
   }
 }
 header[role=banner] .subtitle {
-  margin-top: clamp(4px, 1vh, 10px);
+  margin-top: clamp(2px, 0.5vh, 5px);
   font-size: clamp(0.6rem, 1.2vw, 0.75rem);
   color: var(--color-error);
   opacity: 0.8;
@@ -384,7 +407,7 @@ header[role=banner] .subtitle a:hover {
 /* --- ESTILOS DEL PIE DE PÁGINA --- */
 .main-footer {
   margin-top: auto;
-  padding: clamp(8px, 1.5vh, 16px) 0 clamp(10px, 2vh, 18px);
+  padding: clamp(4px, 0.8vh, 8px) 0 clamp(4px, 1vh, 10px);
   text-align: center;
   font-size: clamp(0.75rem, 1.2vw, 0.85rem);
   color: rgba(255, 255, 255, 0.7);
@@ -393,7 +416,7 @@ header[role=banner] .subtitle a:hover {
   z-index: 5;
 }
 .main-footer p {
-  margin: 3px 0;
+  margin: 1px 0;
   line-height: 1.4;
 }
 .main-footer .heart-icon {
@@ -446,8 +469,8 @@ header[role=banner] .subtitle a:hover {
   width: 100%;
   margin: auto 0;
   /* MEJORA: Aumentado el tamaño para que ocupe más espacio en pantallas grandes usando unidades relativas (vmin) */
-  max-width: min(390px, 88vw, 100vh - 210px);
-  min-width: 270px;
+  max-width: min(360px, 86vw, 100vh - 180px);
+  min-width: 260px;
   opacity: 0;
   transition: opacity 1s;
   --neon-color-1: var(--btn-equal-bg);
@@ -477,13 +500,13 @@ header[role=banner] .subtitle a:hover {
   justify-content: flex-end;
   align-items: center;
   width: 100%;
-  min-height: clamp(52px, 7.5vh, 65px);
-  margin-bottom: clamp(8px, 1.5vh, 14px);
-  padding: clamp(10px, 1.8vh, 18px);
+  min-height: clamp(44px, 6vh, 56px);
+  margin-bottom: clamp(6px, 1vh, 10px);
+  padding: clamp(6px, 1.2vh, 12px) 15px;
   background-color: var(--bg-display);
   color: var(--color-display-text);
   font-family: "Chakra Petch", sans-serif;
-  font-size: 2.2rem;
+  font-size: clamp(1.6rem, 3.5vh, 2.2rem);
   text-align: right;
   border-radius: 10px;
   word-wrap: break-word;

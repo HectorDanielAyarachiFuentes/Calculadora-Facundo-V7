@@ -10,6 +10,18 @@ html, body, button, input, div, p, span, a, h1, h2, h3, h4, h5, h6 {
 }
 
 html {
+    height: 100%;
+    max-height: 100vh;
+    overflow: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE / Edge */
+
+    &::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
     @media (max-width: 600px) {
         box-sizing: border-box;
         *, *:before, *:after {
@@ -21,20 +33,30 @@ html {
 body {
     display: flex;
     flex-direction: column;
-    // Se elimina `justify-content: center` para que no afecte la posición de los modales.
-    align-items: center; // Se mantiene el centrado horizontal para el contenido principal.
-    min-height: 100svh;
-    padding: clamp(8px, 1.5vh, 20px);
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+    max-height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: clamp(6px, 1.2vh, 14px) 15px;
     background-color: var(--bg-main);
     font-family: 'Quicksand', sans-serif;
     color: #eee;
-    overflow-y: auto; /* Permite scroll si la pantalla es muy pequeña o se aplica zoom */
-    overflow-x: hidden;
-    position: relative; // Necesario para el pseudo-elemento
+    overflow: hidden; /* Cero scroll en escritorio para experiencia app nativa */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
+    box-sizing: border-box;
+
+    &::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
 
     @media (max-width: 600px) {
-        padding: 0; // Sin padding en los bordes.
-        // Anulamos el centrado de escritorio para que el contenido se expanda.
+        padding: 0;
         justify-content: flex-start;
         align-items: stretch;
         min-height: 100dvh;
@@ -52,10 +74,10 @@ body {
         background-image: 
             repeating-linear-gradient(90deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px),
             repeating-linear-gradient(0deg, var(--bg-grid-lines) 0 1px, transparent 1px 96px);
-        background-size: 96px 96px; // Tamaño explícito
+        background-size: 96px 96px;
         animation: move-grid 20s linear infinite;
-        z-index: -1; // Detrás de todo el contenido
-        opacity: 0.5; // Un poco más sutil
+        z-index: -1;
+        opacity: 0.5;
     }
 }
 

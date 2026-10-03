@@ -1,7 +1,7 @@
 /* --- ESTILOS DEL PIE DE PÁGINA --- */
 .main-footer {
     margin-top: auto;
-    padding: clamp(8px, 1.5vh, 16px) 0 clamp(10px, 2vh, 18px);
+    padding: clamp(4px, 0.8vh, 8px) 0 clamp(4px, 1vh, 10px);
     text-align: center;
     font-size: clamp(0.75rem, 1.2vw, 0.85rem);
     color: rgba(255, 255, 255, 0.7);
@@ -10,7 +10,7 @@
     z-index: 5;
 
     p {
-        margin: 3px 0;
+        margin: 1px 0;
         line-height: 1.4;
     }
 

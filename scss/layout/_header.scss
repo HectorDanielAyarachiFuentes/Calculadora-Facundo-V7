@@ -1,6 +1,6 @@
 /* --- ESTILOS DE LA CABECERA (TÍTULO) --- */
 header[role="banner"] {
-    margin-bottom: clamp(10px, 2vh, 20px);
+    margin-bottom: clamp(4px, 1vh, 10px);
     text-align: center;
     margin-top: 0;
 
@@ -12,7 +12,7 @@ header[role="banner"] {
 
     h1 {
         font-family: 'Titillium Web', sans-serif;
-        font-size: clamp(1.2rem, 3.5vw, 2rem);
+        font-size: clamp(1.1rem, 2.4vh, 1.6rem);
         font-weight: 700;
         line-height: 1;
         letter-spacing: 1px;
@@ -33,7 +33,7 @@ header[role="banner"] {
     }
 
     .subtitle {
-        margin-top: clamp(4px, 1vh, 10px);
+        margin-top: clamp(2px, 0.5vh, 5px);
         font-size: clamp(0.6rem, 1.2vw, 0.75rem);
         color: var(--color-error);
         opacity: 0.8;

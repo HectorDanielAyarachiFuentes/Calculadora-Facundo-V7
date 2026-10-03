@@ -13,8 +13,8 @@ $keyboard-gap: 2px;
     width: 100%;
     margin: auto 0; // Centra verticalmente el contenedor en el espacio disponible del body (flex).
     /* MEJORA: Aumentado el tamaño para que ocupe más espacio en pantallas grandes usando unidades relativas (vmin) */
-    max-width: min(390px, 88vw, calc(100vh - 210px));
-    min-width: 270px;
+    max-width: min(360px, 86vw, calc(100vh - 180px));
+    min-width: 260px;
     opacity: 0;
     transition: opacity 1s;
 
@@ -48,13 +48,13 @@ $keyboard-gap: 2px;
     justify-content: flex-end;
     align-items: center;
     width: 100%;
-    min-height: clamp(52px, 7.5vh, 65px);
-    margin-bottom: clamp(8px, 1.5vh, 14px);
-    padding: clamp(10px, 1.8vh, 18px);
+    min-height: clamp(44px, 6vh, 56px);
+    margin-bottom: clamp(6px, 1vh, 10px);
+    padding: clamp(6px, 1.2vh, 12px) 15px;
     background-color: var(--bg-display);
     color: var(--color-display-text);
     font-family: 'Chakra Petch', sans-serif;
-    font-size: 2.2rem;
+    font-size: clamp(1.6rem, 3.5vh, 2.2rem);
     text-align: right;
     border-radius: 10px;
     word-wrap: break-word;
