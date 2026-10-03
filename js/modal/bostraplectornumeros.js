@@ -1098,27 +1098,41 @@ class NumberReaderApp {
                     title: "Conversor de Unidades",
                     body: `
                         <div id="unit-converter-container" class="converter-app">
-                            <div class="row g-3 align-items-center">
-                                <div class="col-12">
-                                    <label for="unit-category" class="form-label">Tipo de Medida</label>
-                                    <select id="unit-category" class="form-select">
-                                        <option value="length">Longitud</option>
-                                        <option value="mass">Masa</option>
-                                    </select>
+                            <div class="conv-category-bar mb-2">
+                                <label for="unit-category" class="form-label small fw-bold text-muted mb-1"><i class="fa-solid fa-shapes me-1"></i> Categoría de Medida:</label>
+                                <select id="unit-category" class="form-select form-select-sm">
+                                    <option value="length">📏 Longitud</option>
+                                    <option value="mass">⚖️ Masa / Peso</option>
+                                    <option value="temperature">🌡️ Temperatura</option>
+                                    <option value="time">⏱️ Tiempo</option>
+                                    <option value="data">💾 Almacenamiento Digital</option>
+                                    <option value="speed">🚀 Velocidad</option>
+                                </select>
+                            </div>
+                            <div class="row g-2 align-items-center">
+                                <div class="col-5">
+                                    <label for="unit-from" class="form-label small text-muted mb-1">De:</label>
+                                    <select id="unit-from" class="form-select form-select-sm"></select>
+                                    <input type="number" id="unit-from-value" class="form-control form-control-sm mt-1" value="1" step="any">
                                 </div>
-                                <div class="col-md-5">
-                                    <label for="unit-from" class="form-label">De:</label>
-                                    <select id="unit-from" class="form-select"></select>
-                                    <input type="number" id="unit-from-value" class="form-control mt-2" value="1">
+                                <div class="col-2 text-center d-flex align-items-center justify-content-center pt-3">
+                                    <button id="converter-swap-btn" class="conv-swap-btn" type="button" title="Invertir unidades">
+                                        <i class="fa-solid fa-right-left conv-swap-icon"></i>
+                                    </button>
                                 </div>
-                                <div class="col-md-2 text-center d-flex align-items-center justify-content-center pt-4">
-                                    <i class="fa-solid fa-right-left fs-2 text-secondary converter-app__arrow"></i>
+                                <div class="col-5">
+                                    <label for="unit-to" class="form-label small text-muted mb-1">A:</label>
+                                    <select id="unit-to" class="form-select form-select-sm"></select>
+                                    <div class="input-group input-group-sm mt-1">
+                                        <input type="number" id="unit-to-value" class="form-control form-control-sm" step="any">
+                                        <button id="conv-copy-btn" class="btn btn-outline-secondary" type="button" title="Copiar">
+                                            <i class="fa-regular fa-copy"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="col-md-5">
-                                    <label for="unit-to" class="form-label">A:</label>
-                                    <select id="unit-to" class="form-select"></select>
-                                    <input type="number" id="unit-to-value" class="form-control mt-2">
-                                </div>
+                            </div>
+                            <div class="conv-formula-pill mt-2">
+                                <i class="fa-solid fa-lightbulb text-warning me-1"></i> Equivalencia: <span id="conv-formula-text" class="fw-bold">1 m = 100 cm</span>
                             </div>
                         </div>
                     `,
@@ -1226,78 +1240,114 @@ class NumberReaderApp {
                     }
                 },
                 help: { 
-                    title: "Centro de Ayuda", 
+                    title: "Centro de Ayuda y Atajos", 
                     body: `
-                        <div class="help-center">
-                            <p class="help-intro">¡Bienvenido a la Calculadora de Facundo! Aquí encontrarás respuestas a las preguntas más comunes para sacar el máximo provecho de todas las herramientas.</p>
-                            <div class="accordion" id="helpAccordion">
-                                <!-- Item 1: Uso Básico -->
-                                <div class="accordion-item">
+                        <div class="help-hub">
+                            <div class="help-top-bar mb-2">
+                                <div class="help-search-box">
+                                    <i class="fa-solid fa-magnifying-glass help-search-icon"></i>
+                                    <input type="text" id="helpSearchInput" class="form-control form-control-sm help-search-input" placeholder="Buscar atajo, función o solución...">
+                                </div>
+                            </div>
+
+                            <div class="help-shortcuts-bar mb-2">
+                                <span class="badge bg-dark border border-secondary text-light"><kbd>Enter</kbd> = Calcular</span>
+                                <span class="badge bg-dark border border-secondary text-light"><kbd>C</kbd> = Limpiar</span>
+                                <span class="badge bg-dark border border-secondary text-light"><kbd>⌫</kbd> = Borrar</span>
+                                <span class="badge bg-dark border border-secondary text-light"><kbd>Esc</kbd> = Cerrar</span>
+                            </div>
+
+                            <div class="accordion help-accordion-container" id="helpAccordion">
+                                <div class="accordion-item help-item" data-category="basic">
                                     <h2 class="accordion-header" id="headingOne">
                                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                            <i class="fa-solid fa-keyboard me-2"></i> Uso Básico de la Calculadora
+                                            <i class="fa-solid fa-keyboard me-2 text-success"></i> Uso Básico de la Calculadora
                                         </button>
                                     </h2>
                                     <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#helpAccordion">
-                                        <div class="accordion-body">
-                                            <strong>Realizar cálculos:</strong> Usa el teclado numérico para introducir operaciones como <code>123 + 45</code>. El resultado se mostrará en el display.<br>
-                                            <strong>Operaciones visuales:</strong> Pulsa el botón <strong>'='</strong> para ver la operación resuelta paso a paso en una cuadrícula detallada. Esto es ideal para aprender cómo funcionan las sumas, restas, multiplicaciones, divisiones y raíces.<br>
-                                            <strong>Borrar:</strong> El botón <strong>'C'</strong> limpia toda la entrada. El botón <strong>'⌫'</strong> borra el último carácter.
+                                        <div class="accordion-body small">
+                                            <strong>Cálculos:</strong> Introduce operaciones como <code>123 + 45</code>.<br>
+                                            <strong>Paso a paso:</strong> Pulsa <strong>'='</strong> para ver la cuadrícula pedagógica resuelta.<br>
+                                            <strong>Borrado:</strong> <strong>'C'</strong> limpia todo; <strong>'⌫'</strong> borra el último dígito.
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Item 2: Herramientas -->
-                                <div class="accordion-item">
+
+                                <div class="accordion-item help-item" data-category="tools">
                                     <h2 class="accordion-header" id="headingTwo">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                            <i class="fa-solid fa-screwdriver-wrench me-2"></i> Herramientas Adicionales
+                                            <i class="fa-solid fa-screwdriver-wrench me-2 text-warning"></i> Herramientas Avanzadas
                                         </button>
                                     </h2>
                                     <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#helpAccordion">
-                                        <div class="accordion-body">
-                                            Accede a herramientas avanzadas desde el menú de la esquina superior izquierda (<i class="fa-solid fa-screwdriver-wrench"></i>):
-                                            <ul>
-                                                <li><strong>Lector de Números:</strong> Convierte cualquier número a su forma escrita, con desglose fonético y una increíble representación gráfica.</li>
-                                                <li><strong>Calculadora de Geometría:</strong> Calcula el área y perímetro de varias figuras geométricas con una visualización interactiva.</li>
-                                            </ul>
+                                        <div class="accordion-body small">
+                                            <strong>Lector de Números:</strong> Convierte números a letras con fonética, síntesis de voz y análisis matemático.<br>
+                                            <strong>Geometría CAD:</strong> Calcula áreas, perímetros y cotas con gráficos blueprint interactivos.<br>
+                                            <strong>Conversor:</strong> Longitud, masa, temperatura, tiempo, datos y velocidad.
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Item 3: Personalización -->
-                                <div class="accordion-item">
+
+                                <div class="accordion-item help-item" data-category="config">
                                     <h2 class="accordion-header" id="headingThree">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                            <i class="fa-solid fa-palette me-2"></i> Personalización y Ajustes
+                                            <i class="fa-solid fa-palette me-2 text-info"></i> Personalización y Ajustes
                                         </button>
                                     </h2>
                                     <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#helpAccordion">
-                                        <div class="accordion-body">
-                                            <strong>Botones Flotantes:</strong> ¡Puedes arrastrar los botones de herramientas, tema e historial a cualquier lugar de la pantalla! Tu configuración se guardará.<br>
-                                            <strong>Panel de Configuración (<i class="fa-solid fa-gears"></i>):</strong> Aquí puedes ajustar la velocidad de las animaciones, activar/desactivar sonidos, restaurar las posiciones de los botones y más.<br>
-                                            <strong>Cambio de Tema (<i class="fa-solid fa-moon"></i>):</strong> Alterna entre el modo claro y oscuro para tu comodidad visual.
+                                        <div class="accordion-body small">
+                                            <strong>Botones Flotantes:</strong> Arrastra el menú a cualquier parte de tu pantalla.<br>
+                                            <strong>Temas:</strong> Cambia de estilo entre Océano, Atardecer, Hacker o crea uno aleatorio.<br>
+                                            <strong>Tecla %:</strong> Asígnale potencias, logaritmos o cálculo de factores primos.
                                         </div>
                                     </div>
                                 </div>
-                                 <!-- Item 4: Solución de Problemas -->
-                                <div class="accordion-item">
+
+                                <div class="accordion-item help-item" data-category="trouble">
                                     <h2 class="accordion-header" id="headingFour">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                            <i class="fa-solid fa-circle-exclamation me-2"></i> Solución de Problemas
+                                            <i class="fa-solid fa-circle-exclamation me-2 text-danger"></i> Solución de Problemas
                                         </button>
                                     </h2>
                                     <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#helpAccordion">
-                                        <div class="accordion-body">
-                                            <strong>Aparece 'NaN' o 'Error':</strong> Esto suele ocurrir si la operación introducida no es válida (ej. <code>5++3</code>). Usa el botón 'C' para limpiar y empezar de nuevo.<br>
-                                            <strong>La aplicación va lenta:</strong> Si has realizado muchos cálculos complejos, prueba a limpiar el historial desde su panel. También puedes borrar todos los datos desde el panel de configuración para un reinicio completo.<br>
-                                            <strong>Un botón no está donde lo dejé:</strong> Si cambias el tamaño de la ventana, las posiciones se recalculan. Puedes restaurarlas a su estado original desde el panel de configuración.
+                                        <div class="accordion-body small">
+                                            <strong>'Error' o 'NaN':</strong> Revisa la sintaxis de la operación (ej. evitar signos dobles consecutivos).<br>
+                                            <strong>Botones descolocados:</strong> Restaura posiciones en el panel de configuración.<br>
+                                            <strong>Audio:</strong> Verifica que el navegador tenga permisos de audio para la síntesis de voz.
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>` 
+                        </div>
+                    `,
+                    onShow: () => {
+                        const searchInput = document.getElementById('helpSearchInput');
+                        if (searchInput) {
+                            searchInput.addEventListener('input', (e) => {
+                                const q = e.target.value.toLowerCase().trim();
+                                document.querySelectorAll('.help-item').forEach(item => {
+                                    const text = item.textContent.toLowerCase();
+                                    item.style.display = text.includes(q) ? '' : 'none';
+                                });
+                            });
+                        }
+                    }
                 }
             };
-            
+
+            // Delegación de pestañas para el panel de configuración
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('.settings-tab-btn');
+                if (!btn) return;
+                e.preventDefault();
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.settings-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.settings-tab-pane').forEach(p => p.classList.remove('active'));
+                const target = document.getElementById('settings-pane-' + tab);
+                if (target) target.classList.add('active');
+            });
+
             document.querySelectorAll('[data-modal-target]').forEach(trigger => {
                 trigger.addEventListener('click', () => {
                     const targetKey = trigger.dataset.modalTarget; const data = infoData[targetKey];

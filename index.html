@@ -186,96 +186,112 @@
 
     <!-- NUEVO: Template para el modal de configuración -->
     <template id="config-modal-template">
-        <div class="settings-panel">
-            <!-- Personalización de Teclas -->
-            <div class="settings-group">
-                <h4><i class="fa-solid fa-keyboard"></i> Personalización de Teclas</h4>
-                <p>Selecciona una función alternativa para la tecla de módulo (%). El cambio se aplicará inmediatamente.
-                </p>
-                <div class="mb-2">
-                    <label for="special-function-select" class="form-label">Función para la tecla
-                        <strong>%</strong>:</label>
-                    <select class="form-select" id="special-function-select"
-                        aria-label="Seleccionar función para la tecla de módulo">
-                        <option value="%" data-text="%" data-value="%" data-action="" aria-label="Módulo">Módulo (%)
-                        </option>
-                        <option value="pow" data-text="xʸ" data-value="^" data-action="" aria-label="Potencia">Potencia
-                            (xʸ)</option>
-                        <option value="log" data-text="log" data-value="" data-action="log"
-                            aria-label="Logaritmo base 10">Logaritmo (log)</option>
-                        <option value="ln" data-text="ln" data-value="" data-action="ln" aria-label="Logaritmo natural">
-                            Logaritmo Natural (ln)</option>
-                        <option value="sin" data-text="sin" data-value="" data-action="sin" aria-label="Seno">Seno (sin)
-                        </option>
-                        <option value="cos" data-text="cos" data-value="" data-action="cos" aria-label="Coseno">Coseno
-                            (cos)</option>
-                        <option value="primos" data-text="Factores" data-action="primos" aria-label="Factores Primos">
-                            Factores Primos</option>
-                    </select>
-                </div>
+        <div class="settings-hub">
+            <div class="settings-tabs-bar" role="tablist">
+                <button class="settings-tab-btn active" data-tab="themes" type="button" role="tab">
+                    <i class="fa-solid fa-palette me-1"></i> Temas
+                </button>
+                <button class="settings-tab-btn" data-tab="keys" type="button" role="tab">
+                    <i class="fa-solid fa-keyboard me-1"></i> Tecla %
+                </button>
+                <button class="settings-tab-btn" data-tab="effects" type="button" role="tab">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Efectos
+                </button>
+                <button class="settings-tab-btn" data-tab="data" type="button" role="tab">
+                    <i class="fa-solid fa-database me-1"></i> Memoria
+                </button>
             </div>
-            <!-- Temas de Color -->
-            <div class="settings-group">
-                <h4><i class="fa-solid fa-palette"></i> Temas de Color</h4>
-                <p>Cambia la paleta de colores de los botones de la calculadora. El tema se guardará para futuras
-                    visitas.</p>
-                <div class="mb-3">
-                    <label for="theme-select" class="form-label">Temas Predefinidos:</label>
-                    <select class="form-select" id="theme-select">
-                        <option value="default">Clásico (Por defecto)</option>
-                        <option value="ocean">Océano</option>
-                        <option value="sunset">Atardecer</option>
-                        <option value="forest">Bosque</option>
-                        <option value="grayscale">Escala de Grises</option>
-                        <option value="hacker">Hacker</option>
-                        <option value="martian">Marciano</option>
-                        <option value="trump">The Don</option>
-                        <option value="custom" disabled>Personalizado (Aleatorio)</option>
-                    </select>
+
+            <div class="settings-tab-content">
+                <div class="settings-tab-pane active" id="settings-pane-themes">
+                    <div class="settings-card">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="settings-card-title"><i class="fa-solid fa-swatchbook me-1"></i> Paleta de Colores:</span>
+                            <span class="badge bg-dark border border-secondary text-info">En Vivo</span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="theme-select" class="form-label small text-muted">Tema Seleccionado:</label>
+                            <select class="form-select form-select-sm" id="theme-select">
+                                <option value="default">Clásico (Por defecto)</option>
+                                <option value="ocean">Océano</option>
+                                <option value="sunset">Atardecer</option>
+                                <option value="forest">Bosque</option>
+                                <option value="grayscale">Escala de Grises</option>
+                                <option value="hacker">Hacker</option>
+                                <option value="martian">Marciano</option>
+                                <option value="trump">The Don</option>
+                                <option value="custom" disabled>Personalizado (Aleatorio)</option>
+                            </select>
+                        </div>
+                        <div class="settings-theme-actions">
+                            <button id="random-theme-btn" class="btn btn-sm btn-outline-success">
+                                <i class="fa-solid fa-dice me-1"></i> Tema Aleatorio
+                            </button>
+                            <button id="reset-theme-btn" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa-solid fa-rotate-left me-1"></i> Restaurar Clásico
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <button id="random-theme-btn" class="btn btn-success me-2">Tema Aleatorio</button>
-                <button id="reset-theme-btn" class="btn btn-secondary">Restaurar Por Defecto</button>
-            </div>
-            <!-- Velocidad de Animación -->
-            <div class="settings-group">
-                <h4><i class="fa-solid fa-gauge-high"></i> Velocidad de Animación</h4>
-                <p>Controla la velocidad de las animaciones en las operaciones visuales.</p>
-                <select id="animationSpeedSelector" class="form-select">
-                    <option value="2">Lenta (para aprender)</option>
-                    <option value="1">Normal</option>
-                    <option value="0.5">Rápida</option>
-                    <option value="0">Instantánea (sin animación)</option>
-                </select>
-            </div>
-            <!-- Experiencia Sensorial -->
-            <div class="settings-group">
-                <h4><i class="fa-solid fa-volume-high"></i> Experiencia Sensorial</h4>
-                <p>Activa o desactiva los efectos de sonido y la vibración en los botones.</p>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="soundEffectsToggle">
-                    <label class="form-check-label" for="soundEffectsToggle">Efectos de Sonido</label>
+
+                <div class="settings-tab-pane" id="settings-pane-keys">
+                    <div class="settings-card">
+                        <span class="settings-card-title mb-2 d-block"><i class="fa-solid fa-percent me-1"></i> Función para la Tecla %:</span>
+                        <p class="small text-muted mb-2">Asigna una función matemática rápida a la tecla porcentual del teclado.</p>
+                        <select class="form-select" id="special-function-select">
+                            <option value="%" data-text="%" data-value="%" data-action="" aria-label="Módulo">Módulo (%)</option>
+                            <option value="pow" data-text="xʸ" data-value="^" data-action="" aria-label="Potencia">Potencia (xʸ)</option>
+                            <option value="log" data-text="log" data-value="" data-action="log" aria-label="Logaritmo base 10">Logaritmo (log)</option>
+                            <option value="ln" data-text="ln" data-value="" data-action="ln" aria-label="Logaritmo natural">Logaritmo Natural (ln)</option>
+                            <option value="sin" data-text="sin" data-value="" data-action="sin" aria-label="Seno">Seno (sin)</option>
+                            <option value="cos" data-text="cos" data-value="" data-action="cos" aria-label="Coseno">Coseno (cos)</option>
+                            <option value="primos" data-text="Factores" data-action="primos" aria-label="Factores Primos">Factores Primos</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-check form-switch mt-2">
-                    <input class="form-check-input" type="checkbox" role="switch" id="hapticFeedbackToggle">
-                    <label class="form-check-label" for="hapticFeedbackToggle">Respuesta Táctil (Vibración)</label>
+
+                <div class="settings-tab-pane" id="settings-pane-effects">
+                    <div class="settings-card">
+                        <div class="mb-3">
+                            <label for="animationSpeedSelector" class="form-label small fw-bold"><i class="fa-solid fa-gauge-high me-1"></i> Velocidad de Animación:</label>
+                            <select id="animationSpeedSelector" class="form-select form-select-sm">
+                                <option value="2">Lenta (Para aprender paso a paso)</option>
+                                <option value="1">Normal (Equilibrada)</option>
+                                <option value="0.5">Rápida (Ágil)</option>
+                                <option value="0">Instantánea (Sin animación)</option>
+                            </select>
+                        </div>
+                        <div class="settings-switches-grid">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="soundEffectsToggle">
+                                <label class="form-check-label" for="soundEffectsToggle"><i class="fa-solid fa-volume-high me-1"></i> Sonido al teclear</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="hapticFeedbackToggle">
+                                <label class="form-check-label" for="hapticFeedbackToggle"><i class="fa-solid fa-mobile-screen me-1"></i> Vibración háptica</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="glitchEffectToggle">
+                                <label class="form-check-label" for="glitchEffectToggle"><i class="fa-solid fa-bolt me-1"></i> Efecto Glitch de pantalla</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <!-- Efectos Visuales -->
-            <div class="settings-group">
-                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Efectos Visuales</h4>
-                <p>Activa o desactiva efectos visuales como el "glitch" en el display.</p>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="glitchEffectToggle">
-                    <label class="form-check-label" for="glitchEffectToggle">Efecto Glitch del Display</label>
+
+                <div class="settings-tab-pane" id="settings-pane-data">
+                    <div class="settings-card">
+                        <span class="settings-card-title mb-2 d-block"><i class="fa-solid fa-database me-1"></i> Memoria e Interfaz:</span>
+                        <p class="small text-muted mb-3">Restaura la posición de los botones o limpia el almacenamiento local.</p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button id="resetPositionsBtn" class="btn btn-sm btn-outline-warning">
+                                <i class="fa-solid fa-arrows-to-circle me-1"></i> Restaurar Posiciones Flotantes
+                            </button>
+                            <button id="clearAllDataBtn" class="btn btn-sm btn-outline-danger">
+                                <i class="fa-solid fa-trash me-1"></i> Borrar Todos los Datos
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <!-- Gestión de Interfaz y Datos -->
-            <div class="settings-group">
-                <h4><i class="fa-solid fa-database"></i> Interfaz y Datos</h4>
-                <p class="mb-2">Restaura la posición de los botones flotantes o borra todos los datos de la aplicación.
-                </p>
-                <button id="resetPositionsBtn" class="btn btn-warning me-2">Restaurar Posiciones</button>
-                <button id="clearAllDataBtn" class="btn btn-danger">Borrar Todos los Datos</button>
             </div>
         </div>
     </template>

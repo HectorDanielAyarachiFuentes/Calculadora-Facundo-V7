@@ -1,57 +1,54 @@
-// scss/components/_converters.scss
+/* --- CONVERSOR DE UNIDADES PRO (CERO SCROLL) --- */
 
 .converter-app {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; // Espacio entre grupos de inputs
-    padding: 1.5rem;
-    background-color: var(--history-hover-bg);
-    border-radius: 8px;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--history-border-color);
+    border-radius: 12px;
+}
 
-    .form-label {
-        font-weight: 500;
-        color: var(--history-input-color);
-        margin-bottom: 0.25rem;
-    }
-
-    .form-control, .form-select {
+.conv-category-bar {
+    .form-select {
         background-color: var(--bg-display);
         color: var(--color-display-text);
-        border-color: var(--history-border-color);
-        font-weight: bold;
-        padding: 0.75rem 1rem;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-        &:focus {
-            background-color: var(--bg-display);
-            color: var(--color-display-text);
-            border-color: var(--focus-color);
-            // Usamos un valor rgba directo porque --focus-color-rgb no está definido globalmente
-            box-shadow: 0 0 0 0.25rem rgba(102, 255, 102, 0.25);
-        }
+        border: 1px solid var(--history-border-color);
+        font-weight: 600;
     }
+}
 
-    .input-group-text {
-        background-color: var(--history-header-bg);
-        border-color: var(--history-border-color);
-        color: var(--history-input-color);
-        min-width: 120px;
-        justify-content: center;
-        font-weight: 500;
-    }
+.conv-swap-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--history-border-color);
+    color: var(--focus-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
 
-    // Estilos específicos para el conversor de unidades
-    &__arrow {
-        transition: transform 0.3s ease;
+    &:hover {
+        background: var(--focus-color);
+        color: #ffffff;
+        transform: scale(1.1);
     }
+}
 
-    &:hover &__arrow {
-        transform: scale(1.1) rotate(5deg);
-        color: var(--focus-color);
-    }
+.conv-swap-icon {
+    transition: transform 0.3s ease;
+}
 
-    // Ajustes para el layout de los conversores
-    .input-group {
-        margin-bottom: 0 !important; // Anular el mb-3 de Bootstrap para usar el gap del contenedor
-    }
+.conv-formula-pill {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--history-border-color);
+    border-radius: 8px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--history-input-color);
+    text-align: center;
 }

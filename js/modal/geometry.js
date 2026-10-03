@@ -1,50 +1,61 @@
 // =======================================================
-// --- geometry.js (REFACTORIZADO Y MEJORADO) ---
-// Gestiona la calculadora de geometría con una interfaz mejorada.
+// --- geometry.js (PRO EDUCATIVO Y BLUEPRINT CAD) ---
 // =======================================================
 
 const GeometryCalculator = {
     square: {
         area: (side) => side * side,
-        perimeter: (side) => 4 * side
+        perimeter: (side) => 4 * side,
+        formulaArea: (vals) => `${vals.side || 'L'} × ${vals.side || 'L'}`,
+        formulaPerim: (vals) => `4 × ${vals.side || 'L'}`,
+        baseFormula: { area: 'A = L²', perimeter: 'P = 4L' }
     },
     rectangle: {
         area: (length, width) => length * width,
-        perimeter: (length, width) => 2 * (length + width)
+        perimeter: (length, width) => 2 * (length + width),
+        formulaArea: (vals) => `${vals.length || 'b'} × ${vals.width || 'h'}`,
+        formulaPerim: (vals) => `2 × (${vals.length || 'b'} + ${vals.width || 'h'})`,
+        baseFormula: { area: 'A = b · h', perimeter: 'P = 2(b + h)' }
     },
     triangle: {
         area: (base, height) => (base * height) / 2,
-        perimeter: (side1, side2, side3) => side1 + side2 + side3
+        perimeter: (side1, side2, side3) => side1 + side2 + side3,
+        formulaArea: (vals) => `(${vals.base || 'b'} × ${vals.height || 'h'}) / 2`,
+        formulaPerim: (vals) => `${vals.side1 || 'a'} + ${vals.side2 || 'b'} + ${vals.side3 || 'c'}`,
+        baseFormula: { area: 'A = (b · h) / 2', perimeter: 'P = a + b + c' }
     },
     circle: {
         area: (radius) => Math.PI * radius * radius,
-        perimeter: (radius) => 2 * Math.PI * radius
+        perimeter: (radius) => 2 * Math.PI * radius,
+        formulaArea: (vals) => `π × (${vals.radius || 'r'})²`,
+        formulaPerim: (vals) => `2 × π × ${vals.radius || 'r'}`,
+        baseFormula: { area: 'A = π · r²', perimeter: 'P = 2πr' }
     },
     trapezoid: {
         area: (base1, base2, height) => ((base1 + base2) / 2) * height,
-        perimeter: (side1, side2, base1, base2) => side1 + side2 + base1 + base2
+        perimeter: (side1, side2, base1, base2) => side1 + side2 + base1 + base2,
+        formulaArea: (vals) => `((${vals.base1 || 'B'} + ${vals.base2 || 'b'}) / 2) × ${vals.height || 'h'}`,
+        formulaPerim: (vals) => `${vals.base1 || 'B'} + ${vals.base2 || 'b'} + ${vals.side1 || 's1'} + ${vals.side2 || 's2'}`,
+        baseFormula: { area: 'A = ((B + b) / 2) · h', perimeter: 'P = B + b + l₁ + l₂' }
     },
     rhombus: {
         area: (d1, d2) => (d1 * d2) / 2,
-        perimeter: (side) => 4 * side
+        perimeter: (side) => 4 * side,
+        formulaArea: (vals) => `(${vals.d1 || 'D'} × ${vals.d2 || 'd'}) / 2`,
+        formulaPerim: (vals) => `4 × ${vals.side || 'L'}`,
+        baseFormula: { area: 'A = (D · d) / 2', perimeter: 'P = 4L' }
     }
 };
 
 class GeometryApp {
-    /**
-     * @param {string} containerId El ID del elemento que contendrá la aplicación de geometría.
-     */
     constructor(containerId) {
         this.container = document.getElementById(containerId);
-        if (!this.container) {
-            console.error('GeometryApp: El contenedor no fue encontrado.');
-            return;
-        }
+        if (!this.container) return;
         this.state = {
             shape: 'square',
-            calculationType: 'area', // 'area' o 'perimeter'
+            calculationType: 'area',
             unit: 'cm',
-            values: {}
+            values: { side: 5 }
         };
         this.init();
     }
@@ -59,49 +70,73 @@ class GeometryApp {
         this.container.innerHTML = `
             <div class="geometry-app">
                 <div class="geometry-controls">
-                    <div class="control-group">
-                        <label for="shapeSelect" class="form-label">Figura</label>
-                        <select id="shapeSelect" class="form-select">
-                            <option value="square" selected>Cuadrado</option>
-                            <option value="rectangle">Rectángulo</option>
-                            <option value="triangle">Triángulo</option>
-                            <option value="circle">Círculo</option>
-                            <option value="trapezoid">Trapecio</option>
-                            <option value="rhombus">Rombo</option>
-                        </select>
+                    <div class="geom-top-row">
+                        <div class="control-group flex-1">
+                            <label for="shapeSelect" class="form-label"><i class="fa-solid fa-shapes me-1"></i> Figura</label>
+                            <select id="shapeSelect" class="form-select form-select-sm">
+                                <option value="square" selected>Cuadrado</option>
+                                <option value="rectangle">Rectángulo</option>
+                                <option value="triangle">Triángulo</option>
+                                <option value="circle">Círculo</option>
+                                <option value="trapezoid">Trapecio</option>
+                                <option value="rhombus">Rombo</option>
+                            </select>
+                        </div>
+                        <div class="control-group flex-1">
+                            <label for="unitSelect" class="form-label"><i class="fa-solid fa-ruler me-1"></i> Unidad</label>
+                            <select id="unitSelect" class="form-select form-select-sm">
+                                <option value="cm" selected>Centímetros (cm)</option>
+                                <option value="m">Metros (m)</option>
+                                <option value="km">Kilómetros (km)</option>
+                                <option value="mm">Milímetros (mm)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="control-group">
-                        <label for="unitSelect" class="form-label">Unidad</label>
-                        <select id="unitSelect" class="form-select">
-                            <option value="cm" selected>Centímetros (cm)</option>
-                            <option value="m">Metros (m)</option>
-                            <option value="km">Kilómetros (km)</option>
-                        </select>
+
+                    <div class="calculation-type-toggle">
+                        <div class="btn-group w-100" role="group" aria-label="Tipo de cálculo">
+                            <button type="button" class="btn btn-sm btn-outline-success active" data-calc-type="area">
+                                <i class="fa-solid fa-vector-square me-1"></i> Área
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success" data-calc-type="perimeter">
+                                <i class="fa-solid fa-draw-polygon me-1"></i> Perímetro
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="geometry-inputs" class="geometry-inputs"></div>
+
+                    <div class="geom-formula-card">
+                        <div class="geom-formula-header">
+                            <span class="geom-formula-title"><i class="fa-solid fa-square-root-variable me-1"></i> Fórmula:</span>
+                            <span id="geom-base-formula" class="geom-badge-formula">A = L²</span>
+                        </div>
+                        <div id="geom-step-by-step" class="geom-step-text">5 cm × 5 cm = 25.00 cm²</div>
                     </div>
                 </div>
-                <div class="geometry-main">
-                    <div class="geometry-inputs-section">
-                        <div id="calculation-tabs" class="calculation-tabs"></div>
-                        <div id="geometry-inputs" class="geometry-inputs"></div>
+
+                <div class="geometry-display-section">
+                    <div class="visualization-wrapper">
+                        <button class="export-btn" id="exportSvgBtn" title="Exportar como PNG">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                        <div id="geometry-visualization" class="geometry-visualization highlight-area"></div>
                     </div>
-                    <div class="geometry-display-section">
-                        <div class="visualization-wrapper">
-                            <div id="geometry-visualization" class="geometry-visualization"></div>
-                            <button id="export-svg-btn" class="export-btn" title="Exportar como PNG"><i class="fa-solid fa-download"></i></button>
-                        </div>
-                        <div id="geometry-results" class="geometry-results"></div>
-                    </div>
+                    <div id="geometry-results" class="geometry-results"></div>
                 </div>
             </div>
         `;
+
         this.elements = {
-            shapeSelect: document.getElementById('shapeSelect'),
-            unitSelect: document.getElementById('unitSelect'),
-            tabsContainer: document.getElementById('calculation-tabs'),
-            inputsContainer: document.getElementById('geometry-inputs'),
-            visualizationContainer: document.getElementById('geometry-visualization'),
-            resultsContainer: document.getElementById('geometry-results'),
-            exportBtn: document.getElementById('export-svg-btn'),
+            shapeSelect: this.container.querySelector('#shapeSelect'),
+            unitSelect: this.container.querySelector('#unitSelect'),
+            calcTypeButtons: this.container.querySelectorAll('.calculation-type-toggle button'),
+            inputsContainer: this.container.querySelector('#geometry-inputs'),
+            resultsContainer: this.container.querySelector('#geometry-results'),
+            visualizationContainer: this.container.querySelector('#geometry-visualization'),
+            exportBtn: this.container.querySelector('#exportSvgBtn'),
+            baseFormulaBadge: this.container.querySelector('#geom-base-formula'),
+            stepByStepDiv: this.container.querySelector('#geom-step-by-step')
         };
     }
 
@@ -113,179 +148,184 @@ class GeometryApp {
 
         this.elements.unitSelect.addEventListener('change', (e) => {
             this.state.unit = e.target.value;
+            this.container.querySelectorAll('.input-unit').forEach(el => el.textContent = this.state.unit);
             this.calculate();
         });
 
-        this.elements.tabsContainer.addEventListener('click', (e) => {
-            if (e.target.matches('.tab')) {
-                this.state.calculationType = e.target.dataset.type;
-                this.renderInputs(this.state.shape, this.state.calculationType);
-            }
-        });
-
-        this.elements.inputsContainer.addEventListener('input', (e) => {
-            if (e.target.matches('.geometry-input')) {
+        this.elements.calcTypeButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                this.elements.calcTypeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.state.calculationType = btn.dataset.calcType;
+                
+                this.elements.visualizationContainer.classList.toggle('highlight-area', this.state.calculationType === 'area');
+                this.elements.visualizationContainer.classList.toggle('highlight-perimeter', this.state.calculationType === 'perimeter');
+                
                 this.calculate();
-            }
+            });
         });
 
-        // Listener para los botones de copiar
+        this.elements.inputsContainer.addEventListener('input', () => this.calculate());
+
         this.elements.resultsContainer.addEventListener('click', (e) => {
             const copyBtn = e.target.closest('.copy-btn');
             if (copyBtn) {
                 const resultType = copyBtn.dataset.resultType;
-                const resultElement = document.getElementById(`${resultType}Result`);
-                if (resultElement) {
-                    this.copyToClipboard(resultElement.textContent, copyBtn);
+                const resultSpan = this.elements.resultsContainer.querySelector(`#${resultType}Result`);
+                if (resultSpan) {
+                    this.copyToClipboard(resultSpan.textContent, copyBtn);
                 }
             }
         });
+
+        this.elements.exportBtn.addEventListener('click', () => this.exportSVGAsImage());
     }
 
     updateUIForShape(shape) {
-        this.renderTabs(shape);
-        this.renderInputs(shape, this.state.calculationType);
-    }
-
-    renderTabs() {
-        const tabs = [
-            { type: 'area', label: 'Área' },
-            { type: 'perimeter', label: 'Perímetro' }
-        ];
-
-        this.elements.tabsContainer.innerHTML = tabs.map(tab => `
-            <button class="tab ${this.state.calculationType === tab.type ? 'active' : ''}" data-type="${tab.type}">
-                ${tab.label}
-            </button>
-        `).join('');
-    }
-
-    renderInputs(shape, calculationType) {
-        this.elements.tabsContainer.querySelectorAll('.tab').forEach(tab => {
-            tab.classList.toggle('active', tab.dataset.type === calculationType);
-        });
-
-        // --- MEJORA INTERACTIVA ---
-        // Añadimos una clase al contenedor de la visualización para poder
-        // resaltar el área o el perímetro con CSS según la pestaña activa.
-        this.elements.visualizationContainer.classList.remove('highlight-area', 'highlight-perimeter');
-        this.elements.visualizationContainer.classList.add(
-            calculationType === 'area' ? 'highlight-area' : 'highlight-perimeter'
-        );
-
-        const inputConfigs = {
-            square: {
-                area: [{ label: 'Lado', id: 'side' }],
-                perimeter: [{ label: 'Lado', id: 'side' }]
-            },
-            rectangle: {
-                area: [{ label: 'Largo', id: 'length' }, { label: 'Ancho', id: 'width' }],
-                perimeter: [{ label: 'Largo', id: 'length' }, { label: 'Ancho', id: 'width' }]
-            },
-            triangle: {
-                area: [{ label: 'Base', id: 'base' }, { label: 'Altura', id: 'height' }],
-                perimeter: [{ label: 'Lado 1', id: 'side1' }, { label: 'Lado 2', id: 'side2' }, { label: 'Lado 3', id: 'side3' }]
-            },
-            circle: {
-                area: [{ label: 'Radio', id: 'radius' }],
-                perimeter: [{ label: 'Radio', id: 'radius' }]
-            },
-            trapezoid: {
-                area: [{ label: 'Base Mayor', id: 'base1' }, { label: 'Base Menor', id: 'base2' }, { label: 'Altura', id: 'height' }],
-                perimeter: [{ label: 'Lado 1', id: 'side1' }, { label: 'Lado 2', id: 'side2' }, { label: 'Base Mayor', id: 'base1' }, { label: 'Base Menor', id: 'base2' }]
-            },
-            rhombus: {
-                area: [{ label: 'Diagonal Mayor', id: 'd1' }, { label: 'Diagonal Menor', id: 'd2' }],
-                perimeter: [{ label: 'Lado', id: 'side' }]
-            }
+        let inputsHtml = '';
+        const defaults = {
+            square: { side: 5 },
+            rectangle: { length: 8, width: 5 },
+            triangle: { base: 6, height: 5, side1: 5, side2: 5, side3: 6 },
+            circle: { radius: 5 },
+            trapezoid: { base1: 8, base2: 5, height: 4, side1: 5, side2: 5 },
+            rhombus: { d1: 8, d2: 6, side: 5 }
         };
 
-        const inputsToRender = inputConfigs[shape][calculationType];
-        this.elements.inputsContainer.innerHTML = inputsToRender.map(input => `
-            <div class="input-group">
-                <label for="${input.id}" class="form-label">${input.label}</label>
-                <div class="input-wrapper">
-                    <input type="number" class="form-control geometry-input" id="${input.id}" step="0.1" min="0" value="0">
-                    <span class="input-unit">${this.state.unit}</span>
-                </div>
-            </div>
-        `).join('');
-        
-        this.calculate();
-    }
-
-    _getValue(id) {
-        const el = document.getElementById(id);
-        return el ? parseFloat(el.value) || 0 : 0;
-    }
-
-    calculate() {
-        const values = {};
-        this.elements.inputsContainer.querySelectorAll('.geometry-input').forEach(input => {
-            values[input.id] = parseFloat(input.value) || 0;
-        });
-        this.state.values = { ...this.state.values, ...values };
-
-        let area = 0;
-        let perimeter = 0;
-        const { shape, unit } = this.state;
+        const def = defaults[shape] || {};
+        this.state.values = { ...def };
 
         switch (shape) {
             case 'square':
-                area = GeometryCalculator.square.area(values.side);
-                perimeter = GeometryCalculator.square.perimeter(values.side);
+                inputsHtml = this._createInput('side', 'Lado', def.side);
                 break;
             case 'rectangle':
-                area = GeometryCalculator.rectangle.area(values.length, values.width);
-                perimeter = GeometryCalculator.rectangle.perimeter(values.length, values.width);
+                inputsHtml = this._createInput('length', 'Base / Largo', def.length) +
+                             this._createInput('width', 'Altura / Ancho', def.width);
                 break;
             case 'triangle':
-                const allTriangleValues = {
-                    base: this._getValue('base'),
-                    height: this._getValue('height'),
-                    side1: this._getValue('side1'),
-                    side2: this._getValue('side2'),
-                    side3: this._getValue('side3'),
-                };
-                area = GeometryCalculator.triangle.area(allTriangleValues.base, allTriangleValues.height);
-                perimeter = GeometryCalculator.triangle.perimeter(allTriangleValues.side1, allTriangleValues.side2, allTriangleValues.side3);
-                this.state.values = allTriangleValues;
+                inputsHtml = this._createInput('base', 'Base', def.base) +
+                             this._createInput('height', 'Altura', def.height);
+                if (this.state.calculationType === 'perimeter') {
+                    inputsHtml += this._createInput('side1', 'Lado 1', def.side1) +
+                                  this._createInput('side2', 'Lado 2', def.side2) +
+                                  this._createInput('side3', 'Lado 3', def.side3);
+                }
                 break;
             case 'circle':
-                area = GeometryCalculator.circle.area(values.radius);
-                perimeter = GeometryCalculator.circle.perimeter(values.radius);
+                inputsHtml = this._createInput('radius', 'Radio (r)', def.radius);
                 break;
             case 'trapezoid':
-                const allTrapezoidValues = {
-                    base1: this._getValue('base1'),
-                    base2: this._getValue('base2'),
-                    height: this._getValue('height'),
-                    side1: this._getValue('side1'),
-                    side2: this._getValue('side2'),
-                };
-                area = GeometryCalculator.trapezoid.area(allTrapezoidValues.base1, allTrapezoidValues.base2, allTrapezoidValues.height);
-                perimeter = GeometryCalculator.trapezoid.perimeter(allTrapezoidValues.side1, allTrapezoidValues.side2, allTrapezoidValues.base1, allTrapezoidValues.base2);
-                this.state.values = allTrapezoidValues;
+                inputsHtml = this._createInput('base1', 'Base Mayor (B)', def.base1) +
+                             this._createInput('base2', 'Base Menor (b)', def.base2) +
+                             this._createInput('height', 'Altura (h)', def.height);
+                if (this.state.calculationType === 'perimeter') {
+                    inputsHtml += this._createInput('side1', 'Lado Lateral 1', def.side1) +
+                                  this._createInput('side2', 'Lado Lateral 2', def.side2);
+                }
                 break;
             case 'rhombus':
-                const allRhombusValues = {
-                    d1: this._getValue('d1'),
-                    d2: this._getValue('d2'),
-                    side: this._getValue('side'),
-                };
-                area = GeometryCalculator.rhombus.area(allRhombusValues.d1, allRhombusValues.d2);
-                perimeter = GeometryCalculator.rhombus.perimeter(allRhombusValues.side);
-                this.state.values = allRhombusValues;
+                inputsHtml = this._createInput('d1', 'Diagonal Mayor (D)', def.d1) +
+                             this._createInput('d2', 'Diagonal Menor (d)', def.d2) +
+                             this._createInput('side', 'Lado', def.side);
                 break;
         }
 
+        this.elements.inputsContainer.innerHTML = inputsHtml;
+        this.calculate();
+    }
+
+    _createInput(name, label, defaultValue = 5) {
+        return `
+            <div class="geom-input-card">
+                <label for="input-${name}" class="geom-input-label">${label}</label>
+                <div class="geom-input-wrapper">
+                    <input type="number" id="input-${name}" name="${name}" class="form-control form-control-sm" value="${defaultValue}" min="0.1" step="any" required>
+                    <span class="input-unit">${this.state.unit}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    _getValue(name) {
+        const input = this.elements.inputsContainer.querySelector(`#input-${name}`);
+        return input ? parseFloat(input.value) || 0 : (this.state.values[name] || 0);
+    }
+
+    calculate() {
+        const { shape, unit, calculationType } = this.state;
+        let area = 0;
+        let perimeter = 0;
+        const calcConfig = GeometryCalculator[shape];
+
+        switch (shape) {
+            case 'square':
+                const sVal = this._getValue('side');
+                area = GeometryCalculator.square.area(sVal);
+                perimeter = GeometryCalculator.square.perimeter(sVal);
+                this.state.values = { side: sVal };
+                break;
+            case 'rectangle':
+                const lVal = this._getValue('length');
+                const wVal = this._getValue('width');
+                area = GeometryCalculator.rectangle.area(lVal, wVal);
+                perimeter = GeometryCalculator.rectangle.perimeter(lVal, wVal);
+                this.state.values = { length: lVal, width: wVal };
+                break;
+            case 'triangle':
+                const bVal = this._getValue('base');
+                const hVal = this._getValue('height');
+                const s1 = this._getValue('side1') || bVal;
+                const s2 = this._getValue('side2') || bVal;
+                const s3 = this._getValue('side3') || bVal;
+                area = GeometryCalculator.triangle.area(bVal, hVal);
+                perimeter = GeometryCalculator.triangle.perimeter(s1, s2, s3);
+                this.state.values = { base: bVal, height: hVal, side1: s1, side2: s2, side3: s3 };
+                break;
+            case 'circle':
+                const rVal = this._getValue('radius');
+                area = GeometryCalculator.circle.area(rVal);
+                perimeter = GeometryCalculator.circle.perimeter(rVal);
+                this.state.values = { radius: rVal };
+                break;
+            case 'trapezoid':
+                const BVal = this._getValue('base1');
+                const bMin = this._getValue('base2');
+                const hTrap = this._getValue('height');
+                const ts1 = this._getValue('side1') || hTrap;
+                const ts2 = this._getValue('side2') || hTrap;
+                area = GeometryCalculator.trapezoid.area(BVal, bMin, hTrap);
+                perimeter = GeometryCalculator.trapezoid.perimeter(ts1, ts2, BVal, bMin);
+                this.state.values = { base1: BVal, base2: bMin, height: hTrap, side1: ts1, side2: ts2 };
+                break;
+            case 'rhombus':
+                const d1Val = this._getValue('d1');
+                const d2Val = this._getValue('d2');
+                const rSide = this._getValue('side') || Math.sqrt(Math.pow(d1Val/2, 2) + Math.pow(d2Val/2, 2));
+                area = GeometryCalculator.rhombus.area(d1Val, d2Val);
+                perimeter = GeometryCalculator.rhombus.perimeter(rSide);
+                this.state.values = { d1: d1Val, d2: d2Val, side: rSide };
+                break;
+        }
+
+        if (this.elements.baseFormulaBadge && calcConfig) {
+            this.elements.baseFormulaBadge.textContent = calcConfig.baseFormula[calculationType] || '';
+            const stepExpr = calculationType === 'area'
+                ? calcConfig.formulaArea(this.state.values)
+                : calcConfig.formulaPerim(this.state.values);
+            const activeVal = calculationType === 'area' ? area : perimeter;
+            const activeUnit = calculationType === 'area' ? `${unit}²` : unit;
+            this.elements.stepByStepDiv.innerHTML = `Paso a paso: <strong>${stepExpr} = ${activeVal.toFixed(2)} ${activeUnit}</strong>`;
+        }
+
         this.elements.resultsContainer.innerHTML = `
-            <div class="result-item">
-                <p>Área: <span id="areaResult">${area.toFixed(2)} ${unit}²</span></p>
+            <div class="result-item ${calculationType === 'area' ? 'result-highlight' : ''}">
+                <p><i class="fa-solid fa-vector-square me-1 text-success"></i> Área: <span id="areaResult">${area.toFixed(2)} ${unit}²</span></p>
                 <button class="copy-btn" data-result-type="area" title="Copiar área"><i class="fa-regular fa-copy"></i></button>
             </div>
-            <div class="result-item">
-                <p>Perímetro: <span id="perimeterResult">${perimeter.toFixed(2)} ${unit}</span></p>
+            <div class="result-item ${calculationType === 'perimeter' ? 'result-highlight' : ''}">
+                <p><i class="fa-solid fa-draw-polygon me-1 text-primary"></i> Perímetro: <span id="perimeterResult">${perimeter.toFixed(2)} ${unit}</span></p>
                 <button class="copy-btn" data-result-type="perimeter" title="Copiar perímetro"><i class="fa-regular fa-copy"></i></button>
             </div>
         `;
@@ -293,74 +333,106 @@ class GeometryApp {
     }
 
     updateVisualization() {
-        const { shape, values } = this.state;
+        const { shape, values, unit } = this.state;
         let svg = '';
-        const maxDim = Math.max(...Object.values(values).filter(v => v > 0), 1);
-        const scale = 80 / maxDim;
+        const viewBoxSize = 140;
+        const center = viewBoxSize / 2;
+
+        const gridDef = `
+            <defs>
+                <pattern id="cadGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+                    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="0.5"/>
+                </pattern>
+                <linearGradient id="neonShapeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--focus-color, #4caf50)" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="var(--btn-special-bg, #2196f3)" stop-opacity="0.15"/>
+                </linearGradient>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#cadGrid)" />
+        `;
 
         switch (shape) {
             case 'square':
-                const s = (values.side || 10) * scale;
-                svg = `<svg viewBox="0 0 120 120">
-                    <rect x="${(110-s)/2}" y="${(110-s)/2}" width="${s}" height="${s}" class="shape"/>
-                    <text x="55" y="${(110-s)/2 - 5}" class="label">${values.side || 'L'}</text>
+                const s = 65;
+                const sqX = (viewBoxSize - s) / 2;
+                const sqY = (viewBoxSize - s) / 2;
+                svg = `<svg viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
+                    ${gridDef}
+                    <rect x="${sqX}" y="${sqY}" width="${s}" height="${s}" rx="4" class="shape" fill="url(#neonShapeGrad)"/>
+                    <line x1="${sqX}" y1="${sqY - 6}" x2="${sqX + s}" y2="${sqY - 6}" class="helper-line"/>
+                    <text x="${center}" y="${sqY - 9}" class="label">${values.side || 5} ${unit}</text>
+                    <line x1="${sqX - 6}" y1="${sqY}" x2="${sqX - 6}" y2="${sqY + s}" class="helper-line"/>
+                    <text x="${sqX - 10}" y="${center + 4}" class="label" transform="rotate(-90 ${sqX - 10},${center + 4})">${values.side || 5} ${unit}</text>
                 </svg>`;
                 break;
             case 'rectangle':
-                const l = (values.length || 16) * scale;
-                const w = (values.width || 10) * scale;
-                svg = `<svg viewBox="0 0 120 120">
-                    <rect x="${(110-l)/2}" y="${(110-w)/2}" width="${l}" height="${w}" class="shape"/>
-                    <text x="55" y="${(110-w)/2 - 5}" class="label">${values.length || 'L'}</text>
-                    <text x="${(110-l)/2 - 15}" y="55" class="label">${values.width || 'A'}</text>
+                const rw = 80;
+                const rh = 50;
+                const rx = (viewBoxSize - rw) / 2;
+                const ry = (viewBoxSize - rh) / 2;
+                svg = `<svg viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
+                    ${gridDef}
+                    <rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="4" class="shape" fill="url(#neonShapeGrad)"/>
+                    <line x1="${rx}" y1="${ry - 6}" x2="${rx + rw}" y2="${ry - 6}" class="helper-line"/>
+                    <text x="${center}" y="${ry - 9}" class="label">${values.length || 8} ${unit}</text>
+                    <line x1="${rx - 6}" y1="${ry}" x2="${rx - 6}" y2="${ry + rh}" class="helper-line"/>
+                    <text x="${rx - 10}" y="${center + 4}" class="label" transform="rotate(-90 ${rx - 10},${center + 4})">${values.width || 5} ${unit}</text>
                 </svg>`;
                 break;
             case 'triangle':
-                const b = values.base || 15;
-                const h = values.height || 10;
-                const triangleScale = 80 / Math.max(b, h, 1);
-                svg = `<svg viewBox="0 0 120 120">
-                    <path d="M10 100 L${10+b*triangleScale} 100 L${10+(b*triangleScale/2)} ${100-h*triangleScale} Z" class="shape"/>
-                    <text x="${10 + (b*triangleScale/2)}" y="115" class="label">Base: ${values.base || 'b'}</text>
-                    <line x1="${10+(b*triangleScale/2)}" y1="100" x2="${10+(b*triangleScale/2)}" y2="${100-h*triangleScale}" class="helper-line"/>
-                    <text x="${15+(b*triangleScale/2)}" y="${100-(h*triangleScale/2)}" class="label">h: ${values.height || 'h'}</text>
+                const tb = 75;
+                const th = 60;
+                const tx1 = (viewBoxSize - tb) / 2;
+                const tx2 = tx1 + tb;
+                const tyBase = center + th / 2;
+                const tyApex = center - th / 2;
+                svg = `<svg viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
+                    ${gridDef}
+                    <path d="M${tx1} ${tyBase} L${tx2} ${tyBase} L${center} ${tyApex} Z" class="shape" fill="url(#neonShapeGrad)"/>
+                    <line x1="${center}" y1="${tyBase}" x2="${center}" y2="${tyApex}" class="helper-line" stroke-dasharray="3,3"/>
+                    <text x="${center + 12}" y="${center}" class="label">h:${values.height || 5}</text>
+                    <text x="${center}" y="${tyBase + 14}" class="label">b: ${values.base || 6} ${unit}</text>
                 </svg>`;
                 break;
             case 'circle':
-                const r = values.radius || 10;
-                const circleScale = 40 / Math.max(r, 1);
-                svg = `<svg viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="${r*circleScale}" class="shape"/>
-                    <line x1="60" y1="60" x2="${60 + r*circleScale}" y2="60" class="helper-line"/>
-                    <text x="${60 + (r*circleScale/2)}" y="55" class="label">r: ${r || 'r'}</text>
+                const cr = 36;
+                svg = `<svg viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
+                    ${gridDef}
+                    <circle cx="${center}" cy="${center}" r="${cr}" class="shape" fill="url(#neonShapeGrad)"/>
+                    <line x1="${center}" y1="${center}" x2="${center + cr}" y2="${center}" class="helper-line"/>
+                    <circle cx="${center}" cy="${center}" r="2" fill="var(--focus-color)"/>
+                    <text x="${center + cr / 2}" y="${center - 5}" class="label">r: ${values.radius || 5} ${unit}</text>
                 </svg>`;
                 break;
             case 'trapezoid':
-                const b1 = (values.base1 || 16);
-                const b2 = (values.base2 || 10);
-                const h_trap = (values.height || 8);
-                const trapScale = 80 / Math.max(b1, b2, h_trap, 1);
-                const scaledB1 = b1 * trapScale;
-                const scaledB2 = b2 * trapScale;
-                const scaledH = h_trap * trapScale;
-                const offset = (scaledB1 - scaledB2) / 2;
-                svg = `<svg viewBox="0 0 120 120">
-                    <path d="M${(120-scaledB1)/2} ${60+scaledH/2} L${(120+scaledB1)/2} ${60+scaledH/2} L${(120+scaledB1)/2 - offset} ${60-scaledH/2} L${(120-scaledB1)/2 + offset} ${60-scaledH/2} Z" class="shape"/>
-                    <text x="60" y="${60+scaledH/2 + 15}" class="label">B: ${values.base1 || 'B'}</text>
-                    <text x="60" y="${60-scaledH/2 - 5}" class="label">b: ${values.base2 || 'b'}</text>
-                    <line x1="${(120-scaledB1)/2 + offset}" y1="${60+scaledH/2}" x2="${(120-scaledB1)/2 + offset}" y2="${60-scaledH/2}" class="helper-line"/>
-                    <text x="${(120-scaledB1)/2 + offset + 10}" y="60" class="label">h: ${values.height || 'h'}</text>
+                const trB = 80;
+                const trb = 48;
+                const trH = 50;
+                const trX1 = (viewBoxSize - trB) / 2;
+                const trX2 = trX1 + trB;
+                const trTopX1 = (viewBoxSize - trb) / 2;
+                const trTopX2 = trTopX1 + trb;
+                const trYBottom = center + trH / 2;
+                const trYTop = center - trH / 2;
+                svg = `<svg viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
+                    ${gridDef}
+                    <path d="M${trX1} ${trYBottom} L${trX2} ${trYBottom} L${trTopX2} ${trYTop} L${trTopX1} ${trYTop} Z" class="shape" fill="url(#neonShapeGrad)"/>
+                    <line x1="${trTopX1}" y1="${trYBottom}" x2="${trTopX1}" y2="${trYTop}" class="helper-line" stroke-dasharray="3,3"/>
+                    <text x="${trTopX1 + 10}" y="${center}" class="label">h:${values.height || 4}</text>
+                    <text x="${center}" y="${trYBottom + 13}" class="label">B: ${values.base1 || 8}</text>
+                    <text x="${center}" y="${trYTop - 5}" class="label">b: ${values.base2 || 5}</text>
                 </svg>`;
                 break;
             case 'rhombus':
-                const d1 = (values.d1 || 16) * scale;
-                const d2 = (values.d2 || 10) * scale;
-                svg = `<svg viewBox="0 0 120 120">
-                    <path d="M60 ${60-d2/2} L${60+d1/2} 60 L60 ${60+d2/2} L${60-d1/2} 60 Z" class="shape"/>
-                    <line x1="${60-d1/2}" y1="60" x2="${60+d1/2}" y2="60" class="helper-line"/>
-                    <line x1="60" y1="${60-d2/2}" x2="60" y2="${60+d2/2}" class="helper-line"/>
-                    <text x="60" y="${60-d2/2 - 5}" class="label">d2: ${values.d2 || 'd2'}</text>
-                    <text x="${60+d1/2 + 10}" y="65" class="label">d1: ${values.d1 || 'd1'}</text>
+                const rd1 = 76;
+                const rd2 = 50;
+                svg = `<svg viewBox="0 0 ${viewBoxSize} ${viewBoxSize}">
+                    ${gridDef}
+                    <path d="M${center} ${center - rd2 / 2} L${center + rd1 / 2} ${center} L${center} ${center + rd2 / 2} L${center - rd1 / 2} ${center} Z" class="shape" fill="url(#neonShapeGrad)"/>
+                    <line x1="${center - rd1 / 2}" y1="${center}" x2="${center + rd1 / 2}" y2="${center}" class="helper-line" stroke-dasharray="3,3"/>
+                    <line x1="${center}" y1="${center - rd2 / 2}" x2="${center}" y2="${center + rd2 / 2}" class="helper-line" stroke-dasharray="3,3"/>
+                    <text x="${center + 14}" y="${center - 6}" class="label">d:${values.d2 || 6}</text>
+                    <text x="${center}" y="${center + rd2 / 2 + 12}" class="label">D:${values.d1 || 8}</text>
                 </svg>`;
                 break;
         }
@@ -380,44 +452,34 @@ class GeometryApp {
     
     async exportSVGAsImage(format = 'png') {
         const svgElement = this.elements.visualizationContainer.querySelector('svg');
-        if (!svgElement) {
-            alert('No hay ninguna visualización para exportar.');
-            return;
-        }
+        if (!svgElement) return;
 
-        // 1. Obtener datos del SVG
         const svgData = new XMLSerializer().serializeToString(svgElement);
-
-        // 2. Crear un canvas con dimensiones adecuadas para una buena calidad
         const canvas = document.createElement('canvas');
         const desiredWidth = 600;
-        const { width, height } = svgElement.viewBox.baseVal;
+        const { width, height } = svgElement.viewBox.baseVal || { width: 140, height: 140 };
         canvas.width = desiredWidth;
         canvas.height = (height / width) * desiredWidth;
         const ctx = canvas.getContext('2d');
 
-        // 3. Crear una imagen a partir de los datos del SVG
         const img = new Image();
         const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
         const url = URL.createObjectURL(svgBlob);
 
         img.onload = () => {
-            // Aplicar el color de fondo del tema actual al canvas
-            const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--history-hover-bg').trim();
-            ctx.fillStyle = bgColor;
+            ctx.fillStyle = '#141923';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             URL.revokeObjectURL(url);
 
-            // 4. Crear y simular clic en un enlace de descarga
             const link = document.createElement('a');
             link.href = canvas.toDataURL(`image/${format}`);
-            link.download = `calculadora-facundo-${this.state.shape}.${format}`;
+            link.download = `geometria-${this.state.shape}.${format}`;
             link.click();
         };
 
         img.onerror = () => {
-            console.error("Error al cargar la imagen SVG para exportación.");
+            console.error("Error al exportar la imagen SVG.");
             URL.revokeObjectURL(url);
         };
 

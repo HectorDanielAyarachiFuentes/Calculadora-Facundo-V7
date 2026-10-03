@@ -1,70 +1,109 @@
-.help-center {
-  // Define a CSS variable for the accordion arrow filter.
-  // The default value is for the dark theme.
-  --accordion-arrow-filter: invert(1) grayscale(1) brightness(2);
+/* --- CENTRO DE AYUDA MODERNO CON FILTRO EN VIVO --- */
 
-  .help-intro {
-    font-size: 1.1rem;
-    color: var(--history-input-color);
-    margin-bottom: 1.5rem;
-    text-align: center;
-    padding: 0 1rem;
-  }
-
-  .accordion-item {
-    background-color: transparent;
-    border: 1px solid var(--history-border-color);
-    margin-bottom: 0.5rem;
-    border-radius: 8px !important; // Override Bootstrap's default
-
-    &:first-of-type, &:last-of-type {
-      border-radius: 8px !important;
-    }
-  }
-
-  .accordion-header {
-    button.accordion-button {
-      background-color: var(--history-hover-bg);
-      color: var(--history-text-color);
-      font-weight: bold;
-      font-size: 1.1rem;
-      border-radius: 8px;
-
-      &:not(.collapsed) {
-        background-color: var(--btn-equal-bg);
-        color: var(--btn-text-color);
-        box-shadow: none;
-      }
-
-      &::after { filter: var(--accordion-arrow-filter); }
-    }
-  }
-
-  .accordion-body {
-    background-color: var(--history-panel-bg);
-    color: var(--history-text-color);
-    font-size: 1rem;
-    line-height: 1.6;
-
-    strong {
-      color: var(--focus-color);
-    }
-
-    code {
-      background-color: var(--bg-display);
-      padding: 0.2em 0.4em;
-      border-radius: 4px;
-      font-family: "Roboto Mono", monospace;
-    }
-
-    ul {
-      padding-left: 1.5rem;
-      margin-top: 0.5rem;
-    }
-  }
+.help-hub {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-// Override the CSS variable for the light theme.
-[data-theme="light"] .help-center {
-  --accordion-arrow-filter: none;
+.help-search-box {
+    position: relative;
+    width: 100%;
+}
+
+.help-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--history-input-color);
+    font-size: 0.85rem;
+}
+
+.help-search-input {
+    padding-left: 2rem;
+    height: 36px;
+    background-color: var(--bg-display);
+    color: var(--color-display-text);
+    border: 1px solid var(--history-border-color);
+    border-radius: 8px;
+    font-size: 0.85rem;
+
+    &:focus {
+        border-color: var(--focus-color);
+        box-shadow: 0 0 0 3px rgba(var(--focus-color-rgb, 76, 175, 80), 0.2);
+    }
+}
+
+.help-shortcuts-bar {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+
+    kbd {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: var(--color-display-text);
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+        font-family: 'Roboto Mono', monospace;
+    }
+}
+
+.help-accordion-container {
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 2px;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+    }
+
+    .accordion-item {
+        background: transparent;
+        border: 1px solid var(--history-border-color);
+        margin-bottom: 0.4rem;
+        border-radius: 8px !important;
+        overflow: hidden;
+    }
+
+    .accordion-button {
+        background: var(--history-hover-bg);
+        color: var(--history-text-color);
+        font-size: 0.86rem;
+        font-weight: 700;
+        padding: 0.55rem 0.85rem;
+
+        &:not(.collapsed) {
+            background: rgba(var(--focus-color-rgb, 76, 175, 80), 0.2);
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        &::after {
+            filter: invert(1) grayscale(1) brightness(2);
+            transform: scale(0.8);
+        }
+    }
+
+    .accordion-body {
+        background: var(--history-panel-bg);
+        color: var(--history-text-color);
+        padding: 0.6rem 0.85rem;
+        line-height: 1.5;
+
+        strong {
+            color: var(--focus-color);
+        }
+
+        code {
+            background-color: var(--bg-display);
+            padding: 0.15em 0.35em;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+        }
+    }
 }
