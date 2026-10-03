@@ -40,6 +40,7 @@ import { LogaritmoOperation } from './modules/logaritmo.js';
 import { LogaritmoLogOperation } from './modules/logaritmolog.js';
 import { SenoOperation } from './modules/seno.js';
 import { CosenoOperation } from './modules/coseno.js';
+import { SquareRootOperation } from './modules/square-root.js';
 import { salida } from '../calculadora/config.js';
 import { ErrorHandlerCentralized } from '../calculadora/error-handler-centralized.js';
 
@@ -51,7 +52,9 @@ const operationClassMap = {
     'x': MultiplicationOperation,
     '/': DivisionOperation,
     '%': ModuloOperation,
-    '^': PotenciaOperation
+    '^': PotenciaOperation,
+    '√': SquareRootOperation,
+    'v': SquareRootOperation
 };
 
 /**

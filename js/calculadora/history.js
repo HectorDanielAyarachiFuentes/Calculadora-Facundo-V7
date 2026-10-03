@@ -4,7 +4,11 @@
 // =======================================================
 "use strict";
 
-import { reExecuteOperationFromHistory } from './main.js';
+// Desacoplado: el handler se registra externamente para eliminar dependencias circulares
+let reExecuteHandler = null;
+export function registerReExecuteHandler(fn) {
+    reExecuteHandler = fn;
+}
 import { SpeechService } from '../modal/bostraplectornumeros.js';
 
 /**
@@ -135,7 +139,7 @@ class HistoryManagerClass {
                 HistoryPanel.open();
             }
             HistoryPanel.highlightItem(duplicateIndex);
-            await reExecuteOperationFromHistory(this.history[duplicateIndex].input);
+            if (typeof reExecuteHandler === "function") { await reExecuteHandler(this.history[duplicateIndex].input); }
             return;
         }
 
@@ -242,7 +246,7 @@ class HistoryPanelClass {
  
             if (contentDiv) {
                 const reExecute = async () => {
-                    await reExecuteOperationFromHistory(item.input);
+                    if (typeof reExecuteHandler === "function") { await reExecuteHandler(item.input); }
                     this.close();
                 };
                 contentDiv.addEventListener('click', reExecute);

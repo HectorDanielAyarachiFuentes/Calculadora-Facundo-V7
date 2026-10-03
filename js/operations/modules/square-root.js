@@ -45,7 +45,7 @@ const errorHandler = new ErrorHandlerCentralized(salida);
 // FUNCIÓN PRINCIPAL
 // =======================================================
 
-class SquareRootOperation extends VisualOperation {
+export class SquareRootOperation extends VisualOperation {
     constructor(numerosAR, salida) {
         super(numerosAR, salida);
     }

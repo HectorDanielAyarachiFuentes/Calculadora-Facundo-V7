@@ -64,7 +64,13 @@ export async function calculate(addToHistory = true) {
     }
 
     UIManager.triggerGlitchEffect(entrada);
-    const operador = entrada.match(/(?!^-)[+\-x/%^]/)[0];
+    const matchOperador = entrada.match(/(?!^-)[+\-x/%^]/);
+    if (!matchOperador) {
+        errorHandler.mostrarError('invalidOperation');
+        UIManager.showResultScreen();
+        return;
+    }
+    const operador = matchOperador[0];
     const numerosAR = operations.parsearNumeros(entrada, operador);
     
     UIManager.showResultScreen();
@@ -105,7 +111,7 @@ export async function reExecuteOperationFromHistory(historyInput) {
     const cosMatch = historyInput.match(/^cos\((.+)\)$/);
     const sinMatch = historyInput.match(/^sin\((.+)\)$/);
     const lnMatch = historyInput.match(/^ln\((.+)\)$/);
-    const raizMatch = historyInput.match(/^√\((.+)\)$/);
+    const raizMatch = historyInput.match(/^(?:√|V|v|\^s)\((.+)\)$/);
 
     if (primosMatch) {
         display.innerHTML = primosMatch[1];

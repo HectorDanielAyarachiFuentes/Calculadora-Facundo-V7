@@ -5,7 +5,8 @@
 
 // --- IMPORTACIONES ---
 // Módulos principales de la aplicación
-import { HistoryManager, HistoryPanel } from './history.js';
+import { HistoryManager, HistoryPanel, registerReExecuteHandler } from './history.js';
+import { reExecuteOperationFromHistory } from './calculator-engine.js';
 import { ThemeSwitcher } from './theme-switcher.js';
 import * as UIManager from './ui-manager.js';
 import { setupEventListeners } from './event-handler.js';
@@ -24,6 +25,7 @@ function alCargar() {
     // 2. Inicializa el gestor del historial y el panel visual
     HistoryManager.init();
     HistoryPanel.init();
+    registerReExecuteHandler(reExecuteOperationFromHistory);
     // 3. Inicializa el cambiador de tema (claro/oscuro)
     new ThemeSwitcher();
     // 4. Configura todos los manejadores de eventos (clics, teclado, etc.)
@@ -71,4 +73,4 @@ document.addEventListener('DOMContentLoaded', alCargar);
 // Se re-exporta `reExecuteOperationFromHistory` para que otros módulos, como
 // `history.js`, puedan importarla directamente desde `main.js` y evitar
 // dependencias circulares complejas.
-export { reExecuteOperationFromHistory } from './calculator-engine.js';
+// Re-exportación circular removida para cumplir con directivas ECC y grafo limpio GitNexus

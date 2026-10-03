@@ -5,19 +5,19 @@
     <!-- ============== METAETIQUETAS ORIGINALES DE LA CALCULADORA ============== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="La Calculadora de Facundo con herramientas avanzadas como un lector de números.">
+    <meta name="description" content="La Calculadora de Facundo con herramientas avanzadas, visualización didáctica paso a paso y lector de voz.">
     <meta name="author" content="Hector Daniel Ayarachi Fuentes">
     <meta name="theme-color" content="#66FF66">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='5' y='5' width='90' height='90' rx='15' fill='%2366FF66'/><text x='50' y='55' font-size='40' text-anchor='middle' fill='%23000' font-family='Arial, sans-serif'>FC</text></svg>">
-    <title>Calculadora Facundo 🧮</title>
+    <title>Calculadora Facundo ✨</title>
     <link rel="manifest" href="manifest.json">
 
 
     <!-- Metadatos Open Graph para redes sociales -->
-    <meta property="og:title" content="Calculadora Facundo 🧮">
+    <meta property="og:title" content="Calculadora Facundo ✨">
     <meta property="og:description"
-        content="La Calculadora de Facundo: rápida, atractiva y con herramientas avanzadas.">
+        content="La Calculadora de Facundo: rápida, atractiva y con visualización matemática paso a paso.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://hectordanielayarachifuentes.github.io/Calculadora-Facundo-V4//">
     <meta property="og:image"
@@ -33,7 +33,7 @@
 
     <!-- ============== ESTILOS DE LA CALCULADORA (CARGADO AL FINAL PARA TENER PRIORIDAD) ============== -->
     <!-- Este enlace debe apuntar al archivo CSS compilado desde tu SCSS -->
-    <link rel="stylesheet" href="scss\style.css">
+    <link rel="stylesheet" href="scss/style.css">
 </head>
 
 <body>
@@ -65,27 +65,24 @@
                     <button class="keyboard__button keyboard__button--number" data-value="4">4</button>
                     <button class="keyboard__button keyboard__button--number" data-value="5">5</button>
                     <button class="keyboard__button keyboard__button--number" data-value="6">6</button>
-                    <button id="tpor" class="keyboard__button keyboard__button--operator" data-value="x">×</button>
-                    <button id="tdiv" class="keyboard__button keyboard__button--operator" data-value="/">÷</button>
+                    <button id="tpor" class="keyboard__button keyboard__button--operator" data-value="x" aria-label="Multiplicar">×</button>
+                    <button id="tdiv" class="keyboard__button keyboard__button--operator" data-value="/" aria-label="Dividir">÷</button>
                     <button class="keyboard__button keyboard__button--number" data-value="1">1</button>
                     <button class="keyboard__button keyboard__button--number" data-value="2">2</button>
                     <button class="keyboard__button keyboard__button--number" data-value="3">3</button>
                     <button id="tmod" class="keyboard__button keyboard__button--operator" data-value="%" data-action=""
                         aria-label="Módulo">%</button>
-                    <button id="trai" class="keyboard__button keyboard__button--equals" data-action="raiz"
-                        aria-label="Raíz Cuadrada">√</button>
+                    <button id="trai" class="keyboard__button keyboard__button--equals" data-action="raiz" aria-label="Raíz Cuadrada">√</button>
                     <button class="keyboard__button keyboard__button--number keyboard__button--double-width"
                         data-value="0">0</button>
                     <button id="tcom" class="keyboard__button keyboard__button--number" data-value=",">,</button>
                     <button class="keyboard__button keyboard__button--operator" data-action="clear"
                         aria-label="Limpiar Todo">C</button>
-                    <button class="keyboard__button keyboard__button--operator" data-action="delete"
-                        aria-label="Borrar">⌫</button>
+                    <button class="keyboard__button keyboard__button--operator" data-action="delete" aria-label="Borrar">⌫</button>
                 </div>
                 <div id="salida" class="output-screen" role="region" aria-live="polite"></div>
                 <nav id="divvolver" class="bottom-nav" aria-label="Controles de resultados">
-                    <button id="volver" class="bottom-nav__button bottom-nav__button--arrow" data-action="hide-screen"
-                        aria-label="Volver al teclado">↩</button>
+                    <button id="volver" class="bottom-nav__button bottom-nav__button--arrow" data-action="hide-screen" aria-label="Volver al teclado">←</button>
                     <button id="botexp" class="bottom-nav__button" data-action="divide-expanded"
                         aria-label="Ver división expandida">DIV EXPAND.</button>
                     <button id="botnor" class="bottom-nav__button" data-action="divide-normal"

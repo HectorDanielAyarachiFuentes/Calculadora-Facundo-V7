@@ -99,4 +99,16 @@ describe('Calculator Engine', () => {
         expect(mockExecuteVisualOperation).toHaveBeenCalled();
         expect(mockHistoryAdd).toHaveBeenCalled();
     });
+
+    test('calculate should gracefully handle input without operators without throwing error', async () => {
+        display.innerHTML = "42";
+        await expect(calculate()).resolves.not.toThrow();
+        expect(mockExecuteVisualOperation).not.toHaveBeenCalled();
+    });
+
+    test('writeToDisplay should delete character with "del"', () => {
+        display.innerHTML = "123";
+        writeToDisplay('del');
+        expect(display.innerHTML).toBe('12');
+    });
 });
