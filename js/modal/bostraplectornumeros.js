@@ -440,8 +440,8 @@ class FormalMode {
  */
 class NumberReaderApp {
     /**
-     * Inicializa la aplicación, obtiene referencias a los elementos del DOM,
-     * instancia los modos de aprendizaje y vincula los eventos.
+     * Inicializa el Lector de Números Avanzado con navegación instantánea por pestañas,
+     * controles de velocidad de voz, acciones rápidas y análisis matemático en tiempo real.
      */
     constructor() {
         this.elements = {
@@ -449,34 +449,195 @@ class NumberReaderApp {
             simpleResultDiv: document.getElementById("resultado"),
             playSimpleBtn: document.getElementById("play-simple-btn"),
             playPhoneticBtn: document.getElementById("play-phonetic-btn"),
-            playFormalBtn: document.getElementById("play-formal-btn")
+            playFormalBtn: document.getElementById("play-formal-btn"),
+            clearBtn: document.getElementById("ln-clear-btn"),
+            importCalcBtn: document.getElementById("ln-import-calc-btn"),
+            randomBtn: document.getElementById("ln-random-btn"),
+            copySimpleBtn: document.getElementById("ln-copy-simple-btn"),
+            mathContentDiv: document.getElementById("ln-math-content"),
+            tabsBar: document.querySelector(".ln-tabs-bar"),
+            tabPanes: document.querySelectorAll(".ln-tab-pane"),
+            speedButtons: document.querySelectorAll(".ln-speed-btn")
         };
 
-        if (!this.elements.input) return; // Salir si los elementos no existen
+        if (!this.elements.input) return;
 
-        this.state = { simpleText: "", formalText: "", integerText: "", decimalText: "", unitText: "" };
-        this.placeholders = { simple: '<span class="placeholder-text">La lectura del número aparecerá aquí.</span>' };
+        this.state = {
+            simpleText: "",
+            formalText: "",
+            integerText: "",
+            decimalText: "",
+            unitText: "",
+            pEnteraStr: "",
+            pDecimalStr: ""
+        };
+
+        this.placeholders = {
+            simple: '<span class="placeholder-text">Introduce un número para ver su lectura aquí.</span>',
+            math: '<div class="ln-math-empty placeholder-text">Ingresa un número para calcular su análisis.</div>'
+        };
 
         this.phoneticMode = new PhoneticMode("#aprendizaje-fonetico-resultado");
         this.formalMode = new FormalMode("#aprendizaje-formal-wrapper");
 
         this.bindEvents();
-        this.resetUI();
+        this.initTabs();
+        this.initSpeedControls();
+        this.initQuickActions();
+
+        // Si ya hay un valor ingresado, procesarlo inmediatamente
+        if (this.elements.input.value && this.elements.input.value.trim() !== '') {
+            this.handleInput();
+        } else {
+            this.resetUI();
+        }
     }
 
     /**
-     * Vincula los manejadores de eventos a los elementos de la interfaz (input, botones de play).
+     * Vincula los manejadores de eventos principales
      */
     bindEvents() {
         this.elements.input.addEventListener("input", this.handleInput.bind(this));
-        this.elements.playSimpleBtn.addEventListener("click", this.playSimple.bind(this));
-        this.elements.playPhoneticBtn.addEventListener("click", this.playPhonetic.bind(this));
-        this.elements.playFormalBtn.addEventListener("click", this.playFormal.bind(this));
+        if (this.elements.playSimpleBtn) this.elements.playSimpleBtn.addEventListener("click", this.playSimple.bind(this));
+        if (this.elements.playPhoneticBtn) this.elements.playPhoneticBtn.addEventListener("click", this.playPhonetic.bind(this));
+        if (this.elements.playFormalBtn) this.elements.playFormalBtn.addEventListener("click", this.playFormal.bind(this));
     }
 
     /**
-     * Maneja el evento 'input' del campo de texto.
-     * Limpia la entrada, procesa el número, actualiza el estado y dispara el renderizado.
+     * Navegación por pestañas por delegación de eventos garantizada
+     */
+    initTabs() {
+        if (!this.elements.tabsBar) return;
+
+        this.elements.tabsBar.addEventListener("click", (e) => {
+            const btn = e.target.closest(".ln-tab-btn");
+            if (!btn) return;
+            e.preventDefault();
+
+            const targetTab = btn.getAttribute("data-tab");
+            if (!targetTab) return;
+
+            // Actualizar botones de pestaña
+            this.elements.tabsBar.querySelectorAll(".ln-tab-btn").forEach(b => {
+                b.classList.remove("active");
+                b.setAttribute("aria-selected", "false");
+            });
+            btn.classList.add("active");
+            btn.setAttribute("aria-selected", "true");
+
+            // Actualizar paneles de contenido
+            document.querySelectorAll(".ln-tab-pane").forEach(p => p.classList.remove("active"));
+            const targetPane = document.getElementById(`ln-pane-${targetTab}`);
+            if (targetPane) {
+                targetPane.classList.add("active");
+            }
+        });
+    }
+
+    /**
+     * Controles de velocidad para síntesis de voz (0.8x, 1.0x, 1.25x)
+     */
+    initSpeedControls() {
+        this.elements.speedButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const speed = parseFloat(btn.getAttribute("data-speed")) || 1.0;
+                SpeechService.setSpeed(speed);
+                document.querySelectorAll(".ln-speed-btn").forEach(b => {
+                    b.classList.toggle("active", b.getAttribute("data-speed") === String(speed));
+                });
+            });
+        });
+    }
+
+    /**
+     * Acciones rápidas: Limpiar, Cargar de Calculadora, Número al Azar y Copiar
+     */
+    initQuickActions() {
+        if (this.elements.clearBtn) {
+            this.elements.clearBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                this.elements.input.value = "";
+                this.elements.input.focus();
+                this.resetUI();
+            });
+        }
+
+        if (this.elements.importCalcBtn) {
+            this.elements.importCalcBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const display = document.getElementById("display");
+                let text = display ? display.innerText.trim() : "";
+                text = text.replace(/[^0-9.,-]/g, '').replace(/\./g, ',');
+                if (text && text !== "0" && text !== "Error" && text !== "NaN") {
+                    this.elements.input.value = text;
+                    this.handleInput();
+                    this.showToastFeedback(this.elements.importCalcBtn, "¡Cargado!");
+                } else {
+                    this.showToastFeedback(this.elements.importCalcBtn, "Vacío", true);
+                }
+            });
+        }
+
+        if (this.elements.randomBtn) {
+            const examples = ["42", "128", "564", "1024", "1492,50", "2048", "3,1416", "9876543,21", "500000", "777,7"];
+            this.elements.randomBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const randomVal = examples[Math.floor(Math.random() * examples.length)];
+                this.elements.input.value = randomVal;
+                this.handleInput();
+            });
+        }
+
+        if (this.elements.copySimpleBtn) {
+            this.elements.copySimpleBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (!this.state.simpleText) return;
+                const copyTextEl = this.elements.copySimpleBtn.querySelector(".copy-text");
+                const formatted = this.state.simpleText.charAt(0).toUpperCase() + this.state.simpleText.slice(1);
+                const showDone = () => {
+                    if (copyTextEl) copyTextEl.textContent = "¡Copiado!";
+                    this.elements.copySimpleBtn.classList.add("copied");
+                    setTimeout(() => {
+                        if (copyTextEl) copyTextEl.textContent = "Copiar";
+                        this.elements.copySimpleBtn.classList.remove("copied");
+                    }, 1800);
+                };
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(formatted).then(showDone).catch(() => {
+                        this.copyFallback(formatted);
+                        showDone();
+                    });
+                } else {
+                    this.copyFallback(formatted);
+                    showDone();
+                }
+            });
+        }
+    }
+
+    copyFallback(text) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+    }
+
+    showToastFeedback(btn, message, isError = false) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = isError
+            ? `<i class="fa-solid fa-triangle-exclamation me-1"></i> ${message}`
+            : `<i class="fa-solid fa-check me-1"></i> ${message}`;
+        setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+    }
+
+    /**
+     * Maneja el evento 'input' del campo de texto
      */
     handleInput() {
         let val = this.elements.input.value.replace(/[^0-9,]/g, '').replace(/,/g, (m, o, s) => o === s.indexOf(',') ? ',' : '');
@@ -493,6 +654,8 @@ class NumberReaderApp {
         const pDecimalStr = parts[1] || '';
         const pEnteraNum = parseInt(pEnteraStr, 10);
 
+        this.state.pEnteraStr = pEnteraStr;
+        this.state.pDecimalStr = pDecimalStr;
         this.state.integerText = NumberConverter.toLetters(pEnteraNum);
         const simpleDecimalText = pDecimalStr ? ` coma ${NumberConverter.simpleDecimalsToLetters(pDecimalStr)}` : "";
         this.state.simpleText = this.state.integerText + simpleDecimalText;
@@ -511,49 +674,155 @@ class NumberReaderApp {
         }
 
         this.renderUI(pEnteraStr, pDecimalStr);
+        this.renderMathAnalysis(pEnteraStr, pDecimalStr);
     }
 
     /**
-     * Actualiza todas las partes de la interfaz de usuario con el estado actual.
-     * Llama a los métodos `render` de los modos fonético y formal.
-     * @param {string} pEnteraStr - La parte entera del número para pasar al modo formal.
-     * @param {string} pDecimalStr - La parte decimal del número para pasar al modo formal.
+     * Actualiza la interfaz con el estado actual
      */
     renderUI(pEnteraStr, pDecimalStr) {
-        this.elements.simpleResultDiv.textContent = this.state.simpleText.charAt(0).toUpperCase() + this.state.simpleText.slice(1);
+        if (this.elements.simpleResultDiv) {
+            this.elements.simpleResultDiv.textContent = this.state.simpleText.charAt(0).toUpperCase() + this.state.simpleText.slice(1);
+        }
         this.phoneticMode.render(this.state.simpleText);
         this.formalMode.render(pEnteraStr, pDecimalStr);
     }
 
     /**
-     * Restablece el estado de la aplicación y la interfaz a sus valores iniciales.
+     * Calcula y presenta el análisis matemático
+     */
+    renderMathAnalysis(pEnteraStr, pDecimalStr) {
+        if (!this.elements.mathContentDiv) return;
+        const numVal = parseFloat(`${pEnteraStr}.${pDecimalStr || '0'}`);
+        if (isNaN(numVal)) {
+            this.elements.mathContentDiv.innerHTML = this.placeholders.math;
+            return;
+        }
+
+        const isInteger = !pDecimalStr || parseInt(pDecimalStr, 10) === 0;
+        const intNum = parseInt(pEnteraStr, 10);
+        const isPar = isInteger && (intNum % 2 === 0);
+        const paridadText = isInteger ? (isPar ? "Par" : "Impar") : "Decimal";
+        const paridadIcon = isInteger ? (isPar ? "fa-equals text-success" : "fa-not-equal text-warning") : "fa-circle-dot text-info";
+
+        // Notación científica
+        let scientificStr = "";
+        try {
+            const exp = numVal.toExponential(4);
+            const [base, power] = exp.split('e');
+            scientificStr = `${base} × 10<sup>${parseInt(power, 10)}</sup>`;
+        } catch {
+            scientificStr = "-";
+        }
+
+        // Descomposición polinómica
+        let polynomialChips = [];
+        const digits = pEnteraStr.split('');
+        const len = digits.length;
+        digits.forEach((d, i) => {
+            const digitInt = parseInt(d, 10);
+            if (digitInt > 0) {
+                const placeVal = digitInt * Math.pow(10, len - 1 - i);
+                polynomialChips.push(`<span class="ln-poly-chip">${placeVal}</span>`);
+            }
+        });
+        if (pDecimalStr) {
+            pDecimalStr.split('').forEach((d, i) => {
+                const digitInt = parseInt(d, 10);
+                if (digitInt > 0) {
+                    const decVal = (digitInt / Math.pow(10, i + 1)).toFixed(i + 1);
+                    polynomialChips.push(`<span class="ln-poly-chip dec">${decVal}</span>`);
+                }
+            });
+        }
+        if (polynomialChips.length === 0) {
+            polynomialChips.push(`<span class="ln-poly-chip">0</span>`);
+        }
+        const polynomialHtml = polynomialChips.join('<span class="ln-poly-plus">+</span>');
+
+        // Divisibilidad rápida
+        let divisibilityBadges = [];
+        if (isInteger && intNum > 0) {
+            [2, 3, 5, 10].forEach(d => {
+                if (intNum % d === 0) {
+                    divisibilityBadges.push(`<span class="ln-chip-badge">÷${d}</span>`);
+                }
+            });
+        }
+
+        this.elements.mathContentDiv.innerHTML = `
+            <div class="ln-math-grid">
+                <div class="ln-math-tile">
+                    <i class="fa-solid ${paridadIcon} ln-math-tile-icon"></i>
+                    <div class="ln-math-tile-info">
+                        <span class="ln-math-tile-label">Tipo</span>
+                        <strong class="ln-math-tile-val">${paridadText}</strong>
+                    </div>
+                </div>
+
+                <div class="ln-math-tile">
+                    <i class="fa-solid fa-calculator text-primary ln-math-tile-icon"></i>
+                    <div class="ln-math-tile-info">
+                        <span class="ln-math-tile-label">Cifras</span>
+                        <strong class="ln-math-tile-val">${pEnteraStr.length}E${pDecimalStr ? ` | ${pDecimalStr.length}D` : ''}</strong>
+                    </div>
+                </div>
+
+                <div class="ln-math-tile">
+                    <i class="fa-solid fa-atom text-info ln-math-tile-icon"></i>
+                    <div class="ln-math-tile-info">
+                        <span class="ln-math-tile-label">Científica</span>
+                        <strong class="ln-math-tile-val">${scientificStr}</strong>
+                    </div>
+                </div>
+
+                ${isInteger && divisibilityBadges.length > 0 ? `
+                <div class="ln-math-tile">
+                    <i class="fa-solid fa-divide text-warning ln-math-tile-icon"></i>
+                    <div class="ln-math-tile-info">
+                        <span class="ln-math-tile-label">Divisible</span>
+                        <div class="ln-chips-wrap">${divisibilityBadges.join(' ')}</div>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+
+            <div class="ln-poly-section">
+                <span class="ln-poly-label"><i class="fa-solid fa-cubes-stacked me-1"></i> Descomposición:</span>
+                <div class="ln-poly-container">${polynomialHtml}</div>
+            </div>
+        `;
+    }
+
+    /**
+     * Restablece el estado de la interfaz
      */
     resetUI() {
-        this.state = { simpleText: "", formalText: "", integerText: "", decimalText: "", unitText: "" };
+        this.state = {
+            simpleText: "",
+            formalText: "",
+            integerText: "",
+            decimalText: "",
+            unitText: "",
+            pEnteraStr: "",
+            pDecimalStr: ""
+        };
         if (this.elements.simpleResultDiv) this.elements.simpleResultDiv.innerHTML = this.placeholders.simple;
+        if (this.elements.mathContentDiv) this.elements.mathContentDiv.innerHTML = this.placeholders.math;
         this.phoneticMode.reset();
         this.formalMode.reset();
     }
 
-    /**
-     * Inicia la reproducción de la lectura simple del número.
-     */
     playSimple() {
         if (!this.state.simpleText) return;
         SpeechService.speak(this.state.simpleText);
     }
 
-    /**
-     * Inicia la reproducción y el resaltado en el modo fonético.
-     */
     playPhonetic() {
         if (!this.state.simpleText) return;
         this.phoneticMode.play(this.state.simpleText);
     }
 
-    /**
-     * Inicia la reproducción y el resaltado en el modo formal (gráfico).
-     */
     playFormal() {
         if (!this.state.formalText) return;
         this.formalMode.play({
@@ -684,68 +953,66 @@ class NumberReaderApp {
                     title: "Lector de Números Avanzado",
                     body: `
                         <div class="ln-hub">
-                            <!-- Hero Input Card -->
-                            <div class="ln-input-card">
-                                <label for="numero" class="ln-input-label">
-                                    <i class="fa-solid fa-calculator me-1"></i> Introduce un número o impórtalo:
-                                </label>
+                            <!-- Barra Superior Compacta: Input + Acciones en una sola fila -->
+                            <div class="ln-top-bar">
                                 <div class="ln-input-group">
-                                    <input type="text" id="numero" class="ln-input" placeholder="Ej: 1234,56" autocomplete="off" aria-describedby="resultado-label fonetico-label formal-label">
-                                    <button id="ln-clear-btn" class="ln-btn-ghost" type="button" title="Limpiar entrada" aria-label="Limpiar entrada">
+                                    <i class="fa-solid fa-calculator ln-input-icon"></i>
+                                    <input type="text" id="numero" class="ln-input" placeholder="Ej: 564 o 1234,56" autocomplete="off" aria-label="Número para leer">
+                                    <button id="ln-clear-btn" class="ln-btn-ghost" type="button" title="Limpiar" aria-label="Limpiar">
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
                                 </div>
                                 <div class="ln-quick-actions">
-                                    <button id="ln-import-calc-btn" class="ln-badge-btn" type="button" title="Pegar el número de la calculadora">
+                                    <button id="ln-import-calc-btn" class="ln-badge-btn" type="button" title="Pegar número de la calculadora">
                                         <i class="fa-solid fa-arrow-down-to-bracket me-1"></i> Cargar de Calculadora
                                     </button>
-                                    <button id="ln-random-btn" class="ln-badge-btn" type="button" title="Generar un número al azar">
+                                    <button id="ln-random-btn" class="ln-badge-btn" type="button" title="Generar número al azar">
                                         <i class="fa-solid fa-dice me-1"></i> Ejemplo al azar
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Glassmorphism Segmented Navigation Tabs -->
+                            <!-- Barra de Pestañas Segmentada Compacta -->
                             <div class="ln-tabs-bar" role="tablist">
-                                <button class="ln-tab-btn active" data-tab="simple" role="tab" aria-selected="true">
-                                    <i class="fa-solid fa-book-open me-2"></i> Lectura Escrita
+                                <button class="ln-tab-btn active" data-tab="simple" type="button" role="tab" aria-selected="true">
+                                    <i class="fa-solid fa-book-open me-1"></i> Lectura Escrita
                                 </button>
-                                <button class="ln-tab-btn" data-tab="phonetic" role="tab" aria-selected="false">
-                                    <i class="fa-solid fa-microphone-lines me-2"></i> Fonética & Sílabas
+                                <button class="ln-tab-btn" data-tab="phonetic" type="button" role="tab" aria-selected="false">
+                                    <i class="fa-solid fa-microphone-lines me-1"></i> Fonética & Sílabas
                                 </button>
-                                <button class="ln-tab-btn" data-tab="formal" role="tab" aria-selected="false">
-                                    <i class="fa-solid fa-chart-column me-2"></i> Gráfico Posicional
+                                <button class="ln-tab-btn" data-tab="formal" type="button" role="tab" aria-selected="false">
+                                    <i class="fa-solid fa-chart-column me-1"></i> Gráfico Posicional
                                 </button>
-                                <button class="ln-tab-btn" data-tab="math" role="tab" aria-selected="false">
-                                    <i class="fa-solid fa-square-root-variable me-2"></i> Análisis Matemático
+                                <button class="ln-tab-btn" data-tab="math" type="button" role="tab" aria-selected="false">
+                                    <i class="fa-solid fa-square-root-variable me-1"></i> Análisis Matemático
                                 </button>
                             </div>
 
-                            <!-- Tabs Content Area -->
+                            <!-- Área de Paneles (Todo Visible, CERO Scroll) -->
                             <div class="ln-tab-content">
                                 <!-- Panel 1: Lectura Escrita -->
                                 <div class="ln-tab-pane active" id="ln-pane-simple">
                                     <div class="ln-card">
                                         <div class="ln-card-header">
-                                            <h2 id="resultado-label" class="ln-card-title">
-                                                <i class="fa-solid fa-quote-left me-2"></i> Lectura en palabras
-                                            </h2>
-                                            <button id="ln-copy-simple-btn" class="ln-btn-sm" type="button" title="Copiar lectura al portapapeles">
+                                            <span id="resultado-label" class="ln-card-title">
+                                                <i class="fa-solid fa-quote-left me-1"></i> Lectura en palabras:
+                                            </span>
+                                            <button id="ln-copy-simple-btn" class="ln-btn-sm" type="button" title="Copiar lectura">
                                                 <i class="fa-regular fa-copy me-1"></i> <span class="copy-text">Copiar</span>
                                             </button>
                                         </div>
                                         <div id="resultado" class="result-box ln-readable-box" aria-live="polite">
-                                            <span class="placeholder-text">La lectura del número aparecerá aquí.</span>
+                                            <span class="placeholder-text">Introduce un número para ver su lectura aquí.</span>
                                         </div>
                                         <div class="ln-audio-bar">
-                                            <button id="play-simple-btn" class="play-btn ln-play-main" aria-label="Escuchar la lectura del número">
-                                                <i class="fa-solid fa-volume-high me-2"></i> Escuchar Lectura
+                                            <button id="play-simple-btn" class="play-btn ln-play-main" type="button" aria-label="Escuchar lectura">
+                                                <i class="fa-solid fa-volume-high me-1"></i> Escuchar Lectura
                                             </button>
-                                            <div class="ln-speed-controls" title="Velocidad de reproducción de voz">
-                                                <span class="ln-speed-label"><i class="fa-solid fa-gauge-high me-1"></i> Velocidad:</span>
-                                                <button class="ln-speed-btn" data-speed="0.8">0.8x</button>
-                                                <button class="ln-speed-btn active" data-speed="1.0">1.0x</button>
-                                                <button class="ln-speed-btn" data-speed="1.25">1.25x</button>
+                                            <div class="ln-speed-controls" title="Velocidad de voz">
+                                                <span class="ln-speed-label">Velocidad:</span>
+                                                <button class="ln-speed-btn" type="button" data-speed="0.8">0.8x</button>
+                                                <button class="ln-speed-btn active" type="button" data-speed="1.0">1.0x</button>
+                                                <button class="ln-speed-btn" type="button" data-speed="1.25">1.25x</button>
                                             </div>
                                         </div>
                                     </div>
@@ -755,23 +1022,23 @@ class NumberReaderApp {
                                 <div class="ln-tab-pane" id="ln-pane-phonetic">
                                     <div class="ln-card">
                                         <div class="ln-card-header">
-                                            <h2 id="fonetico-label" class="ln-card-title">
-                                                <i class="fa-solid fa-spell-check me-2"></i> Desglose Fonético & Sílabas
-                                            </h2>
-                                            <span class="ln-badge-info"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Sincronizado con voz</span>
+                                            <span id="fonetico-label" class="ln-card-title">
+                                                <i class="fa-solid fa-spell-check me-1"></i> Desglose Fonético & Sílabas:
+                                            </span>
+                                            <span class="ln-badge-info"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Sincronizado</span>
                                         </div>
                                         <div id="aprendizaje-fonetico-resultado" class="result-box phonetic-box ln-phonetic-glow" aria-live="polite">
                                             <span class="placeholder-text">El desglose fonético aparecerá aquí.</span>
                                         </div>
                                         <div class="ln-audio-bar">
-                                            <button id="play-phonetic-btn" class="play-btn ln-play-main" aria-label="Escuchar y resaltar sílabas">
-                                                <i class="fa-solid fa-headphones me-2"></i> Escuchar y Resaltar Sílabas
+                                            <button id="play-phonetic-btn" class="play-btn ln-play-main" type="button" aria-label="Escuchar sílabas">
+                                                <i class="fa-solid fa-headphones me-1"></i> Escuchar Sílabas
                                             </button>
-                                            <div class="ln-speed-controls" title="Velocidad de reproducción de voz">
-                                                <span class="ln-speed-label"><i class="fa-solid fa-gauge-high me-1"></i> Velocidad:</span>
-                                                <button class="ln-speed-btn" data-speed="0.8">0.8x</button>
-                                                <button class="ln-speed-btn active" data-speed="1.0">1.0x</button>
-                                                <button class="ln-speed-btn" data-speed="1.25">1.25x</button>
+                                            <div class="ln-speed-controls" title="Velocidad de voz">
+                                                <span class="ln-speed-label">Velocidad:</span>
+                                                <button class="ln-speed-btn" type="button" data-speed="0.8">0.8x</button>
+                                                <button class="ln-speed-btn active" type="button" data-speed="1.0">1.0x</button>
+                                                <button class="ln-speed-btn" type="button" data-speed="1.25">1.25x</button>
                                             </div>
                                         </div>
                                     </div>
@@ -781,17 +1048,17 @@ class NumberReaderApp {
                                 <div class="ln-tab-pane" id="ln-pane-formal">
                                     <div class="ln-card">
                                         <div class="ln-card-header">
-                                            <h2 id="formal-label" class="ln-card-title">
-                                                <i class="fa-solid fa-shapes me-2"></i> Valor Posicional y Notación Formal
-                                            </h2>
-                                            <span class="ln-badge-info"><i class="fa-solid fa-eye me-1"></i> Visualización SVG</span>
+                                            <span id="formal-label" class="ln-card-title">
+                                                <i class="fa-solid fa-shapes me-1"></i> Valor Posicional y Notación Formal:
+                                            </span>
+                                            <span class="ln-badge-info"><i class="fa-solid fa-eye me-1"></i> Gráfico</span>
                                         </div>
                                         <div id="aprendizaje-formal-wrapper" class="result-box svg-box ln-svg-wrapper" aria-live="polite">
-                                            <span class="placeholder-text">Representación gráfica del valor posicional...</span>
+                                            <span class="placeholder-text">Gráfico de valor posicional...</span>
                                         </div>
                                         <div class="ln-audio-bar">
-                                            <button id="play-formal-btn" class="play-btn ln-play-main" aria-label="Escuchar y resaltar la gráfica">
-                                                <i class="fa-solid fa-chalkboard-user me-2"></i> Escuchar y Resaltar Gráfica
+                                            <button id="play-formal-btn" class="play-btn ln-play-main" type="button" aria-label="Explicar gráfico">
+                                                <i class="fa-solid fa-chalkboard-user me-1"></i> Explicar Gráfica
                                             </button>
                                         </div>
                                     </div>
@@ -801,13 +1068,13 @@ class NumberReaderApp {
                                 <div class="ln-tab-pane" id="ln-pane-math">
                                     <div class="ln-card">
                                         <div class="ln-card-header">
-                                            <h2 class="ln-card-title">
-                                                <i class="fa-solid fa-chart-pie me-2"></i> Propiedades y Análisis Matemático
-                                            </h2>
+                                            <span class="ln-card-title">
+                                                <i class="fa-solid fa-chart-pie me-1"></i> Propiedades y Análisis Matemático:
+                                            </span>
                                             <span class="ln-badge-info"><i class="fa-solid fa-brain me-1"></i> En tiempo real</span>
                                         </div>
                                         <div id="ln-math-content" class="ln-math-container">
-                                            <div class="ln-math-empty placeholder-text">Ingresa un número para calcular su análisis matemático.</div>
+                                            <div class="ln-math-empty placeholder-text">Ingresa un número para calcular su análisis.</div>
                                         </div>
                                     </div>
                                 </div>
@@ -816,12 +1083,9 @@ class NumberReaderApp {
                     `,
                     onShow: () => {
                         new NumberReaderApp();
-                        // --- MEJORA DE ACCESIBILIDAD: Mover el foco al campo de entrada ---
                         const numberInput = document.getElementById('numero');
                         if (numberInput) {
-                            // Usamos un pequeño timeout para asegurar que el modal es completamente visible
-                            // antes de mover el foco, evitando conflictos con la animación del modal.
-                            setTimeout(() => numberInput.focus(), 150);
+                            setTimeout(() => numberInput.focus(), 80);
                         }
                     }
                 },
@@ -1038,8 +1302,12 @@ class NumberReaderApp {
                 trigger.addEventListener('click', () => {
                     const targetKey = trigger.dataset.modalTarget; const data = infoData[targetKey];
                     if (data) {
-                        modalTitle.textContent = data.title; modalBody.innerHTML = data.body; infoModal.show();
-                        if (data.onShow) { infoModalEl.addEventListener('shown.bs.modal', data.onShow, { once: true }); }
+                        modalTitle.textContent = data.title;
+                        modalBody.innerHTML = data.body;
+                        infoModal.show();
+                        if (data.onShow) {
+                            try { data.onShow(); } catch (err) { console.error('Error onShow:', err); }
+                        }
                     }
                 });
             });
