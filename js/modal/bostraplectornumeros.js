@@ -208,6 +208,16 @@ class Syllabifier {
  * Permite reproducir texto con callbacks para eventos de límite de palabra y finalización.
  */
 export class SpeechService {
+    static playbackRate = 1.0;
+
+    /**
+     * Configura la velocidad de reproducción de voz.
+     * @param {number|string} rate
+     */
+    static setSpeed(rate) {
+        SpeechService.playbackRate = parseFloat(rate) || 1.0;
+    }
+
     /**
      * Reproduce un texto utilizando la síntesis de voz del navegador.
      * @param {string} text - El texto a reproducir.
@@ -223,11 +233,13 @@ export class SpeechService {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = lang;
+        utterance.rate = SpeechService.playbackRate || 1.0;
         if (onBoundaryCallback) {
             utterance.onboundary = onBoundaryCallback;
         }
         if (onEndCallback) {
             utterance.onend = onEndCallback;
+            utterance.onerror = onEndCallback;
         }
         window.speechSynthesis.speak(utterance);
     }
@@ -671,10 +683,136 @@ class NumberReaderApp {
                 readNumbers: {
                     title: "Lector de Números Avanzado",
                     body: `
-                        <div class="input-section"><label for="numero">Introduce el número:</label><input type="text" id="numero" placeholder="Ej: 1234,56" autocomplete="off" aria-describedby="resultado-label fonetico-label formal-label"></div>
-                        <div class="card"><h2 id="resultado-label">Lectura Simple</h2><div id="resultado" class="result-box" aria-live="polite"><span class="placeholder-text">...</span></div><button id="play-simple-btn" class="play-btn" aria-label="Escuchar la lectura simple del número">▶️ Escuchar</button></div>
-                        <div class="card"><h2 id="fonetico-label">Modo de Aprendizaje Fonético</h2><div id="aprendizaje-fonetico-resultado" class="result-box phonetic-box" aria-live="polite"><span class="placeholder-text">...</span></div><button id="play-phonetic-btn" class="play-btn" aria-label="Escuchar el desglose fonético y resaltar sílabas">▶️ Escuchar y Resaltar</button></div>
-                        <div class="card"><h2 id="formal-label">Modo de Aprendizaje Formal (Gráfico)</h2><div id="aprendizaje-formal-wrapper" class="result-box svg-box" aria-live="polite"><span class="placeholder-text">...</span></div><button id="play-formal-btn" class="play-btn" aria-label="Escuchar la lectura formal y resaltar la gráfica">▶️ Escuchar y Resaltar</button></div>
+                        <div class="ln-hub">
+                            <!-- Hero Input Card -->
+                            <div class="ln-input-card">
+                                <label for="numero" class="ln-input-label">
+                                    <i class="fa-solid fa-calculator me-1"></i> Introduce un número o impórtalo:
+                                </label>
+                                <div class="ln-input-group">
+                                    <input type="text" id="numero" class="ln-input" placeholder="Ej: 1234,56" autocomplete="off" aria-describedby="resultado-label fonetico-label formal-label">
+                                    <button id="ln-clear-btn" class="ln-btn-ghost" type="button" title="Limpiar entrada" aria-label="Limpiar entrada">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <div class="ln-quick-actions">
+                                    <button id="ln-import-calc-btn" class="ln-badge-btn" type="button" title="Pegar el número de la calculadora">
+                                        <i class="fa-solid fa-arrow-down-to-bracket me-1"></i> Cargar de Calculadora
+                                    </button>
+                                    <button id="ln-random-btn" class="ln-badge-btn" type="button" title="Generar un número al azar">
+                                        <i class="fa-solid fa-dice me-1"></i> Ejemplo al azar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Glassmorphism Segmented Navigation Tabs -->
+                            <div class="ln-tabs-bar" role="tablist">
+                                <button class="ln-tab-btn active" data-tab="simple" role="tab" aria-selected="true">
+                                    <i class="fa-solid fa-book-open me-2"></i> Lectura Escrita
+                                </button>
+                                <button class="ln-tab-btn" data-tab="phonetic" role="tab" aria-selected="false">
+                                    <i class="fa-solid fa-microphone-lines me-2"></i> Fonética & Sílabas
+                                </button>
+                                <button class="ln-tab-btn" data-tab="formal" role="tab" aria-selected="false">
+                                    <i class="fa-solid fa-chart-column me-2"></i> Gráfico Posicional
+                                </button>
+                                <button class="ln-tab-btn" data-tab="math" role="tab" aria-selected="false">
+                                    <i class="fa-solid fa-square-root-variable me-2"></i> Análisis Matemático
+                                </button>
+                            </div>
+
+                            <!-- Tabs Content Area -->
+                            <div class="ln-tab-content">
+                                <!-- Panel 1: Lectura Escrita -->
+                                <div class="ln-tab-pane active" id="ln-pane-simple">
+                                    <div class="ln-card">
+                                        <div class="ln-card-header">
+                                            <h2 id="resultado-label" class="ln-card-title">
+                                                <i class="fa-solid fa-quote-left me-2"></i> Lectura en palabras
+                                            </h2>
+                                            <button id="ln-copy-simple-btn" class="ln-btn-sm" type="button" title="Copiar lectura al portapapeles">
+                                                <i class="fa-regular fa-copy me-1"></i> <span class="copy-text">Copiar</span>
+                                            </button>
+                                        </div>
+                                        <div id="resultado" class="result-box ln-readable-box" aria-live="polite">
+                                            <span class="placeholder-text">La lectura del número aparecerá aquí.</span>
+                                        </div>
+                                        <div class="ln-audio-bar">
+                                            <button id="play-simple-btn" class="play-btn ln-play-main" aria-label="Escuchar la lectura del número">
+                                                <i class="fa-solid fa-volume-high me-2"></i> Escuchar Lectura
+                                            </button>
+                                            <div class="ln-speed-controls" title="Velocidad de reproducción de voz">
+                                                <span class="ln-speed-label"><i class="fa-solid fa-gauge-high me-1"></i> Velocidad:</span>
+                                                <button class="ln-speed-btn" data-speed="0.8">0.8x</button>
+                                                <button class="ln-speed-btn active" data-speed="1.0">1.0x</button>
+                                                <button class="ln-speed-btn" data-speed="1.25">1.25x</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Panel 2: Modo Fonético -->
+                                <div class="ln-tab-pane" id="ln-pane-phonetic">
+                                    <div class="ln-card">
+                                        <div class="ln-card-header">
+                                            <h2 id="fonetico-label" class="ln-card-title">
+                                                <i class="fa-solid fa-spell-check me-2"></i> Desglose Fonético & Sílabas
+                                            </h2>
+                                            <span class="ln-badge-info"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Sincronizado con voz</span>
+                                        </div>
+                                        <div id="aprendizaje-fonetico-resultado" class="result-box phonetic-box ln-phonetic-glow" aria-live="polite">
+                                            <span class="placeholder-text">El desglose fonético aparecerá aquí.</span>
+                                        </div>
+                                        <div class="ln-audio-bar">
+                                            <button id="play-phonetic-btn" class="play-btn ln-play-main" aria-label="Escuchar y resaltar sílabas">
+                                                <i class="fa-solid fa-headphones me-2"></i> Escuchar y Resaltar Sílabas
+                                            </button>
+                                            <div class="ln-speed-controls" title="Velocidad de reproducción de voz">
+                                                <span class="ln-speed-label"><i class="fa-solid fa-gauge-high me-1"></i> Velocidad:</span>
+                                                <button class="ln-speed-btn" data-speed="0.8">0.8x</button>
+                                                <button class="ln-speed-btn active" data-speed="1.0">1.0x</button>
+                                                <button class="ln-speed-btn" data-speed="1.25">1.25x</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Panel 3: Modo Formal Gráfico -->
+                                <div class="ln-tab-pane" id="ln-pane-formal">
+                                    <div class="ln-card">
+                                        <div class="ln-card-header">
+                                            <h2 id="formal-label" class="ln-card-title">
+                                                <i class="fa-solid fa-shapes me-2"></i> Valor Posicional y Notación Formal
+                                            </h2>
+                                            <span class="ln-badge-info"><i class="fa-solid fa-eye me-1"></i> Visualización SVG</span>
+                                        </div>
+                                        <div id="aprendizaje-formal-wrapper" class="result-box svg-box ln-svg-wrapper" aria-live="polite">
+                                            <span class="placeholder-text">Representación gráfica del valor posicional...</span>
+                                        </div>
+                                        <div class="ln-audio-bar">
+                                            <button id="play-formal-btn" class="play-btn ln-play-main" aria-label="Escuchar y resaltar la gráfica">
+                                                <i class="fa-solid fa-chalkboard-user me-2"></i> Escuchar y Resaltar Gráfica
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Panel 4: Análisis Matemático -->
+                                <div class="ln-tab-pane" id="ln-pane-math">
+                                    <div class="ln-card">
+                                        <div class="ln-card-header">
+                                            <h2 class="ln-card-title">
+                                                <i class="fa-solid fa-chart-pie me-2"></i> Propiedades y Análisis Matemático
+                                            </h2>
+                                            <span class="ln-badge-info"><i class="fa-solid fa-brain me-1"></i> En tiempo real</span>
+                                        </div>
+                                        <div id="ln-math-content" class="ln-math-container">
+                                            <div class="ln-math-empty placeholder-text">Ingresa un número para calcular su análisis matemático.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     `,
                     onShow: () => {
                         new NumberReaderApp();
