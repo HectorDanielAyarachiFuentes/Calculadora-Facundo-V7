@@ -98,3 +98,9 @@ button:focus-visible {
 .error {
     color: var(--color-error);
 }
+
+/* Prevenir que el outline nativo corte las teclas de la calculadora */
+.keyboard__button:focus,
+.keyboard__button:focus-visible {
+    outline: none !important;
+}
