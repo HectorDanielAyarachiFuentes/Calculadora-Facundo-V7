@@ -98,31 +98,44 @@ export function updateKeyboardState(displayContent) {
  * Aplica estilos dinámicos para la vista de escritorio o los resetea para móvil.
  */
 export function applyResponsiveStyles() {
-    if (window.innerWidth > 600) {
-        const w = Math.min(window.innerHeight / 1.93, window.innerWidth / 1.5);
-        calculatorContainer.style.width = `${w}px`;
-        calculatorContainer.style.paddingTop = `${(w * 1.56) * 0.04}px`;
-        display.style.fontSize = `${w * 0.085}px`;
-        display.style.height = `${w * 0.11 * 1.11}px`;
-        keyboardContainer.style.width = `${0.95 * w}px`;
-        keyboardContainer.style.height = `${0.95 * w}px`;
-        teclado.style.fontSize = `${0.1 * w}px`;
-        botExp.style.fontSize = `${0.08 * w}px`;
-        botExp.style.paddingTop = `${0.05 * w}px`;
-        botNor.style.fontSize = `${0.08 * w}px`;
-        botNor.style.paddingTop = `${0.05 * w}px`;
-    } else {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // Marcadores de estado en el body para control granular y accesible
+    document.body.classList.toggle('is-mobile', width <= 600);
+    document.body.classList.toggle('is-tablet', width > 600 && width <= 1024);
+    document.body.classList.toggle('is-desktop', width > 1024);
+    document.body.classList.toggle('is-landscape-mobile', height <= 540 && width > height);
+
+    // Dynamic viewport units para navegadores móviles con barra de dirección plegable
+    const vh = height * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+    // Limpieza de estilos inline antiguos para permitir que SCSS controle el diseño de forma fluida
+    if (calculatorContainer) {
         calculatorContainer.style.width = '';
         calculatorContainer.style.paddingTop = '';
-        display.style.fontSize = '';
+    }
+    if (display) {
         display.style.height = '';
+        display.style.fontSize = '';
+    }
+    if (keyboardContainer) {
         keyboardContainer.style.width = '';
         keyboardContainer.style.height = '';
+    }
+    if (teclado) {
+        teclado.style.fontSize = '';
+    }
+    if (botExp) {
         botExp.style.fontSize = '';
         botExp.style.paddingTop = '';
+    }
+    if (botNor) {
         botNor.style.fontSize = '';
         botNor.style.paddingTop = '';
     }
+}
 }
 
 /**

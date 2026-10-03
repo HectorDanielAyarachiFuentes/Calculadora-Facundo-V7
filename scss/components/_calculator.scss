@@ -25,21 +25,35 @@ $keyboard-gap: 2px;
 
     // Layout flexible para móviles
     @include mobile {
-        margin: 0; // En móvil, el contenedor ocupa todo el espacio, no necesita margen.
-        max-width: none;
-        margin-bottom: 0;
-        flex-grow: 1;
+        margin: 0;
+        max-width: 100%;
+        width: 100%;
+        height: 100dvh;
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
+        padding: 8px 12px 14px;
         animation: none;
+        border-radius: 0;
+        box-shadow: none;
 
-        // La sección que contiene el teclado debe crecer para ocupar el espacio disponible.
         > section:last-of-type {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0; // Fix para que flex-grow funcione correctamente en contenedores anidados.
+            min-height: 0;
         }
+    }
+
+    @include tablet {
+        max-width: min(440px, 75vw, calc(100vh - 200px));
+        margin: auto 0;
+    }
+
+    @include landscape-mobile {
+        max-width: min(520px, 90vw, calc(100vh - 80px));
+        margin: 0 auto;
+        padding: 4px;
     }
 }
 

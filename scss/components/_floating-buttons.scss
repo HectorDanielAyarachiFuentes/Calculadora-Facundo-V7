@@ -35,6 +35,10 @@
 
     // En móvil, los hacemos un poco más pequeños.
     @include mobile {
+        width: 44px;
+        height: 44px;
+    }
+    @include tablet {
         width: 48px;
         height: 48px;
     }
