@@ -1,0 +1,21 @@
+# Agent Directives & Operational Rules
+
+## 1. Safety & Hard Boundaries (Zona Prohibida - ECC Core)
+- **Archivos protegidos:** Prohibido modificar o exponer `.env*`, `.git/`, tokens, credenciales y archivos de despliegue.
+- **Inmutabilidad:** No alterar firmas de funciones existentes ni refactorizar código sin autorización explícita previa.
+- **Operaciones terminal:** Prohibido ejecutar comandos destructivos (`rm -rf`, `git reset --hard`, `git push --force`).
+- **Edición atómica:** Realizar cambios quirúrgicos únicamente en las líneas necesarias; no reescribir archivos completos innecesariamente.
+
+## 2. OmniRoute Strategy (Optimización de Modelos y Costos)
+- **Modelo Ligero (Fast / Haiku / Flash):** Aplicar para formateo, documentación (JSDoc), linting, commits y diffs rápidos.
+- **Modelo Avanzado (Deep / Sonnet / Opus):** Aplicar para análisis arquitectónico, resolución de bugs lógicos y auditoría de dependencias.
+
+## 3. Protocolo de Auditoría con GitNexus (Obligatorio)
+Antes de proponer o aplicar cualquier cambio de código:
+1. **Pre-Auditoría:** Invocar `gitnexus_impact` o `gitnexus_context` para mapear el radio de impacto (*blast radius*) de las funciones a tocar.
+2. **Reporte:** Informar al usuario los archivos dependientes y el nivel de riesgo (Bajo / Medio / Alto).
+3. **Ejecución:** Aplicar los cambios autorizados.
+4. **Post-Auditoría:** Ejecutar `gitnexus_detect_changes` para certificar que no se introdujeron regresiones.
+
+## 4. Auditoría Multi-Repositorio
+- Para inspeccionar el segundo repositorio, consultar el contexto indexado correspondiente mediante las herramientas de GitNexus sin mezclar contextos de ejecución.
