@@ -195,8 +195,8 @@
     }
 
     &.active {
-        background: var(--btn-equal-bg);
-        color: #ffffff;
+        background: var(--focus-color, #22c55e);
+        color: #ffffff !important;
         box-shadow: 0 3px 10px rgba(var(--focus-color-rgb, 76, 175, 80), 0.35);
         font-weight: 700;
     }
@@ -459,8 +459,8 @@
     }
 
     &.active {
-        background: var(--btn-equal-bg);
-        color: #ffffff;
+        background: var(--focus-color, #22c55e);
+        color: #ffffff !important;
         border-color: var(--focus-color);
     }
 }
@@ -654,5 +654,132 @@
             color: #212529 !important;
             border-color: var(--focus-color) !important;
         }
+    }
+}
+
+/* Soporte Modo Claro: Lector de Números */
+[data-theme="light"] {
+    .ln-tabs-bar {
+        background: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    .ln-tab-btn {
+        color: #495057;
+
+        &:hover {
+            color: #111827;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        &.active {
+            background: var(--focus-color, #16a34a) !important;
+            color: #ffffff !important;
+        }
+    }
+
+    .ln-readable-box {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+        color: #111827;
+    }
+
+    .phonetic-box {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+
+        .palabra-fonetica {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #111827;
+        }
+    }
+
+    .svg-box {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+    }
+
+    .svg-numero {
+        fill: #111827;
+    }
+
+    .svg-etiqueta-principal {
+        fill: #6b7280;
+    }
+
+    .ln-speed-controls {
+        background: #f1f3f5;
+        border-color: #dee2e6;
+    }
+
+    .ln-speed-label {
+        color: #6b7280;
+    }
+
+    .ln-speed-btn {
+        color: #4b5563;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        &.active {
+            background: var(--focus-color, #16a34a);
+            color: #ffffff !important;
+        }
+    }
+
+    .ln-math-tile {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+    }
+
+    .ln-math-tile-icon {
+        background: #e5e7eb;
+    }
+
+    .ln-math-tile-label {
+        color: #6b7280;
+    }
+
+    .ln-math-tile-val {
+        color: #111827;
+    }
+
+    .ln-poly-section {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+    }
+
+    .ln-poly-label {
+        color: #6b7280;
+    }
+
+    .ln-poly-chip {
+        background: #ffffff;
+        border-color: #d1d5db;
+        color: #111827;
+
+        &.dec {
+            color: #16a34a;
+        }
+    }
+
+    .ln-btn-sm {
+        background: #ffffff;
+        border-color: #d1d5db;
+        color: #374151;
+
+        &:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+    }
+
+    .ln-badge-info {
+        background: rgba(var(--focus-color-rgb, 76, 175, 80), 0.12);
+        color: #15803d;
+        border-color: rgba(var(--focus-color-rgb, 76, 175, 80), 0.35);
     }
 }

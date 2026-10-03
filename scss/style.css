@@ -1547,8 +1547,8 @@ header[role=banner] .subtitle a:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 .ln-tab-btn.active {
-  background: var(--btn-equal-bg);
-  color: #ffffff;
+  background: var(--focus-color, #22c55e);
+  color: #ffffff !important;
   box-shadow: 0 3px 10px rgba(var(--focus-color-rgb, 76, 175, 80), 0.35);
   font-weight: 700;
 }
@@ -1801,8 +1801,8 @@ header[role=banner] .subtitle a:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 .ln-speed-btn.active {
-  background: var(--btn-equal-bg);
-  color: #ffffff;
+  background: var(--focus-color, #22c55e);
+  color: #ffffff !important;
   border-color: var(--focus-color);
 }
 
@@ -1989,6 +1989,106 @@ header[role=banner] .subtitle a:hover {
   background-color: #ffffff !important;
   color: #212529 !important;
   border-color: var(--focus-color) !important;
+}
+
+/* Soporte Modo Claro: Lector de Números */
+[data-theme=light] .ln-tabs-bar {
+  background: #e9ecef;
+  border-color: #dee2e6;
+}
+[data-theme=light] .ln-tab-btn {
+  color: #495057;
+}
+[data-theme=light] .ln-tab-btn:hover {
+  color: #111827;
+  background: rgba(0, 0, 0, 0.05);
+}
+[data-theme=light] .ln-tab-btn.active {
+  background: var(--focus-color, #16a34a) !important;
+  color: #ffffff !important;
+}
+[data-theme=light] .ln-readable-box {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+  color: #111827;
+}
+[data-theme=light] .phonetic-box {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .phonetic-box .palabra-fonetica {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #111827;
+}
+[data-theme=light] .svg-box {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .svg-numero {
+  fill: #111827;
+}
+[data-theme=light] .svg-etiqueta-principal {
+  fill: #6b7280;
+}
+[data-theme=light] .ln-speed-controls {
+  background: #f1f3f5;
+  border-color: #dee2e6;
+}
+[data-theme=light] .ln-speed-label {
+  color: #6b7280;
+}
+[data-theme=light] .ln-speed-btn {
+  color: #4b5563;
+}
+[data-theme=light] .ln-speed-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+[data-theme=light] .ln-speed-btn.active {
+  background: var(--focus-color, #16a34a);
+  color: #ffffff !important;
+}
+[data-theme=light] .ln-math-tile {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .ln-math-tile-icon {
+  background: #e5e7eb;
+}
+[data-theme=light] .ln-math-tile-label {
+  color: #6b7280;
+}
+[data-theme=light] .ln-math-tile-val {
+  color: #111827;
+}
+[data-theme=light] .ln-poly-section {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .ln-poly-label {
+  color: #6b7280;
+}
+[data-theme=light] .ln-poly-chip {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #111827;
+}
+[data-theme=light] .ln-poly-chip.dec {
+  color: #16a34a;
+}
+[data-theme=light] .ln-btn-sm {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+[data-theme=light] .ln-btn-sm:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+[data-theme=light] .ln-badge-info {
+  background: rgba(var(--focus-color-rgb, 76, 175, 80), 0.12);
+  color: #15803d;
+  border-color: rgba(var(--focus-color-rgb, 76, 175, 80), 0.35);
 }
 
 /* --- COMPONENTE: VISUALIZACIÓN DE MULTIPLICACIÓN --- */
@@ -2278,6 +2378,61 @@ header[role=banner] .subtitle a:hover {
     grid-template-columns: 1fr;
   }
 }
+/* Soporte Modo Claro: Geometría */
+[data-theme=light] .control-group .form-label {
+  color: #4b5563;
+}
+[data-theme=light] .geom-input-card {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .geom-input-label {
+  color: #374151;
+}
+[data-theme=light] .geom-input-wrapper input {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+[data-theme=light] .geom-input-wrapper .input-unit {
+  background-color: #e5e7eb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-left: none;
+}
+[data-theme=light] .geom-formula-card {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+[data-theme=light] .geom-formula-title {
+  color: #64748b;
+}
+[data-theme=light] .geom-step-text {
+  color: #1e293b;
+}
+[data-theme=light] .geometry-results {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .geometry-results .result-item.result-highlight {
+  background: #f1f5f9;
+}
+[data-theme=light] .geometry-results p {
+  color: #111827;
+}
+[data-theme=light] .geometry-results span {
+  color: #15803d;
+}
+[data-theme=light] .geometry-results .copy-btn {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #4b5563;
+}
+[data-theme=light] .geometry-results .copy-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
 /* --- COMPONENTE: BOTÓN DE CAMBIO DE TEMA --- */
 /* Animación para el cambio de tema */
 .theme-transition {
@@ -2321,8 +2476,8 @@ header[role=banner] .subtitle a:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 .settings-tab-btn.active {
-  background: var(--btn-equal-bg);
-  color: #ffffff;
+  background: var(--focus-color, #22c55e);
+  color: #ffffff !important;
   font-weight: 700;
 }
 
@@ -2391,6 +2546,57 @@ header[role=banner] .subtitle a:hover {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--history-text-color);
+}
+
+/* Soporte Modo Claro: Panel de Configuración */
+[data-theme=light] .settings-tabs-bar {
+  background: #e9ecef;
+  border-color: #dee2e6;
+}
+[data-theme=light] .settings-tab-btn {
+  color: #495057;
+}
+[data-theme=light] .settings-tab-btn:hover {
+  color: #111827;
+  background: rgba(0, 0, 0, 0.05);
+}
+[data-theme=light] .settings-tab-btn.active {
+  background: var(--focus-color, #16a34a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+[data-theme=light] .settings-card {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .settings-card-title {
+  color: #111827;
+}
+[data-theme=light] .form-check-label {
+  color: #374151;
+}
+[data-theme=light] .badge.bg-dark {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1;
+}
+[data-theme=light] .settings-theme-actions .btn-outline-success {
+  border-color: #16a34a;
+  color: #16a34a;
+  background: #ffffff;
+}
+[data-theme=light] .settings-theme-actions .btn-outline-success:hover {
+  background: #16a34a;
+  color: #ffffff;
+}
+[data-theme=light] .settings-theme-actions .btn-outline-secondary {
+  border-color: #9ca3af;
+  color: #4b5563;
+  background: #ffffff;
+}
+[data-theme=light] .settings-theme-actions .btn-outline-secondary:hover {
+  background: #e5e7eb;
+  color: #111827;
 }
 
 /* --- CENTRO DE AYUDA MODERNO CON FILTRO EN VIVO --- */
@@ -2532,6 +2738,28 @@ header[role=banner] .subtitle a:hover {
 }
 
 /* Soporte Tema Claro */
+[data-theme=light] .help-accordion-container .accordion-item {
+  border-color: #e5e7eb;
+}
+[data-theme=light] .help-accordion-container .accordion-button {
+  background: #f8f9fa;
+  color: #111827;
+}
+[data-theme=light] .help-accordion-container .accordion-button::after {
+  filter: none !important;
+}
+[data-theme=light] .help-accordion-container .accordion-button:not(.collapsed) {
+  background: rgba(var(--focus-color-rgb, 76, 175, 80), 0.12);
+  color: #15803d;
+}
+[data-theme=light] .help-accordion-container .accordion-body {
+  background: #ffffff;
+  color: #374151;
+}
+[data-theme=light] .help-accordion-container .accordion-body code {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
 [data-theme=light] .help-search-icon {
   color: var(--focus-color) !important;
 }
@@ -2611,6 +2839,26 @@ header[role=banner] .subtitle a:hover {
   font-size: 0.8rem;
   color: var(--history-input-color);
   text-align: center;
+}
+
+/* Soporte Modo Claro: Conversor */
+[data-theme=light] .converter-app {
+  background: #f8f9fa;
+  border-color: #e5e7eb;
+}
+[data-theme=light] .conv-swap-btn {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #15803d;
+}
+[data-theme=light] .conv-swap-btn:hover {
+  background: #16a34a;
+  color: #ffffff;
+}
+[data-theme=light] .conv-formula-pill {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
 }
 
 /*# sourceMappingURL=style.css.map */

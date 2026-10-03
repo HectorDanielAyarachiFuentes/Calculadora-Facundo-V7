@@ -52,3 +52,28 @@
     color: var(--history-input-color);
     text-align: center;
 }
+
+/* Soporte Modo Claro: Conversor */
+[data-theme="light"] {
+    .converter-app {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+    }
+
+    .conv-swap-btn {
+        background: #ffffff;
+        border-color: #d1d5db;
+        color: #15803d;
+
+        &:hover {
+            background: #16a34a;
+            color: #ffffff;
+        }
+    }
+
+    .conv-formula-pill {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #475569;
+    }
+}

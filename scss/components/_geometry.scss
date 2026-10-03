@@ -280,3 +280,75 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Soporte Modo Claro: Geometría */
+[data-theme="light"] {
+    .control-group .form-label {
+        color: #4b5563;
+    }
+
+    .geom-input-card {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+    }
+
+    .geom-input-label {
+        color: #374151;
+    }
+
+    .geom-input-wrapper {
+        input {
+            background-color: #ffffff !important;
+            color: #111827 !important;
+            border-color: #d1d5db !important;
+        }
+
+        .input-unit {
+            background-color: #e5e7eb;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-left: none;
+        }
+    }
+
+    .geom-formula-card {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .geom-formula-title {
+        color: #64748b;
+    }
+
+    .geom-step-text {
+        color: #1e293b;
+    }
+
+    .geometry-results {
+        background: #f8f9fa;
+        border-color: #e5e7eb;
+
+        .result-item.result-highlight {
+            background: #f1f5f9;
+        }
+
+        p {
+            color: #111827;
+        }
+
+        span {
+            color: #15803d;
+        }
+
+        .copy-btn {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #4b5563;
+
+            &:hover {
+                background: #e5e7eb;
+                color: #111827;
+            }
+        }
+    }
+}

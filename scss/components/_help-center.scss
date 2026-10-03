@@ -150,6 +150,30 @@
 
 /* Soporte Tema Claro */
 [data-theme="light"] {
+    .help-accordion-container {
+        .accordion-item {
+            border-color: #e5e7eb;
+        }
+        .accordion-button {
+            background: #f8f9fa;
+            color: #111827;
+            &::after {
+                filter: none !important;
+            }
+            &:not(.collapsed) {
+                background: rgba(var(--focus-color-rgb, 76, 175, 80), 0.12);
+                color: #15803d;
+            }
+        }
+        .accordion-body {
+            background: #ffffff;
+            color: #374151;
+            code {
+                background-color: #f1f5f9;
+                color: #1e293b;
+            }
+        }
+    }
     .help-search-icon {
         color: var(--focus-color) !important;
     }
