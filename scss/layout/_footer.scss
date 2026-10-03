@@ -1,11 +1,24 @@
 /* --- ESTILOS DEL PIE DE PÁGINA --- */
 .main-footer {
-    margin-top: 30px;
-    padding-bottom: 20px;
+    margin-top: auto;
+    padding: clamp(8px, 1.5vh, 16px) 0 clamp(10px, 2vh, 18px);
     text-align: center;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+    color: rgba(255, 255, 255, 0.7);
     flex-shrink: 0;
+    width: 100%;
+    z-index: 5;
+
+    p {
+        margin: 3px 0;
+        line-height: 1.4;
+    }
+
+    .heart-icon {
+        display: inline-block;
+        animation: heartBeat 1.5s ease-in-out infinite;
+        vertical-align: middle;
+    }
 
     a {
         color: var(--btn-special-bg);
@@ -18,6 +31,26 @@
     }
     
     @media (max-width: 600px) {
-        display: none;
+        margin-top: 10px;
+        padding-bottom: 12px;
+        font-size: 0.75rem;
+    }
+}
+
+@keyframes heartBeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    14% {
+        transform: scale(1.3);
+    }
+    28% {
+        transform: scale(1);
+    }
+    42% {
+        transform: scale(1.15);
+    }
+    70% {
+        transform: scale(1);
     }
 }

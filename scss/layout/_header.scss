@@ -1,6 +1,6 @@
 /* --- ESTILOS DE LA CABECERA (TÍTULO) --- */
 header[role="banner"] {
-    margin-bottom: 25px;
+    margin-bottom: clamp(10px, 2vh, 20px);
     text-align: center;
     margin-top: 0;
 
@@ -33,7 +33,7 @@ header[role="banner"] {
     }
 
     .subtitle {
-        margin-top: 15px;
+        margin-top: clamp(4px, 1vh, 10px);
         font-size: clamp(0.6rem, 1.2vw, 0.75rem);
         color: var(--color-error);
         opacity: 0.8;

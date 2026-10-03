@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "build:css": "sass scss/style.scss scss/style.css",
+    "watch:css": "sass --watch scss/style.scss:scss/style.css"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

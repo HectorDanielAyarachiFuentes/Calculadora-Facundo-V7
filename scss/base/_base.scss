@@ -24,11 +24,12 @@ body {
     // Se elimina `justify-content: center` para que no afecte la posición de los modales.
     align-items: center; // Se mantiene el centrado horizontal para el contenido principal.
     min-height: 100svh;
-    padding: 20px;
+    padding: clamp(8px, 1.5vh, 20px);
     background-color: var(--bg-main);
     font-family: 'Quicksand', sans-serif;
     color: #eee;
-    overflow: hidden; /* Evita scroll en escritorio */
+    overflow-y: auto; /* Permite scroll si la pantalla es muy pequeña o se aplica zoom */
+    overflow-x: hidden;
     position: relative; // Necesario para el pseudo-elemento
 
     @media (max-width: 600px) {
