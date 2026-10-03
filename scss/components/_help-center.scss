@@ -13,39 +13,78 @@
 
 .help-search-icon {
     position: absolute;
-    left: 10px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--history-input-color);
-    font-size: 0.85rem;
+    color: var(--focus-color) !important;
+    font-size: 0.95rem;
+    pointer-events: none;
+    z-index: 5;
+    transition: color 0.2s ease;
 }
 
 .help-search-input {
-    padding-left: 2rem;
-    height: 36px;
-    background-color: var(--bg-display);
-    color: var(--color-display-text);
-    border: 1px solid var(--history-border-color);
-    border-radius: 8px;
-    font-size: 0.85rem;
+    padding-left: 2.6rem !important;
+    padding-right: 1rem !important;
+    height: 42px !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-radius: 9px !important;
+    font-size: 0.92rem !important;
+    font-family: 'Quicksand', sans-serif !important;
+    font-weight: 600 !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 
+    /* Legibilidad ultra clara del placeholder en tema oscuro */
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.72) !important;
+        opacity: 1 !important;
+        font-weight: 500 !important;
+    }
+
+    /* Mantiene el fondo oscuro elegante al enfocar, NUNCA fondo blanco */
     &:focus {
-        border-color: var(--focus-color);
-        box-shadow: 0 0 0 3px rgba(var(--focus-color-rgb, 76, 175, 80), 0.2);
+        background-color: rgba(18, 18, 18, 0.92) !important;
+        color: #ffffff !important;
+        border-color: var(--focus-color) !important;
+        box-shadow: 0 0 0 3px rgba(var(--focus-color-rgb, 76, 175, 80), 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        outline: none !important;
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.45) !important;
+        }
     }
 }
 
 .help-shortcuts-bar {
     display: flex;
-    gap: 0.4rem;
+    gap: 0.45rem;
     flex-wrap: wrap;
 
+    .badge {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        color: #e5e7eb !important;
+        font-weight: 500;
+        font-size: 0.76rem;
+        padding: 0.3rem 0.55rem;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
     kbd {
-        background-color: rgba(255, 255, 255, 0.15);
-        color: var(--color-display-text);
+        background-color: rgba(var(--focus-color-rgb, 76, 175, 80), 0.22) !important;
+        color: #bef264 !important;
+        border: 1px solid rgba(var(--focus-color-rgb, 76, 175, 80), 0.45) !important;
         padding: 0.1rem 0.35rem;
         border-radius: 4px;
         font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 0.8rem;
     }
 }
 
@@ -58,7 +97,7 @@
         width: 5px;
     }
     &::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.2);
         border-radius: 4px;
     }
 
@@ -101,9 +140,49 @@
 
         code {
             background-color: var(--bg-display);
+            color: var(--color-display-text);
             padding: 0.15em 0.35em;
             border-radius: 4px;
             font-family: 'Roboto Mono', monospace;
+        }
+    }
+}
+
+/* Soporte Tema Claro */
+[data-theme="light"] {
+    .help-search-icon {
+        color: var(--focus-color) !important;
+    }
+
+    .help-search-input {
+        background-color: #ffffff !important;
+        color: #212529 !important;
+        border: 1px solid #ced4da !important;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075) !important;
+
+        &::placeholder {
+            color: #6c757d !important;
+            opacity: 1 !important;
+        }
+
+        &:focus {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border-color: var(--focus-color) !important;
+            box-shadow: 0 0 0 3px rgba(var(--focus-color-rgb, 76, 175, 80), 0.25) !important;
+        }
+    }
+
+    .help-shortcuts-bar {
+        .badge {
+            background-color: #f1f3f5 !important;
+            border-color: #dee2e6 !important;
+            color: #495057 !important;
+        }
+        kbd {
+            background-color: #e9ecef !important;
+            color: #2b8a3e !important;
+            border-color: #ced4da !important;
         }
     }
 }

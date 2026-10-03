@@ -608,3 +608,51 @@
         justify-content: center;
     }
 }
+
+
+/* Controles de Formulario dentro de Modales - Dark Mode seguro y contraste nítido */
+.modal-content {
+    .form-control,
+    .form-select {
+        background-color: var(--bg-display) !important;
+        color: var(--history-text-color) !important;
+        border: 1px solid var(--history-border-color) !important;
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.65) !important;
+            opacity: 1 !important;
+        }
+
+        &:focus {
+            background-color: var(--bg-display) !important;
+            color: #ffffff !important;
+            border-color: var(--focus-color) !important;
+            box-shadow: 0 0 0 3px rgba(var(--focus-color-rgb, 76, 175, 80), 0.25) !important;
+            outline: none !important;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.45) !important;
+            }
+        }
+    }
+}
+
+[data-theme="light"] .modal-content {
+    .form-control,
+    .form-select {
+        background-color: #ffffff !important;
+        color: #212529 !important;
+        border: 1px solid #ced4da !important;
+
+        &::placeholder {
+            color: #6c757d !important;
+            opacity: 1 !important;
+        }
+
+        &:focus {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border-color: var(--focus-color) !important;
+        }
+    }
+}

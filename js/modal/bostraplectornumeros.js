@@ -1323,12 +1323,20 @@ class NumberReaderApp {
                     onShow: () => {
                         const searchInput = document.getElementById('helpSearchInput');
                         if (searchInput) {
+                            setTimeout(() => searchInput.focus(), 60);
                             searchInput.addEventListener('input', (e) => {
                                 const q = e.target.value.toLowerCase().trim();
                                 document.querySelectorAll('.help-item').forEach(item => {
                                     const text = item.textContent.toLowerCase();
                                     item.style.display = text.includes(q) ? '' : 'none';
                                 });
+                            });
+                            searchInput.addEventListener('keydown', (e) => {
+                                if (e.key === 'Escape' && searchInput.value) {
+                                    e.stopPropagation();
+                                    searchInput.value = '';
+                                    searchInput.dispatchEvent(new Event('input'));
+                                }
                             });
                         }
                     }
