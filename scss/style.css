@@ -410,14 +410,16 @@ header[role=banner] .subtitle a:hover {
   padding: clamp(4px, 0.8vh, 8px) 0 clamp(4px, 1vh, 10px);
   text-align: center;
   font-size: clamp(0.75rem, 1.2vw, 0.85rem);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--history-input-color);
   flex-shrink: 0;
   width: 100%;
   z-index: 5;
+  transition: color 0.3s ease;
 }
 .main-footer p {
   margin: 1px 0;
   line-height: 1.4;
+  color: inherit;
 }
 .main-footer .heart-icon {
   display: inline-block;
@@ -439,6 +441,14 @@ header[role=banner] .subtitle a:hover {
     padding-bottom: 12px;
     font-size: 0.75rem;
   }
+}
+
+/* Modo claro: Contraste nítido y legible contra el fondo claro #f5f5f5 */
+[data-theme=light] .main-footer {
+  color: #4b5563;
+}
+[data-theme=light] .main-footer p {
+  color: #4b5563;
 }
 
 @keyframes heartBeat {
