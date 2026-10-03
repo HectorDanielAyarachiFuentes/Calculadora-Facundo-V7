@@ -136,14 +136,13 @@ export function applyResponsiveStyles() {
         botNor.style.paddingTop = '';
     }
 }
-}
 
 /**
  * Configura la animación del título de la página cuando la pestaña pierde el foco.
  */
 export function setupTitleAnimation() {
-    let baseTitle = "Calculadora Facundo 🧮";
-    let altTitle = "¡Regresa! 😢 🧮 ";
+    let baseTitle = "Calculadora Facundo ✨";
+    let altTitle = "¡Regresa! 👋 ✨ ";
     let scrollTitle = altTitle + " ";
     let interval, timeout, pos = 0;
 
