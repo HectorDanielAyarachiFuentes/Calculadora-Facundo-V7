@@ -566,11 +566,9 @@ class NumberReaderApp {
         if (this.elements.importCalcBtn) {
             this.elements.importCalcBtn.addEventListener("click", (e) => {
                 e.preventDefault();
-                const display = document.getElementById("display");
-                let text = display ? display.innerText.trim() : "";
-                text = text.replace(/[^0-9.,-]/g, '').replace(/\./g, ',');
-                if (text && text !== "0" && text !== "Error" && text !== "NaN") {
-                    this.elements.input.value = text;
+                const resultado = this.obtenerResultadoCalculadora();
+                if (resultado && resultado !== "Error" && resultado !== "NaN") {
+                    this.elements.input.value = resultado;
                     this.handleInput();
                     this.showToastFeedback(this.elements.importCalcBtn, "¡Cargado!");
                 } else {
@@ -634,6 +632,180 @@ class NumberReaderApp {
             ? `<i class="fa-solid fa-triangle-exclamation me-1"></i> ${message}`
             : `<i class="fa-solid fa-check me-1"></i> ${message}`;
         setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+    }
+
+    /**
+     * Obtiene el resultado numérico de la operación de la calculadora.
+     * Prioridades:
+     * 1. Pantalla visual de salida (#salida) si contiene un resultado activo.
+     * 2. Historial de cálculo reciente (localStorage 'calculatorHistory').
+     * 3. Evaluación matemática en tiempo real si el usuario escribió la operación en #display sin pulsar '='.
+     * 4. Número simple cargado en #display.
+     * @returns {string|null} Resultado formateado con coma decimal.
+     */
+    obtenerResultadoCalculadora() {
+        const display = document.getElementById("display");
+        const rawDisplay = display ? (display.innerText || display.textContent || "").trim() : "";
+        const salida = document.getElementById("salida");
+
+        const formatearNum = (n) => {
+            if (n === null || n === undefined || isNaN(n)) return null;
+            const numFixed = parseFloat(n.toPrecision(12));
+            return String(numFixed).replace('.', ',');
+        };
+
+        // 1. Extraer de la pantalla visual de salida (#salida) si contiene un resultado renderizado
+        if (salida && salida.innerHTML && salida.innerHTML.trim() !== '') {
+            const cardResult = salida.querySelector('.power-result-card, .output-grid__result--simple, .output-grid__result--division-final, .output-grid__result--multiplication-final');
+            if (cardResult) {
+                const text = cardResult.textContent.trim();
+                const part = text.split(/[:=]/).pop()?.trim();
+                if (part && /^-?[0-9]+([.,][0-9]+)?$/.test(part)) {
+                    return part.replace(/\./g, ',');
+                }
+            }
+
+            const generalResult = salida.querySelector('.output-grid__result');
+            if (generalResult && generalResult.textContent.includes(':')) {
+                const part = generalResult.textContent.split(':').pop()?.trim();
+                if (part && /^-?[0-9]+([.,][0-9]+)?$/.test(part)) {
+                    return part.replace(/\./g, ',');
+                }
+            }
+
+            const radical = salida.querySelector('.output-grid__radical');
+            const divisor = salida.querySelector('.output-grid__cell--divisor');
+            if (radical || divisor) {
+                const cocientes = Array.from(salida.querySelectorAll('.output-grid__cell--cociente'));
+                if (cocientes.length > 0) {
+                    cocientes.sort((a, b) => (parseFloat(a.style.left) || 0) - (parseFloat(b.style.left) || 0));
+                    const raw = cocientes.map(c => c.textContent).join('');
+                    if (raw && /^-?[0-9]+([.,][0-9]+)?$/.test(raw)) {
+                        return raw.replace(/\./g, ',');
+                    }
+                }
+            }
+
+            const candidateCells = salida.querySelectorAll('.output-grid__cell--cociente, .output-grid__cell--producto');
+            if (candidateCells.length > 0) {
+                const lines = new Map();
+                candidateCells.forEach(cell => {
+                    const top = Math.round(parseFloat(cell.style.top) || 0);
+                    if (!lines.has(top)) lines.set(top, []);
+                    lines.get(top).push(cell);
+                });
+                if (lines.size > 0) {
+                    const lowestY = Math.max(...lines.keys());
+                    const resultLine = lines.get(lowestY);
+                    resultLine.sort((a, b) => (parseFloat(a.style.left) || 0) - (parseFloat(b.style.left) || 0));
+                    const raw = resultLine.map(c => c.textContent).filter(t => t && t !== 'undefined').join('');
+                    if (raw && /^-?[0-9]+([.,][0-9]+)?$/.test(raw)) {
+                        return raw.replace(/\./g, ',');
+                    }
+                }
+            }
+        }
+
+        // 2. Comprobar historial guardado en localStorage
+        try {
+            const stored = localStorage.getItem('calculatorHistory');
+            if (stored) {
+                const history = JSON.parse(stored);
+                if (Array.isArray(history) && history.length > 0) {
+                    const last = history[0];
+                    if (last && last.result && (last.input === rawDisplay || rawDisplay === '0' || !rawDisplay)) {
+                        const resLimpio = String(last.result).trim().replace(/[^0-9.,-]/g, '').replace(/\./g, ',');
+                        if (resLimpio && !isNaN(parseFloat(resLimpio.replace(',', '.')))) {
+                            return resLimpio;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            // Silencioso
+        }
+
+        // 3. Evaluar la expresión matemática en rawDisplay si el usuario aún no presionó '='
+        if (rawDisplay && rawDisplay !== '0' && rawDisplay !== 'Error' && rawDisplay !== 'NaN') {
+            const expr = rawDisplay;
+
+            const raizMatch = expr.match(/^(?:√|V|v|\^s|raiz)\(?([0-9.,]+)\)?$/i);
+            if (raizMatch) {
+                const num = parseFloat(raizMatch[1].replace(',', '.'));
+                if (!isNaN(num) && num >= 0) return formatearNum(Math.sqrt(num));
+            }
+
+            const factoresMatch = expr.match(/^factores\(?([0-9]+)\)?$/i);
+            if (factoresMatch) {
+                return factoresMatch[1];
+            }
+
+            if (expr.includes('^')) {
+                const parts = expr.split('^');
+                if (parts.length === 2) {
+                    const a = parseFloat(parts[0].replace(',', '.'));
+                    const b = parseFloat(parts[1].replace(',', '.'));
+                    if (!isNaN(a) && !isNaN(b)) return formatearNum(Math.pow(a, b));
+                }
+            }
+
+            if (expr.includes('%')) {
+                const parts = expr.split('%');
+                if (parts.length === 2) {
+                    const a = parseFloat(parts[0].replace(',', '.'));
+                    const b = parseFloat(parts[1].replace(',', '.'));
+                    if (!isNaN(a) && !isNaN(b) && b !== 0) return formatearNum(a % b);
+                }
+            }
+
+            const matchOp = expr.match(/(?!^-)[+\-x*\/]/);
+            if (matchOp) {
+                const op = matchOp[0];
+                const opIdx = expr.indexOf(op, expr.startsWith('-') ? 1 : 0);
+                const aStr = expr.substring(0, opIdx).trim();
+                const bStr = expr.substring(opIdx + 1).trim();
+                if (bStr !== '') {
+                    const a = parseFloat(aStr.replace(',', '.'));
+                    const b = parseFloat(bStr.replace(',', '.'));
+                    if (!isNaN(a) && !isNaN(b)) {
+                        let res = null;
+                        switch (op) {
+                            case '+': res = a + b; break;
+                            case '-': res = a - b; break;
+                            case 'x':
+                            case '*': res = a * b; break;
+                            case '/': if (b !== 0) res = a / b; break;
+                        }
+                        if (res !== null && !isNaN(res)) {
+                            return formatearNum(res);
+                        }
+                    }
+                }
+            }
+
+            const soloNum = expr.replace(/[^0-9.,-]/g, '').replace(/\./g, ',');
+            if (soloNum && !isNaN(parseFloat(soloNum.replace(',', '.')))) {
+                return soloNum;
+            }
+        }
+
+        // 4. Fallback final al último resultado registrado en el historial
+        try {
+            const stored = localStorage.getItem('calculatorHistory');
+            if (stored) {
+                const history = JSON.parse(stored);
+                if (Array.isArray(history) && history.length > 0 && history[0].result) {
+                    const resLimpio = String(history[0].result).trim().replace(/[^0-9.,-]/g, '').replace(/\./g, ',');
+                    if (resLimpio && !isNaN(parseFloat(resLimpio.replace(',', '.')))) {
+                        return resLimpio;
+                    }
+                }
+            }
+        } catch (e) {
+            // Silencioso
+        }
+
+        return null;
     }
 
     /**
@@ -963,7 +1135,7 @@ class NumberReaderApp {
                                     </button>
                                 </div>
                                 <div class="ln-quick-actions">
-                                    <button id="ln-import-calc-btn" class="ln-badge-btn" type="button" title="Pegar número de la calculadora">
+                                    <button id="ln-import-calc-btn" class="ln-badge-btn" type="button" title="Cargar resultado de la calculadora">
                                         <i class="fa-solid fa-arrow-down-to-bracket me-1"></i> Cargar de Calculadora
                                     </button>
                                     <button id="ln-random-btn" class="ln-badge-btn" type="button" title="Generar número al azar">
