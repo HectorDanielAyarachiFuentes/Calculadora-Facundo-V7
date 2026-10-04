@@ -109,94 +109,162 @@ class NumberConverter {
 
 /**
  * Proporciona un método estático para separar palabras en sílabas.
- * Utiliza un algoritmo simple basado en vocales y consonantes.
+ * Implementa las reglas fonotácticas y ortográficas oficiales del español (RAE):
+ * - Identificación precisa de núcleos vocálicos (diptongos, triptongos y corte de hiatos simples y acentuales).
+ * - Dígrafos inseparables (ch, ll, rr) y grupos muta cum liquida (pr, br, tr, dr, cr, kr, gr, fr, pl, bl, cl, kl, gl, fl, tl).
+ * - División silábica entre consonantes intervocálicas (1, 2, 3 o 4 consonantes).
+ * - Adscripción correcta del ataque inicial y coda final de la palabra.
  */
-class Syllabifier {
+export class Syllabifier {
+    static _INSEPARABLE = new Set([
+        'ch', 'll', 'rr',
+        'pr', 'br', 'tr', 'dr', 'cr', 'kr', 'gr', 'fr',
+        'pl', 'bl', 'cl', 'kl', 'gl', 'fl', 'tl'
+    ]);
+
+    static _OPEN_VOWELS = 'aeoáéó';
+    static _ACCENTED_CLOSED_VOWELS = 'íú';
+
+    /**
+     * Determina si un carácter es una vocal en el contexto fonético de la palabra.
+     * Maneja casos especiales como 'u' muda en 'qu' y 'gu', y la semivocal 'y'.
+     * @private
+     */
+    static _isVowel(ch, word, index) {
+        if (!ch) return false;
+        const c = ch.toLowerCase();
+        if ('aeiouáéíóúü'.includes(c)) {
+            if (c === 'u') {
+                const prev = index > 0 ? word[index - 1].toLowerCase() : '';
+                const next = index + 1 < word.length ? word[index + 1].toLowerCase() : '';
+                if (prev === 'q' && 'eéií'.includes(next)) return false;
+                if (prev === 'g' && 'eéií'.includes(next)) return false;
+            }
+            return true;
+        }
+        if (c === 'y') {
+            const prev = index > 0 ? word[index - 1].toLowerCase() : '';
+            const next = index + 1 < word.length ? word[index + 1].toLowerCase() : '';
+            const prevIsVowel = 'aeiouáéíóúü'.includes(prev);
+            const nextIsVowel = 'aeiouáéíóúü'.includes(next);
+            if (!next || (!nextIsVowel && prevIsVowel) || (!prev && !next)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determina si dos vocales adyacentes constituyen un hiato (se separan en sílabas distintas).
+     * @private
+     */
+    static _isHiatus(v1, v2) {
+        const c1 = v1.toLowerCase();
+        const c2 = v2.toLowerCase();
+        if (c1 === c2) return true;
+        if (Syllabifier._OPEN_VOWELS.includes(c1) && Syllabifier._OPEN_VOWELS.includes(c2)) return true;
+        if (Syllabifier._OPEN_VOWELS.includes(c1) && Syllabifier._ACCENTED_CLOSED_VOWELS.includes(c2)) return true;
+        if (Syllabifier._ACCENTED_CLOSED_VOWELS.includes(c1) && Syllabifier._OPEN_VOWELS.includes(c2)) return true;
+        return false;
+    }
+
+    /**
+     * Divide un grupo de consonantes intervocálicas entre la coda de la sílaba previa
+     * y el ataque de la siguiente sílaba.
+     * @private
+     */
+    static _splitConsonants(cons) {
+        const len = cons.length;
+        if (len === 0) return ['', ''];
+        if (len === 1) return ['', cons];
+        if (len === 2) {
+            const pair = cons.toLowerCase();
+            if (Syllabifier._INSEPARABLE.has(pair)) {
+                return ['', cons];
+            }
+            return [cons[0], cons[1]];
+        }
+        if (len === 3) {
+            const lastPair = cons.slice(1).toLowerCase();
+            if (Syllabifier._INSEPARABLE.has(lastPair)) {
+                return [cons.slice(0, 1), cons.slice(1)];
+            }
+            return [cons.slice(0, 2), cons.slice(2)];
+        }
+        if (len === 4) {
+            return [cons.slice(0, 2), cons.slice(2)];
+        }
+        return [cons.slice(0, len - 2), cons.slice(len - 2)];
+    }
+
     /**
      * Separa una palabra en un array de sílabas.
      * @param {string} word - La palabra a silabificar.
      * @returns {string[]} Un array con las sílabas de la palabra.
      */
     static syllabify(word) {
-        // Implementación mejorada que considera diptongos y hiatos.
-        // Referencia de reglas: https://www.rae.es/dpd/diptongo
-        const VOWELS = 'aeiouáéíóú';
-        const STRONG_VOWELS = 'aeoáéó';
-        const WEAK_VOWELS = 'iuíú';
+        if (!word) return [];
+        const trimmed = word.trim();
+        if (trimmed.length <= 1) return [trimmed];
 
-        word = word.toLowerCase().trim().replace(/y/g, 'i');
-        if (word.length <= 2) return [word];
-
-        let syllables = [];
-        let currentSyllable = '';
-
-        for (let i = 0; i < word.length; i++) {
-            currentSyllable += word[i];
-
-            // Buscamos la siguiente vocal para decidir si cortar la sílaba
-            const nextVowelIndex = word.slice(i + 1).search(`[${VOWELS}]`);
-            const hasNextVowel = nextVowelIndex !== -1;
-
-            // Si no hay más vocales, el resto de la palabra es parte de la sílaba actual
-            if (!hasNextVowel) {
-                currentSyllable += word.slice(i + 1);
-                break;
+        const vowelIndices = [];
+        for (let i = 0; i < trimmed.length; i++) {
+            if (Syllabifier._isVowel(trimmed[i], trimmed, i)) {
+                vowelIndices.push(i);
             }
+        }
 
-            // Si el caracter actual es una vocal, analizamos el contexto
-            if (VOWELS.includes(word[i])) {
-                const nextChar = word[i + 1];
-                const nextNextChar = word[i + 2];
-                const isNextCharVowel = VOWELS.includes(nextChar);
+        if (vowelIndices.length === 0) return [trimmed];
 
-                // Regla de HIATO: dos vocales fuertes se separan (po-e-ta)
-                if (isNextCharVowel && STRONG_VOWELS.includes(word[i]) && STRONG_VOWELS.includes(nextChar)) {
-                    syllables.push(currentSyllable);
-                    currentSyllable = '';
-                    continue;
-                }
+        const nuclei = [];
+        let currentNucleus = [vowelIndices[0]];
 
-                // Regla de HIATO: vocal fuerte + vocal débil acentuada (ca-í-da)
-                if (isNextCharVowel && ((STRONG_VOWELS.includes(word[i]) && 'íú'.includes(nextChar)) || ('íú'.includes(word[i]) && STRONG_VOWELS.includes(nextChar)))) {
-                    syllables.push(currentSyllable);
-                    currentSyllable = '';
-                    continue;
-                }
-            }
+        for (let i = 1; i < vowelIndices.length; i++) {
+            const prevIdx = vowelIndices[i - 1];
+            const currIdx = vowelIndices[i];
 
-            // Analizar el grupo de consonantes entre la vocal actual y la siguiente
-            const consonants = word.substring(i + 1, i + 1 + nextVowelIndex);
-            if (consonants.length > 1) {
-                // Grupos inseparables (bl, cr, ll, ch, rr)
-                if (/^(ll|rr|ch|[bcdfghprt]l|[bcdfghprt]r)$/.test(consonants)) {
-                    // La sílaba se corta ANTES del grupo inseparable
-                    syllables.push(currentSyllable);
-                    currentSyllable = '';
+            if (currIdx === prevIdx + 1) {
+                const v1 = trimmed[prevIdx];
+                const v2 = trimmed[currIdx];
+                if (Syllabifier._isHiatus(v1, v2)) {
+                    nuclei.push({ start: currentNucleus[0], end: currentNucleus[currentNucleus.length - 1] });
+                    currentNucleus = [currIdx];
                 } else {
-                    // Grupos separables (ns, st, rd). La primera consonante se queda.
-                    currentSyllable += consonants[0];
-                    syllables.push(currentSyllable);
-                    currentSyllable = '';
-                    // Ajustar el índice para no procesar la consonante dos veces
-                    i++;
+                    currentNucleus.push(currIdx);
                 }
-            } else if (consonants.length === 1) {
-                // Si solo hay una consonante, la sílaba se corta antes de ella.
-                syllables.push(currentSyllable);
-                currentSyllable = '';
+            } else if (currIdx === prevIdx + 2 && trimmed[prevIdx + 1].toLowerCase() === 'h') {
+                const v1 = trimmed[prevIdx];
+                const v2 = trimmed[currIdx];
+                if (Syllabifier._isHiatus(v1, v2)) {
+                    nuclei.push({ start: currentNucleus[0], end: currentNucleus[currentNucleus.length - 1] });
+                    currentNucleus = [currIdx];
+                } else {
+                    currentNucleus.push(currIdx);
+                }
+            } else {
+                nuclei.push({ start: currentNucleus[0], end: currentNucleus[currentNucleus.length - 1] });
+                currentNucleus = [currIdx];
             }
         }
+        nuclei.push({ start: currentNucleus[0], end: currentNucleus[currentNucleus.length - 1] });
 
-        if (currentSyllable) {
-            syllables.push(currentSyllable);
+        if (nuclei.length === 1) {
+            return [trimmed];
         }
 
-        // Post-procesamiento para unir sílabas que quedaron de una sola consonante
-        // (Ej: "a-c-ti-vo" -> "ac-ti-vo")
-        for (let i = syllables.length - 2; i >= 0; i--) {
-            if (syllables[i+1].length === 1 && !VOWELS.includes(syllables[i+1])) {
-                syllables[i] += syllables[i+1];
-                syllables.splice(i+1, 1);
+        const syllables = [];
+        let currentOnset = trimmed.slice(0, nuclei[0].start);
+
+        for (let k = 0; k < nuclei.length; k++) {
+            const nucleusStr = trimmed.slice(nuclei[k].start, nuclei[k].end + 1);
+            if (k === nuclei.length - 1) {
+                const finalConsonants = trimmed.slice(nuclei[k].end + 1);
+                syllables.push(currentOnset + nucleusStr + finalConsonants);
+            } else {
+                const betweenConsonants = trimmed.slice(nuclei[k].end + 1, nuclei[k + 1].start);
+                const [coda, nextOnset] = Syllabifier._splitConsonants(betweenConsonants);
+                syllables.push(currentOnset + nucleusStr + coda);
+                currentOnset = nextOnset;
             }
         }
 
