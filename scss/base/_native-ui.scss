@@ -1,0 +1,501 @@
+/* ======================================================= */
+/* --- SCSS: NATIVE UI COMPONENTS (REEMPLAZO DE BOOTSTRAP) --- */
+/* ======================================================= */
+
+/* 1. SISTEMA MODAL NATIVO */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1055;
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+
+    &.show {
+        display: flex;
+    }
+
+    &.fade .modal-dialog {
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-out;
+        transform: scale(0.94) translateY(-10px);
+        opacity: 0;
+    }
+
+    &.show .modal-dialog {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 820px;
+    margin: auto;
+    pointer-events: none;
+
+    &.modal-xl {
+        max-width: 900px;
+    }
+
+    &.modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 2rem);
+    }
+}
+
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: var(--history-panel-bg);
+    background-clip: padding-box;
+    border: 1px solid var(--history-border-color);
+    border-radius: 14px;
+    outline: 0;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+}
+
+.modal-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--history-border-color);
+}
+
+.modal-title {
+    margin-bottom: 0;
+    line-height: 1.5;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--history-text-color);
+}
+
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1rem 1.25rem;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0.65rem 1.25rem;
+    border-top: 1px solid var(--history-border-color);
+    gap: 0.5rem;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+
+    &.show {
+        opacity: 1;
+    }
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* 2. BOTONES NATIVOS */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:active {
+        transform: scale(0.97);
+    }
+}
+
+.btn-primary {
+    background-color: var(--bubble-btn-primary-bg, #0d6efd);
+    color: #ffffff;
+    &:hover { filter: brightness(1.15); }
+}
+
+.btn-success {
+    background-color: var(--bubble-btn-success-bg, #198754);
+    color: #ffffff;
+    &:hover { filter: brightness(1.15); }
+}
+
+.btn-warning {
+    background-color: #f59e0b;
+    color: #000000;
+    &:hover { filter: brightness(1.1); }
+}
+
+.btn-secondary {
+    background-color: var(--bubble-btn-secondary-bg, #4b5563);
+    color: #ffffff;
+    &:hover { filter: brightness(1.15); }
+}
+
+.btn-info {
+    background-color: var(--bubble-btn-info-bg, #06b6d4);
+    color: #000000;
+    &:hover { filter: brightness(1.1); }
+}
+
+.btn-outline-secondary {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--history-border-color);
+    color: var(--history-text-color);
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.18);
+        border-color: var(--focus-color);
+        color: #ffffff;
+    }
+}
+
+[data-theme="light"] .btn-outline-secondary {
+    background-color: #f1f3f5;
+    border-color: #ced4da;
+    color: #495057;
+
+    &:hover {
+        background-color: #e9ecef;
+        color: #212529;
+        border-color: #adb5bd;
+    }
+}
+
+.btn-close {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 1.25rem;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: var(--history-text-color);
+    opacity: 0.75;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+
+    &::before {
+        content: "✕";
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    &:hover {
+        opacity: 1;
+        transform: rotate(90deg);
+        color: #ff5252;
+        background-color: rgba(255, 82, 82, 0.15);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--focus-color) !important;
+        outline-offset: 1px;
+    }
+}
+
+/* 3. SISTEMA COLLAPSE Y ACORDEÓN */
+.collapse {
+    &:not(.show) {
+        display: none;
+    }
+    &.show {
+        display: block;
+    }
+}
+
+.accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.accordion-item {
+    background-color: transparent;
+    border: 1px solid var(--history-border-color);
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+.accordion-header {
+    margin: 0;
+}
+
+.accordion-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--history-text-color);
+    text-align: left;
+    background-color: var(--history-hover-bg);
+    border: 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:not(.collapsed) {
+        color: var(--btn-text-color);
+        background-color: var(--btn-equal-bg);
+        box-shadow: none;
+    }
+
+    &::after {
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        margin-left: auto;
+        content: "▼";
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.25s ease-in-out;
+    }
+
+    &:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+}
+
+.accordion-body {
+    padding: 1rem 1.25rem;
+    background-color: var(--history-panel-bg);
+    color: var(--history-text-color);
+    line-height: 1.6;
+}
+
+/* 4. CONTROLES DE FORMULARIO Y SELECTS */
+.form-control,
+.form-select {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.85rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--history-text-color);
+    background-color: var(--bg-display);
+    border: 1px solid var(--history-border-color);
+    border-radius: 8px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:focus {
+        outline: none;
+        border-color: var(--focus-color);
+        box-shadow: 0 0 0 3px rgba(var(--focus-color-rgb, 76, 175, 80), 0.25);
+    }
+}
+
+.form-select {
+    cursor: pointer;
+}
+
+.form-control-sm,
+.form-select-sm {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: 100%;
+
+    > .form-control,
+    > .form-select {
+        position: relative;
+        flex: 1 1 auto;
+        width: 1%;
+        min-width: 0;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+
+    > .btn,
+    > .btn-outline-secondary {
+        position: relative;
+        z-index: 2;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        margin-left: -1px;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    > .input-group-text {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        margin-left: -1px;
+    }
+}
+
+.input-group-sm {
+    > .form-control,
+    > .form-select {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.875rem;
+    }
+
+    > .btn,
+    > .btn-outline-secondary,
+    > .input-group-text {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+.input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--history-text-color);
+    text-align: center;
+    white-space: nowrap;
+    background-color: var(--history-header-bg);
+    border: 1px solid var(--history-border-color);
+    border-radius: 8px;
+}
+
+/* 5. SISTEMA GRID Y COLUMNAS NATIVO */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+
+    > * {
+        box-sizing: border-box;
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}
+
+.g-1 {
+    margin-right: -0.25rem;
+    margin-left: -0.25rem;
+    > * { padding-right: 0.25rem; padding-left: 0.25rem; }
+}
+.g-2 {
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+    > * { padding-right: 0.5rem; padding-left: 0.5rem; }
+}
+.g-3 {
+    margin-right: -0.75rem;
+    margin-left: -0.75rem;
+    > * { padding-right: 0.75rem; padding-left: 0.75rem; }
+}
+
+.col-1  { flex: 0 0 auto; width: 8.33333333%; }
+.col-2  { flex: 0 0 auto; width: 16.66666667%; }
+.col-3  { flex: 0 0 auto; width: 25%; }
+.col-4  { flex: 0 0 auto; width: 33.33333333%; }
+.col-5  { flex: 0 0 auto; width: 41.66666667%; }
+.col-6  { flex: 0 0 auto; width: 50%; }
+.col-7  { flex: 0 0 auto; width: 58.33333333%; }
+.col-8  { flex: 0 0 auto; width: 66.66666667%; }
+.col-9  { flex: 0 0 auto; width: 75%; }
+.col-10 { flex: 0 0 auto; width: 83.33333333%; }
+.col-11 { flex: 0 0 auto; width: 91.66666667%; }
+.col-12 { flex: 0 0 auto; width: 100%; }
+
+/* 6. UTILIDADES FLEX, TEXTO Y ESPACIADO NATIVAS */
+.d-flex { display: flex !important; }
+.flex-column { flex-direction: column !important; }
+.align-items-start { align-items: flex-start !important; }
+.align-items-center { align-items: center !important; }
+.align-items-stretch { align-items: stretch !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-between { justify-content: space-between !important; }
+
+.text-center { text-align: center !important; }
+.text-start { text-align: left !important; }
+.text-end { text-align: right !important; }
+.text-muted { color: var(--history-input-color) !important; }
+.text-success { color: var(--color-resultado, #4caf50) !important; }
+.text-warning { color: #f59e0b !important; }
+.text-danger { color: var(--color-error, #e84d4d) !important; }
+.text-primary { color: #0d6efd !important; }
+.small { font-size: 0.85rem !important; }
+.fw-bold { font-weight: 700 !important; }
+
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 1rem !important; }
+
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.me-1 { margin-right: 0.25rem !important; }
+.me-2 { margin-right: 0.5rem !important; }
+.ps-4 { padding-left: 1.5rem !important; }
+.pt-1 { padding-top: 0.25rem !important; }
+.pt-2 { padding-top: 0.5rem !important; }
+.pt-3 { padding-top: 1rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 1rem !important; }
+.w-100 { width: 100% !important; }
+.fs-4 { font-size: 1.35rem !important; }

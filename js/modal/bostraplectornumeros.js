@@ -4,6 +4,7 @@
 import { settingsManager } from '../calculadora/settings.js';
 import { GeometryApp } from './geometry.js';
 import { UnitConverterApp } from './unit-converter.js';
+import { NativeModal, setupCollapseDelegation } from './native-ui.js';
 
 /**
  * Proporciona métodos estáticos para convertir números a su representación en letras.
@@ -1112,11 +1113,11 @@ class NumberReaderApp {
             // Cargar y aplicar el tema guardado al iniciar la aplicación.
             themeManager.init();
 
-            const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            // Colapsables y acordeones nativos sin dependencias
+            setupCollapseDelegation();
 
             const infoModalEl = document.getElementById('infoModal');
-            const infoModal = new bootstrap.Modal(infoModalEl);
+            const infoModal = new NativeModal(infoModalEl);
             const modalTitle = document.getElementById('infoModalLabel');
             const modalBody = document.getElementById('infoModalBody');
             

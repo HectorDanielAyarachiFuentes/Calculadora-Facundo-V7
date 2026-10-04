@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calculadora-facundo-v1';
+const CACHE_NAME = 'calculadora-facundo-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -15,9 +15,9 @@ const ASSETS_TO_CACHE = [
     './js/calculadora/ui-manager.js',
     './js/calculadora/utils.js',
     './scss/style.css',
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+    './js/modal/native-ui.js',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js'
+    // Assets 100% nativos sin librerías externas pesadas
 ];
 
 self.addEventListener('install', (event) => {

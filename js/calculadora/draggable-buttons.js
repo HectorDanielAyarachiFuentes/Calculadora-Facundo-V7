@@ -1,3 +1,5 @@
+import { NativeCollapse } from '../modal/native-ui.js';
+
 const elementConfigs = [
     { id: 'bubble-main', selector: '.bubble-main', type: 'collapse-toggle' },
     { id: 'theme-toggle-btn', selector: '#theme-toggle-btn', type: 'button' },
@@ -109,9 +111,9 @@ function loadPosition(draggable) {
  * Inicializa la funcionalidad de los botones arrastrables.
  */
 export function initDraggableButtons() {
-    // Instancia de Bootstrap Collapse para el menú principal
+    // Instancia de Collapse nativo para el menú principal
     const mainOptionsCollapseEl = document.getElementById('mainOptions');
-    const mainOptionsCollapse = new bootstrap.Collapse(mainOptionsCollapseEl, { toggle: false });
+    const mainOptionsCollapse = new NativeCollapse(mainOptionsCollapseEl, { toggle: false });
 
     // Inicializa cada elemento arrastrable
     elementConfigs.forEach(config => {

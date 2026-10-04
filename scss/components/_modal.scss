@@ -26,20 +26,6 @@
     padding: 0.5rem 1.25rem;
 }
 
-.btn-close {
-    filter: invert(1) grayscale(100) brightness(200%);
-    opacity: 0.8;
-    padding: 0.5rem;
-    transition: transform 0.2s, opacity 0.2s;
-    &:hover {
-        transform: rotate(90deg);
-        opacity: 1;
-    }
-}
-
-[data-theme="light"] .btn-close {
-    filter: none;
-}
 
 #infoModalLabel {
     color: var(--history-text-color);
