@@ -1159,6 +1159,362 @@ body.modal-open {
   font-size: 1.35rem !important;
 }
 
+/* ======================================================= */
+/* --- 5. DIALOG SERVICE & TOASTS (ULTRA-MODERN UI) --- */
+/* ======================================================= */
+.calc-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  opacity: 0;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.calc-dialog-overlay.calc-dialog-overlay--show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.calc-dialog-overlay.calc-dialog-overlay--show .calc-dialog-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+.calc-dialog-overlay.calc-dialog-overlay--hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.calc-dialog-overlay.calc-dialog-overlay--hide .calc-dialog-card {
+  transform: scale(0.92) translateY(10px);
+  opacity: 0;
+}
+
+.calc-dialog-card {
+  position: relative;
+  max-width: 440px;
+  width: 100%;
+  padding: 1.85rem 1.65rem 1.65rem;
+  border-radius: 24px;
+  background: linear-gradient(155deg, rgba(28, 28, 35, 0.95), rgba(18, 18, 22, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transform: scale(0.9) translateY(16px);
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease-out;
+  overflow: hidden;
+}
+.calc-dialog-card--danger {
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(239, 68, 68, 0.2);
+}
+.calc-dialog-card--danger .calc-dialog-glow {
+  background: radial-gradient(circle at 50% -20%, rgba(239, 68, 68, 0.25), transparent 70%);
+}
+.calc-dialog-card--warning {
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(245, 158, 11, 0.2);
+}
+.calc-dialog-card--warning .calc-dialog-glow {
+  background: radial-gradient(circle at 50% -20%, rgba(245, 158, 11, 0.25), transparent 70%);
+}
+.calc-dialog-card--info {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(59, 130, 246, 0.2);
+}
+.calc-dialog-card--info .calc-dialog-glow {
+  background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.25), transparent 70%);
+}
+.calc-dialog-card--success {
+  border-color: rgba(76, 175, 80, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(76, 175, 80, 0.2);
+}
+.calc-dialog-card--success .calc-dialog-glow {
+  background: radial-gradient(circle at 50% -20%, rgba(76, 175, 80, 0.25), transparent 70%);
+}
+.calc-dialog-card.calc-dialog-card--shake {
+  animation: calcDialogShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.calc-dialog-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.calc-dialog-icon {
+  position: relative;
+  z-index: 1;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  margin-bottom: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.calc-dialog-icon--danger {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.1));
+  color: #f87171;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+.calc-dialog-icon--warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.1));
+  color: #fbbf24;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+.calc-dialog-icon--info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.1));
+  color: #60a5fa;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+.calc-dialog-icon--success {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.25), rgba(46, 125, 50, 0.1));
+  color: #4ade80;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.calc-dialog-title {
+  position: relative;
+  z-index: 1;
+  font-family: "Outfit", "Quicksand", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.65rem;
+  line-height: 1.3;
+}
+
+.calc-dialog-message {
+  position: relative;
+  z-index: 1;
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.96rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 1.6rem;
+  width: 100%;
+}
+.calc-dialog-message .calc-dialog-text {
+  margin-bottom: 0.35rem;
+}
+.calc-dialog-message .calc-dialog-text:last-child {
+  margin-bottom: 0;
+}
+
+.calc-dialog-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.calc-dialog-btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: 14px;
+  font-family: "Outfit", "Quicksand", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+.calc-dialog-btn:active {
+  transform: scale(0.97);
+}
+.calc-dialog-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+.calc-dialog-btn--cancel {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+}
+.calc-dialog-btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.calc-dialog-btn--confirm {
+  flex: 1.2;
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.45);
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--danger:hover {
+  box-shadow: 0 6px 22px rgba(239, 68, 68, 0.65);
+  filter: brightness(1.1);
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.45);
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--warning:hover {
+  box-shadow: 0 6px 22px rgba(245, 158, 11, 0.65);
+  filter: brightness(1.1);
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--info {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 4px 18px rgba(59, 130, 246, 0.45);
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--info:hover {
+  box-shadow: 0 6px 22px rgba(59, 130, 246, 0.65);
+  filter: brightness(1.1);
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+}
+.calc-dialog-btn--confirm.calc-dialog-btn--success:hover {
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.65);
+  filter: brightness(1.1);
+}
+
+/* --- SISTEMA DE TOAST FLOTANTE --- */
+.calc-toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1300;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .calc-toast-container {
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    align-items: center;
+  }
+}
+
+.calc-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 9999px;
+  background: rgba(24, 24, 30, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 255, 255, 0.05);
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transform: translateY(-15px) scale(0.92);
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease-out;
+}
+.calc-toast.calc-toast--show {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+.calc-toast.calc-toast--hiding {
+  transform: translateY(-10px) scale(0.92);
+  opacity: 0;
+}
+.calc-toast .calc-toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+}
+.calc-toast--success {
+  border-color: rgba(76, 175, 80, 0.4);
+}
+.calc-toast--success .calc-toast-icon {
+  color: #4ade80;
+}
+.calc-toast--danger {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+.calc-toast--danger .calc-toast-icon {
+  color: #f87171;
+}
+.calc-toast--warning {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.calc-toast--warning .calc-toast-icon {
+  color: #fbbf24;
+}
+.calc-toast--info {
+  border-color: rgba(59, 130, 246, 0.4);
+}
+.calc-toast--info .calc-toast-icon {
+  color: #60a5fa;
+}
+
+/* Soporte para Tema Claro */
+[data-theme=light] .calc-dialog-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+[data-theme=light] .calc-dialog-card {
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.97), rgba(245, 245, 247, 0.98));
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+[data-theme=light] .calc-dialog-title {
+  color: #111827;
+}
+[data-theme=light] .calc-dialog-message {
+  color: #4b5563;
+}
+[data-theme=light] .calc-dialog-btn--cancel {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #374151;
+}
+[data-theme=light] .calc-dialog-btn--cancel:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #111827;
+}
+[data-theme=light] .calc-toast {
+  background: rgba(255, 255, 255, 0.94);
+  color: #111827;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes calcDialogShake {
+  0%, 100% {
+    transform: scale(1) translateX(0);
+  }
+  20%, 60% {
+    transform: scale(1) translateX(-6px);
+  }
+  40%, 80% {
+    transform: scale(1) translateX(6px);
+  }
+}
 /* --- CONTENEDORES PRINCIPALES DE LAYOUT --- */
 .main-content-wrapper {
   flex-grow: 1;

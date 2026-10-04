@@ -2,6 +2,7 @@
 
 import { soundManager } from './sound-manager.js';
 import { resetDraggableButtonPositions } from './draggable-buttons.js';
+import { DialogService } from '../modal/native-ui.js';
 
 class SettingsManager {
     constructor() {
@@ -77,8 +78,16 @@ class SettingsManager {
         }
 
         if (clearAllDataBtn) {
-            clearAllDataBtn.addEventListener('click', () => {
-                if (confirm('¿Estás seguro de que quieres borrar TODOS los datos de la aplicación? (Historial, tema, ajustes y posiciones de botones). Esta acción no se puede deshacer.')) {
+            clearAllDataBtn.addEventListener('click', async () => {
+                const confirmed = await DialogService.confirm({
+                    title: '¿Borrar todos los datos?',
+                    message: '¿Estás seguro de que quieres borrar TODOS los datos de la aplicación? (Historial, tema, ajustes y posiciones de botones).\n\nEsta acción no se puede deshacer.',
+                    confirmText: 'Sí, borrar todo',
+                    cancelText: 'Cancelar',
+                    type: 'danger',
+                    icon: 'fa-triangle-exclamation'
+                });
+                if (confirmed) {
                     localStorage.removeItem('calculatorHistory');
                     localStorage.removeItem('calculadora-facundo-theme');
                     localStorage.removeItem(this.SETTINGS_KEY);
@@ -87,8 +96,8 @@ class SettingsManager {
                         if (key.startsWith('draggable_pos_')) localStorage.removeItem(key);
                     });
                     
-                    alert('Todos los datos han sido borrados. La página se recargará para aplicar los cambios.');
-                    window.location.reload();
+                    DialogService.toast('Restableciendo aplicación...', { type: 'warning', icon: 'fa-arrows-rotate' });
+                    setTimeout(() => window.location.reload(), 900);
                 }
             });
         }

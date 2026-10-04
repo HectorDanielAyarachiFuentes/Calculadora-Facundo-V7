@@ -1,4 +1,4 @@
-import { NativeCollapse } from '../modal/native-ui.js';
+import { NativeCollapse, DialogService } from '../modal/native-ui.js';
 
 const elementConfigs = [
     { id: 'bubble-main', selector: '.bubble-main', type: 'collapse-toggle' },
@@ -186,10 +186,18 @@ export function initDraggableButtons() {
 /**
  * Restaura las posiciones de los botones arrastrables a su estado original.
  */
-export function resetDraggableButtonPositions() {
-    if (confirm('¿Restaurar las posiciones de todos los botones flotantes a su estado original?')) {
+export async function resetDraggableButtonPositions() {
+    const confirmed = await DialogService.confirm({
+        title: '¿Restaurar posiciones?',
+        message: '¿Restaurar las posiciones de todos los botones flotantes a su estado original?',
+        confirmText: 'Restaurar',
+        cancelText: 'Cancelar',
+        type: 'warning',
+        icon: 'fa-arrows-rotate'
+    });
+    if (confirmed) {
         draggables.forEach(resetPosition);
-        alert('Posiciones restauradas. Se aplicarán al recargar la página.');
-        window.location.reload();
+        DialogService.toast('Posiciones restauradas con éxito.', { type: 'success', icon: 'fa-check' });
+        setTimeout(() => window.location.reload(), 900);
     }
 }

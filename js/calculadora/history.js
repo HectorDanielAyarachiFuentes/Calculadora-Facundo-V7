@@ -10,6 +10,7 @@ export function registerReExecuteHandler(fn) {
     reExecuteHandler = fn;
 }
 import { SpeechService } from '../modal/bostraplectornumeros.js';
+import { DialogService } from '../modal/native-ui.js';
 
 /**
  * Genera textos legibles para la operación y para el lector de pantalla.
@@ -134,7 +135,7 @@ class HistoryManagerClass {
         // Evita añadir duplicados consecutivos
         const duplicateIndex = this.history.findIndex(existingItem => existingItem.input === item.input);
         if (duplicateIndex !== -1) {
-            alert('¡Oye! Ya has realizado esta operación antes. ¡Mira el historial!');
+            DialogService.toast('¡Operación duplicada! Mostrando en historial.', { type: 'info', icon: 'fa-clock-rotate-left' });
             if (!HistoryPanel.isOpen()) {
                 HistoryPanel.open();
             }
@@ -215,9 +216,18 @@ class HistoryPanelClass {
         }
     }
 
-    confirmAndClear() {
-        if (window.confirm('¿Estás seguro de que quieres borrar todo el historial?\n\nEsta acción no se puede deshacer.')) {
+    async confirmAndClear() {
+        const confirmed = await DialogService.confirm({
+            title: '¿Borrar todo el historial?',
+            message: '¿Estás seguro de que quieres borrar todo el historial?\nEsta acción no se puede deshacer.',
+            confirmText: 'Borrar historial',
+            cancelText: 'Cancelar',
+            type: 'danger',
+            icon: 'fa-trash-can'
+        });
+        if (confirmed) {
             HistoryManager.clearAll();
+            DialogService.toast('Historial borrado correctamente', { type: 'success', icon: 'fa-check' });
         }
     }
 
