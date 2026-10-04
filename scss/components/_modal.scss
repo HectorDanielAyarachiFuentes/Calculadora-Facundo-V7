@@ -36,11 +36,27 @@
     margin: 0;
 }
 
-/* Modal Body CERO SCROLL */
+/* Modal Body con desplazamiento fluido cuando sea necesario */
 #infoModal .modal-body {
-    padding: 0.75rem 1.2rem;
-    max-height: calc(100vh - 140px);
-    overflow: hidden !important;
+    padding: 0.85rem 1.25rem;
+    max-height: calc(85vh - 110px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        &:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+    }
 }
 
 /* ==========================================================================

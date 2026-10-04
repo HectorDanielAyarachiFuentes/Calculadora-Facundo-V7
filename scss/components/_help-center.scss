@@ -62,6 +62,7 @@
     display: flex;
     gap: 0.45rem;
     flex-wrap: wrap;
+    align-items: center;
 
     .badge {
         background-color: rgba(255, 255, 255, 0.06) !important;
@@ -86,20 +87,36 @@
         font-weight: 700;
         font-size: 0.8rem;
     }
+
+    .help-toggle-btn {
+        margin-left: auto;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid var(--history-border-color) !important;
+        color: var(--focus-color) !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        padding: 0.25rem 0.65rem !important;
+        border-radius: 6px !important;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: rgba(var(--focus-color-rgb, 76, 175, 80), 0.18) !important;
+            border-color: var(--focus-color) !important;
+            transform: translateY(-1px);
+        }
+    }
 }
 
 .help-accordion-container {
-    max-height: 250px;
-    overflow-y: auto;
-    padding-right: 2px;
-
-    &::-webkit-scrollbar {
-        width: 5px;
-    }
-    &::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 4px;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: none;
+    overflow: visible;
 
     .accordion-item {
         background: transparent;
@@ -112,9 +129,9 @@
     .accordion-button {
         background: var(--history-hover-bg);
         color: var(--history-text-color);
-        font-size: 0.86rem;
+        font-size: 0.88rem;
         font-weight: 700;
-        padding: 0.55rem 0.85rem;
+        padding: 0.65rem 0.95rem;
 
         &:not(.collapsed) {
             background: rgba(var(--focus-color-rgb, 76, 175, 80), 0.2);
@@ -131,8 +148,9 @@
     .accordion-body {
         background: var(--history-panel-bg);
         color: var(--history-text-color);
-        padding: 0.6rem 0.85rem;
-        line-height: 1.5;
+        padding: 0.8rem 1rem 0.95rem;
+        line-height: 1.65;
+        font-size: 0.9rem;
 
         strong {
             color: var(--focus-color);
@@ -207,6 +225,16 @@
             background-color: #e9ecef !important;
             color: #2b8a3e !important;
             border-color: #ced4da !important;
+        }
+        .help-toggle-btn {
+            background: #f1f3f5 !important;
+            border-color: #ced4da !important;
+            color: #15803d !important;
+
+            &:hover {
+                background: #e9ecef !important;
+                border-color: #16a34a !important;
+            }
         }
     }
 }

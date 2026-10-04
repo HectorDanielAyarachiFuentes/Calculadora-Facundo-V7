@@ -34,18 +34,37 @@
 }
 
 .calculation-type-toggle {
-    margin: 0.15rem 0;
-    .btn-outline-success {
-        border-color: var(--history-border-color);
-        color: var(--history-text-color);
-        font-size: 0.78rem;
-        font-weight: 600;
-        padding: 0.25rem 0.5rem;
+    margin: 0.25rem 0 0.45rem;
 
-        &.active, &:hover {
-            background-color: var(--focus-color);
-            border-color: var(--focus-color);
+    .btn-group {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--history-border-color);
+    }
+
+    .btn-outline-success {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: none;
+        color: var(--history-text-color);
+        font-size: 0.84rem;
+        font-weight: 600;
+        padding: 0.38rem 0.75rem;
+        border-radius: 0 !important;
+        transition: all 0.2s ease;
+
+        &:not(:last-child) {
+            border-right: 1px solid var(--history-border-color) !important;
+        }
+
+        &:hover:not(.active) {
+            background-color: rgba(var(--focus-color-rgb, 76, 175, 80), 0.18);
             color: #ffffff;
+        }
+
+        &.active {
+            background-color: var(--focus-color) !important;
+            color: #000000 !important;
+            font-weight: 700;
         }
     }
 }
@@ -308,6 +327,31 @@
             color: #374151;
             border: 1px solid #d1d5db;
             border-left: none;
+        }
+    }
+
+    .calculation-type-toggle {
+        .btn-group {
+            border-color: #ced4da;
+        }
+
+        .btn-outline-success {
+            background-color: #f8f9fa;
+            color: #495057;
+
+            &:not(:last-child) {
+                border-right: 1px solid #ced4da !important;
+            }
+
+            &:hover:not(.active) {
+                background-color: #e9ecef;
+                color: #198754;
+            }
+
+            &.active {
+                background-color: #198754 !important;
+                color: #ffffff !important;
+            }
         }
     }
 

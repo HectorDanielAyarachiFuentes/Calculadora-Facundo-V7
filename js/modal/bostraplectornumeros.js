@@ -1428,6 +1428,9 @@ class NumberReaderApp {
                                 <span class="badge bg-dark border border-secondary text-light"><kbd>C</kbd> = Limpiar</span>
                                 <span class="badge bg-dark border border-secondary text-light"><kbd>⌫</kbd> = Borrar</span>
                                 <span class="badge bg-dark border border-secondary text-light"><kbd>Esc</kbd> = Cerrar</span>
+                                <button id="helpToggleAllBtn" type="button" class="help-toggle-btn" title="Expandir o contraer todo">
+                                    <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Ver todo
+                                </button>
                             </div>
 
                             <div class="accordion help-accordion-container" id="helpAccordion">
@@ -1510,6 +1513,24 @@ class NumberReaderApp {
                                     searchInput.value = '';
                                     searchInput.dispatchEvent(new Event('input'));
                                 }
+                            });
+                        }
+
+                        const toggleAllBtn = document.getElementById('helpToggleAllBtn');
+                        if (toggleAllBtn) {
+                            let allExpanded = false;
+                            toggleAllBtn.addEventListener('click', () => {
+                                allExpanded = !allExpanded;
+                                document.querySelectorAll('#helpAccordion .accordion-collapse').forEach(col => {
+                                    col.classList.toggle('show', allExpanded);
+                                });
+                                document.querySelectorAll('#helpAccordion .accordion-button').forEach(btn => {
+                                    btn.classList.toggle('collapsed', !allExpanded);
+                                    btn.setAttribute('aria-expanded', allExpanded ? 'true' : 'false');
+                                });
+                                toggleAllBtn.innerHTML = allExpanded
+                                    ? '<i class="fa-solid fa-down-left-and-up-right-to-center"></i> Contraer todo'
+                                    : '<i class="fa-solid fa-up-right-and-down-left-from-center"></i> Ver todo';
                             });
                         }
                     }
